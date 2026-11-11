@@ -167,9 +167,15 @@ export function HangerRack({
                       }
                     }}
                     onClick={() => {
-                      // Klik produk: langsung buka pop-up layar penuh detail produk sesuai panduan PDF
-                      onPlaySound('open');
-                      onOpenDetail(idx);
+                      // Klik baju yang sudah menghadap depan → buka detail.
+                      // Klik baju yang masih tampak samping (HP, tanpa hover) → putar ke depan dulu.
+                      if (isActive) {
+                        onPlaySound('open');
+                        onOpenDetail(idx);
+                      } else {
+                        onPlaySound('slide');
+                        onSelectIndex(idx);
+                      }
                     }}
                     className={`hanger-slot flex flex-col items-center cursor-pointer transition-[width] duration-500 ease-out [perspective:900px] ${
                       isActive ? 'w-[200px] md:w-[220px] z-30' : 'w-[84px] md:w-[94px] z-10'

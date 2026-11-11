@@ -93,20 +93,20 @@ export function GarmentSVG({
     return (
       <svg
         className={`w-auto max-w-full h-full block filter drop-shadow-md ${className}`}
-        viewBox="0 0 300 350"
+        viewBox="0 0 110 350"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          <linearGradient id={gradId} x1="101" y1="6" x2="199" y2="6" gradientUnits="userSpaceOnUse">
+          <linearGradient id={gradId} x1="6" y1="6" x2="104" y2="6" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stopColor="#ffffff" stopOpacity="0.25" />
             <stop offset="28%" stopColor="#ffffff" stopOpacity="0.05" />
             <stop offset="65%" stopColor="#000000" stopOpacity="0" />
             <stop offset="100%" stopColor="#000000" stopOpacity="0.32" />
           </linearGradient>
         </defs>
-        <rect x="101" y="6" width="98" height="314" rx="22" fill={hex} />
-        <rect x="101" y="6" width="98" height="314" rx="22" fill={`url(#${gradId})`} stroke={strokeColor} strokeWidth="2" />
+        <rect x="6" y="6" width="98" height="314" rx="22" fill={hex} />
+        <rect x="6" y="6" width="98" height="314" rx="22" fill={`url(#${gradId})`} stroke={strokeColor} strokeWidth="2" />
       </svg>
     );
   }
