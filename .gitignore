@@ -1,3 +1,12 @@
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Scratch & test logs
+scratch/
+
 # Windows
 desktop.ini
 Thumbs.db

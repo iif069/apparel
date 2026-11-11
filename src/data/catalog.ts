@@ -1,0 +1,55 @@
+import { CategoryData, CategoryId } from '@/types';
+
+export const INITIAL_CATEGORIES: Record<CategoryId, CategoryData> = {
+  kaos: {
+    id: 'kaos',
+    tabLabel: 'Kaos sablon',
+    heroTitle: 'APPAREL',
+    watermark: 'APPAREL',
+    kicker: 'Katalog pakaian interaktif',
+    subtitle: 'Sablon DTF & Plastisol presisi tinggi, bahan 100% Cotton Combed 24s & 30s adem standar distro.',
+    rack: [
+      { id: 'kaos-hitam', name: 'Kaos Hitam Reaktif', colorName: 'Hitam', hex: '#1c1b1a', highlight: '#3c3c3c', shadow: '#111111', accent: '#ffffff', price: 65000, side: null, front: null, back: null },
+      { id: 'kaos-dongker', name: 'Kaos Biru Dongker', colorName: 'Biru Dongker', hex: '#1F2734', highlight: '#354257', shadow: '#10151d', accent: '#ffffff', price: 65000, side: null, front: null, back: null },
+      { id: 'kaos-mineral', name: 'Kaos Mineral Green', colorName: 'Mineral Green', hex: '#5B7069', highlight: '#768f87', shadow: '#3b4a45', accent: '#ffffff', price: 65000, side: null, front: null, back: null },
+      { id: 'kaos-putih', name: 'Kaos Putih Netral', colorName: 'Putih', hex: '#f8f7f3', highlight: '#ffffff', shadow: '#cac6bc', accent: '#7b29ba', price: 60000, side: null, front: null, back: null },
+      { id: 'kaos-benhur', name: 'Kaos Benhur Spesial', colorName: 'Benhur Spesial', hex: '#203B72', highlight: '#35589e', shadow: '#122244', accent: '#ffffff', price: 65000, side: null, front: null, back: null },
+      { id: 'kaos-burgundy', name: 'Kaos Burgundy', colorName: 'Burgundy', hex: '#602332', highlight: '#823548', shadow: '#3b121c', accent: '#ffffff', price: 65000, side: null, front: null, back: null },
+      { id: 'kaos-purple', name: 'Kaos Royal Purple', colorName: 'Royal Purple', hex: '#573A69', highlight: '#75518c', shadow: '#362242', accent: '#ffffff', price: 65000, side: null, front: null, back: null },
+    ],
+  },
+  jersey: {
+    id: 'jersey',
+    tabLabel: 'Jersey printing',
+    heroTitle: 'JERSEY',
+    watermark: 'JERSEY',
+    kicker: 'Custom Jersey Olahraga & Esport',
+    subtitle: 'Sublimasi full printing warna tajam anti-luntur dengan material dryfit Milano/Brazil berpori adem.',
+    rack: [
+      { id: 'jersey-black', name: 'Jersey Hitam Gold', colorName: 'Hitam gold', hex: '#1c1b1a', highlight: '#3b3b42', shadow: '#101012', accent: '#e5b842', price: 115000, side: null, front: null, back: null },
+      { id: 'jersey-blue', name: 'Jersey Biru Elektrik', colorName: 'Biru elektrik', hex: '#183f8c', highlight: '#2859b8', shadow: '#0d2452', accent: '#28a9c4', price: 115000, side: null, front: null, back: null },
+      { id: 'jersey-red', name: 'Jersey Merah Garuda', colorName: 'Merah garuda', hex: '#a51c24', highlight: '#c72c37', shadow: '#610e14', accent: '#ffffff', price: 115000, side: null, front: null, back: null },
+      { id: 'jersey-white', name: 'Jersey Putih Klasik', colorName: 'Putih klasik', hex: '#efedf2', highlight: '#ffffff', shadow: '#c9c5bc', accent: '#7b29ba', price: 110000, side: null, front: null, back: null },
+      { id: 'jersey-teal', name: 'Jersey Hijau Tosca', colorName: 'Hijau tosca', hex: '#167559', highlight: '#258f87', shadow: '#0b3d39', accent: '#dff266', price: 115000, side: null, front: null, back: null },
+      { id: 'jersey-maroon', name: 'Jersey Marun Pro', colorName: 'Marun pro', hex: '#6e1923', highlight: '#822c3e', shadow: '#360d16', accent: '#f3c677', price: 115000, side: null, front: null, back: null },
+      { id: 'jersey-purple', name: 'Jersey Ungu MIG', colorName: 'Ungu MIG', hex: '#761eb8', highlight: '#7b38ab', shadow: '#34114d', accent: '#ffffff', price: 115000, side: null, front: null, back: null },
+    ],
+  },
+  puffer: {
+    id: 'puffer',
+    tabLabel: 'Kemeja',
+    heroTitle: 'KEMEJA',
+    watermark: 'KEMEJA',
+    kicker: 'Kemeja Korsa & Seragam Komunitas',
+    subtitle: 'Kemeja kerja lapangan/kantor bahan American & Japan Drill premium, potongan rapi & jahitan kokoh.',
+    rack: [
+      { id: 'kemeja-hitam', name: 'Kemeja Hitam Elegan', colorName: 'Hitam elegan', hex: '#202022', highlight: '#3a3a3e', shadow: '#101012', accent: '#ffffff', price: 95000, side: null, front: null, back: null },
+      { id: 'kemeja-navy', name: 'Kemeja Biru Dongker', colorName: 'Biru dongker', hex: '#1c283c', highlight: '#2e3e5c', shadow: '#101724', accent: '#ffffff', price: 95000, side: null, front: null, back: null },
+      { id: 'kemeja-army', name: 'Kemeja Hijau Army', colorName: 'Hijau army', hex: '#444c3c', highlight: '#5c6652', shadow: '#2d3328', accent: '#ffffff', price: 95000, side: null, front: null, back: null },
+      { id: 'kemeja-putih', name: 'Kemeja Putih Formal', colorName: 'Putih formal', hex: '#f6f5f1', highlight: '#ffffff', shadow: '#cac6bc', accent: '#7b29ba', price: 90000, side: null, front: null, back: null },
+      { id: 'kemeja-khaki', name: 'Kemeja Krem Khaki', colorName: 'Krem khaki', hex: '#b39d7b', highlight: '#cbba9c', shadow: '#877254', accent: '#ffffff', price: 95000, side: null, front: null, back: null },
+      { id: 'kemeja-marun', name: 'Kemeja Merah Marun', colorName: 'Merah marun', hex: '#5c1b26', highlight: '#7d2a38', shadow: '#380d14', accent: '#ffffff', price: 95000, side: null, front: null, back: null },
+      { id: 'kemeja-abu', name: 'Kemeja Abu Semen', colorName: 'Abu semen', hex: '#6f7478', highlight: '#8d9296', shadow: '#4d5154', accent: '#ffffff', price: 95000, side: null, front: null, back: null },
+    ],
+  },
+};

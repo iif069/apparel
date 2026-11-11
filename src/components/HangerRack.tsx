@@ -1,0 +1,212 @@
+'use client';
+
+import React, { useRef, useEffect } from 'react';
+import { ArrowRight } from 'lucide-react';
+import { GarmentItem, CategoryData, CustomPhotoData } from '@/types';
+import { HangerHookSVG } from './HangerHookSVG';
+import { GarmentSVG } from './GarmentSVG';
+
+interface HangerRackProps {
+  categoryData: CategoryData;
+  activeIndex: number;
+  onSelectIndex: (index: number) => void;
+  onOpenDetail: (index: number) => void;
+  customPhotos: Record<string, CustomPhotoData>;
+  onPlaySound: (type: 'slide' | 'open') => void;
+}
+
+export function HangerRack({
+  categoryData,
+  activeIndex,
+  onSelectIndex,
+  onOpenDetail,
+  customPhotos,
+  onPlaySound,
+}: HangerRackProps) {
+  const rackListRef = useRef<HTMLDivElement>(null);
+  const isDraggingRef = useRef(false);
+  const dragStartXRef = useRef(0);
+  const dragScrollLeftRef = useRef(0);
+
+  const items = categoryData.rack;
+  const activeItem = items[activeIndex] || items[0];
+  const activeCustom = customPhotos[activeItem?.id];
+  const activePrice = activeCustom?.price || activeItem?.price || 60000;
+  const activeName = activeCustom?.name || activeItem?.name;
+  const activeColor = activeCustom?.colorName || activeItem?.colorName;
+
+  // Auto scroll ke active slot saat index berubah
+  useEffect(() => {
+    const el = rackListRef.current;
+    if (!el) return;
+    const slots = el.querySelectorAll<HTMLElement>('.hanger-slot');
+    const target = slots[activeIndex];
+    if (target) {
+      const containerW = el.clientWidth;
+      const targetLeft = target.offsetLeft;
+      const targetW = target.offsetWidth;
+      el.scrollTo({
+        left: targetLeft - containerW / 2 + targetW / 2,
+        behavior: 'smooth',
+      });
+    }
+  }, [activeIndex]);
+
+  // Pointer drag gestures
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (!rackListRef.current) return;
+    isDraggingRef.current = true;
+    dragStartXRef.current = e.clientX;
+    dragScrollLeftRef.current = rackListRef.current.scrollLeft;
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDraggingRef.current || !rackListRef.current) return;
+    const dx = e.clientX - dragStartXRef.current;
+    rackListRef.current.scrollLeft = dragScrollLeftRef.current - dx;
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+    const moved = Math.abs(e.clientX - dragStartXRef.current);
+    if (moved > 20) {
+      onPlaySound('slide');
+    }
+  };
+
+  return (
+    <section className="relative w-full min-h-[calc(100vh-64px)] md:min-h-[calc(100vh-68px)] flex flex-col justify-between overflow-hidden bg-page select-none">
+      {/* 1. Latar Polos & Tipografi Raksasa "APPAREL" */}
+      <div className="absolute inset-0 pointer-events-none flex flex-col justify-center items-center overflow-hidden z-0">
+        <h1 className="font-display text-[20vw] md:text-[18vw] leading-none text-[#ebe8f2] tracking-wider select-none transform -translate-y-12">
+          {categoryData.heroTitle || 'APPAREL'}
+        </h1>
+        {/* Bayangan Lantai Perspektif 3D */}
+        <div className="absolute bottom-16 md:bottom-20 w-full flex justify-center [perspective:800px]">
+          <div
+            className="font-display text-[15vw] md:text-[14vw] leading-none text-[#ded9e8]/50 tracking-wider select-none origin-bottom [transform:rotateX(75deg)_scaleY(0.5)] opacity-60 filter blur-[1px]"
+            aria-hidden="true"
+          >
+            {categoryData.watermark || 'APPAREL'}
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Callout Kiri & Kanan (Desktop) */}
+      <aside className="hidden lg:flex flex-col absolute left-10 top-1/2 -translate-y-1/2 z-20 pointer-events-none text-left">
+        <span className="font-serif italic text-3xl md:text-4xl text-ink leading-tight">Tampil</span>
+        <span className="font-sans font-black text-2xl md:text-3xl text-ink tracking-tight">MENAWAN</span>
+      </aside>
+
+      <aside className="hidden lg:flex flex-col absolute right-10 top-1/2 -translate-y-1/2 z-20 pointer-events-none text-right">
+        <span className="font-serif italic text-3xl md:text-4xl text-ink leading-tight">Langsung</span>
+        <span className="font-sans font-black text-2xl md:text-3xl text-ink tracking-tight">PILIH UKURAN</span>
+      </aside>
+
+      {/* 3. PIPA GANTUNGAN CHROME HORIZONTAL & DERETAN BAJU */}
+      <div className="relative w-full z-10 flex-1 flex flex-col justify-center mt-12 md:mt-16">
+        {/* Kawat Chrome Horizontal */}
+        <div className="absolute top-[26px] left-0 right-0 h-[8px] bg-gradient-to-b from-[#d6d4de] via-white via-28% to-[#1c1b1a] z-0 shadow-sm">
+          <div className="w-full h-[2px] bg-white/85" />
+        </div>
+
+        {/* Deretan Baju Gantungan yang Bisa Digeser */}
+        <div
+          ref={rackListRef}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          className="w-full flex items-center justify-start md:justify-center overflow-x-auto no-scrollbar px-10 md:px-20 py-8 cursor-grab active:cursor-grabbing z-10"
+        >
+          <div className="flex items-center gap-1 md:gap-3 mx-auto">
+            {items.map((item, idx) => {
+              const isActive = idx === activeIndex;
+              const custom = customPhotos[item.id];
+              const price = custom?.price || item.price;
+              const priceText = `Rp ${Math.round(price / 1000)}rb`;
+
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => {
+                    if (isActive) {
+                      onPlaySound('open');
+                      onOpenDetail(idx);
+                    } else {
+                      onPlaySound('slide');
+                      onSelectIndex(idx);
+                    }
+                  }}
+                  className={`hanger-slot flex flex-col items-center cursor-pointer transition-all duration-300 ease-out preserve-3d ${
+                    isActive
+                      ? 'w-[200px] md:w-[220px] scale-100 z-30 opacity-100'
+                      : 'w-[84px] md:w-[94px] scale-[0.92] z-10 opacity-80 hover:opacity-100'
+                  }`}
+                  style={{
+                    transform: isActive ? 'none' : idx < activeIndex ? 'rotateY(35deg)' : 'rotateY(-35deg)',
+                  }}
+                >
+                  {/* Gantungan Hook SVG */}
+                  <div className="w-[100px] md:w-[110px] h-[52px]">
+                    <HangerHookSVG priceTagText={priceText} showPriceTag={isActive} />
+                  </div>
+
+                  {/* Siluet atau Foto Baju */}
+                  <div className="w-full h-[230px] md:h-[260px] flex items-start justify-center mt-[-6px]">
+                    <GarmentSVG
+                      item={item}
+                      categoryId={categoryData.id}
+                      viewAngle={isActive ? 'front' : 'side-left'}
+                      custom={custom}
+                      className="max-h-full drop-shadow-md"
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* 4. BAR AKSI BAWAH RAK */}
+      <footer className="relative w-full z-20 px-4 md:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4 max-w-[1340px] mx-auto">
+        <div className="flex items-center gap-2 text-ink/75 font-medium text-[13px] bg-surface/80 backdrop-blur-sm border border-line px-3.5 py-1.5 rounded-full">
+          <span className="w-2 h-2 rounded-full bg-brand animate-pulse" />
+          <span>{categoryData.kicker}</span>
+        </div>
+
+        {/* Floating Pill Info Produk Aktif & Tombol Lihat Detail */}
+        <div
+          onClick={() => {
+            onPlaySound('open');
+            onOpenDetail(activeIndex);
+          }}
+          className="flex items-center justify-between gap-4 bg-surface border border-line px-4 py-2.5 rounded-full shadow-soft hover:shadow-card cursor-pointer transition-all press-active max-w-[360px] w-full sm:w-auto"
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span
+              className="w-5 h-5 rounded-full border border-line flex-shrink-0"
+              style={{ backgroundColor: activeItem?.hex || '#ffffff' }}
+            />
+            <div className="flex flex-col min-w-0">
+              <span className="text-[13px] font-bold text-ink truncate">{activeName}</span>
+              <span className="text-[11.5px] text-ink/60 truncate">
+                Mulai dari Rp {activePrice.toLocaleString('id-ID')}
+              </span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand text-surface text-[12px] font-bold shadow-sm whitespace-nowrap"
+          >
+            <span>Lihat detail</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </footer>
+    </section>
+  );
+}
