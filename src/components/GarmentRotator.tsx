@@ -91,7 +91,7 @@ export function GarmentRotator({
     >
       {/* 1. Kait Gantungan Atas (Disembunyikan jika foto custom punya gantungan sendiri) */}
       {!hasOwnHanger && (
-        <div className="w-[90px] md:w-[120px] h-[44px] md:h-[56px] -mt-[2px] flex-shrink-0 z-20">
+        <div className="w-[96px] md:w-[120px] h-[48px] md:h-[58px] flex-shrink-0 z-20">
           <HangerHookSVG priceTagText={priceText} showPriceTag={true} />
         </div>
       )}
@@ -103,7 +103,7 @@ export function GarmentRotator({
         }`}
         style={{
           transform: `rotateY(${spinDeg}deg)`,
-          marginTop: hasOwnHanger ? '-30px' : '-4px',
+          marginTop: hasOwnHanger ? '-30px' : '-3px',
         }}
       >
         {/* TAMPAK DEPAN / SAMPING */}

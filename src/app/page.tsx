@@ -185,6 +185,9 @@ export default function HomePage() {
       {/* 2. Panggung Rak Gantungan 3D (Stage 1) */}
       <HangerRack
         categoryData={activeCategoryData}
+        categories={categoryTabList}
+        currentCategory={currentCategory}
+        onSelectCategory={handleSelectCategory}
         activeIndex={activeSlotIndex}
         onSelectIndex={setActiveSlotIndex}
         onOpenDetail={(idx) => {

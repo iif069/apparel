@@ -129,24 +129,6 @@ export function Topbar({
           </div>
         </div>
       </header>
-
-      {/* Bar Kategori Khusus di HP (Menempel rapi di bawah Topbar) */}
-      <div className="md:hidden sticky top-[64px] z-40 w-full bg-page/95 backdrop-blur-sm border-b border-line px-3.5 py-2.5 flex items-center gap-2 overflow-x-auto no-scrollbar">
-        {categories.map((cat) => (
-          <button
-            key={cat.id}
-            type="button"
-            onClick={() => onSelectCategory(cat.id)}
-            className={`px-3.5 py-1.5 rounded-full text-[12.5px] font-semibold whitespace-nowrap transition-all press-active ${
-              currentCategory === cat.id
-                ? 'bg-ink text-surface shadow-sm'
-                : 'bg-surface text-ink border border-line'
-            }`}
-          >
-            {cat.tabLabel}
-          </button>
-        ))}
-      </div>
     </>
   );
 }
