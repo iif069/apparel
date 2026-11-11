@@ -8,9 +8,9 @@ import { GarmentSVG } from './GarmentSVG';
 
 interface HangerRackProps {
   categoryData: CategoryData;
-  categories: { id: CategoryId; tabLabel: string }[];
-  currentCategory: CategoryId;
-  onSelectCategory: (id: CategoryId) => void;
+  categories?: { id: CategoryId; tabLabel: string }[];
+  currentCategory?: CategoryId;
+  onSelectCategory?: (id: CategoryId) => void;
   activeIndex: number;
   onSelectIndex: (index: number) => void;
   onOpenDetail: (index: number) => void;
@@ -20,7 +20,7 @@ interface HangerRackProps {
 
 export function HangerRack({
   categoryData,
-  categories,
+  categories = [],
   currentCategory,
   onSelectCategory,
   activeIndex,
@@ -84,24 +84,26 @@ export function HangerRack({
   return (
     <section className="relative w-full min-h-[calc(100vh-64px)] md:min-h-[calc(100vh-68px)] flex flex-col justify-between overflow-hidden bg-page select-none">
       {/* 1. Bar Kategori Khusus HP (3 Kolom Seimbang Sesuai Desain Sistem: tinggi 42px, font 13px) */}
-      <div className="md:hidden w-full px-3.5 pt-3 pb-2 z-20">
-        <nav className="grid grid-cols-3 gap-2 w-full" aria-label="Kategori pakaian">
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              type="button"
-              onClick={() => onSelectCategory(cat.id)}
-              className={`h-[42px] min-h-[42px] px-2 rounded-full text-[13px] font-semibold flex items-center justify-center transition-all press-active ${
-                currentCategory === cat.id
-                  ? 'bg-ink text-surface shadow-sm'
-                  : 'bg-surface text-ink border border-line hover:border-ink/30'
-              }`}
-            >
-              {cat.tabLabel}
-            </button>
-          ))}
-        </nav>
-      </div>
+      {categories && categories.length > 0 && (
+        <div className="md:hidden w-full px-3.5 pt-3 pb-2 z-20">
+          <nav className="grid grid-cols-3 gap-2 w-full" aria-label="Kategori pakaian">
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => onSelectCategory && onSelectCategory(cat.id)}
+                className={`h-[42px] min-h-[42px] px-2 rounded-full text-[13px] font-semibold flex items-center justify-center transition-all press-active ${
+                  currentCategory === cat.id
+                    ? 'bg-ink text-surface shadow-sm'
+                    : 'bg-surface text-ink border border-line hover:border-ink/30'
+                }`}
+              >
+                {cat.tabLabel}
+              </button>
+            ))}
+          </nav>
+        </div>
+      )}
 
       {/* 2. Latar Polos & Tipografi Raksasa "APPAREL" */}
       <div className="absolute inset-0 pointer-events-none flex flex-col justify-center items-center overflow-hidden z-0">
