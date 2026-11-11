@@ -189,8 +189,10 @@ export function HangerRack({
                     {/* Siluet atau Foto Baju — berputar (rotateY) ke tampak depan saat aktif / di-hover, tanpa efek membesar */}
                     <div
                       key={isActive ? 'front' : 'side'}
-                      className={`w-full h-[230px] md:h-[260px] flex items-start justify-center -mt-1.5 ${
-                        isActive ? 'animate-garment-turn' : 'animate-garment-turn-back'
+                      className={`h-[230px] md:h-[260px] flex-shrink-0 flex items-start justify-center -mt-1.5 ${
+                        isActive
+                          ? 'w-[200px] md:w-[220px] animate-garment-turn'
+                          : 'w-[84px] md:w-[94px] animate-garment-turn-back'
                       }`}
                     >
                       <GarmentSVG
