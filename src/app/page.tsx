@@ -24,7 +24,16 @@ export default function HomePage() {
   const [customPhotos, setCustomPhotos] = useState<Record<string, CustomPhotoData>>({});
   const [customCategories, setCustomCategories] = useState<Record<string, CustomCategoryData>>({});
 
-  // 1. Muat data dari localStorage saat mount
+  // Mode Rahasia Admin (disembunyikan secara default untuk pengunjung umum)
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  // 1. Muat data dari localStorage & cek URL secret admin saat mount
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem('mig-apparel-cart');
@@ -36,6 +45,16 @@ export default function HomePage() {
       const savedCats = localStorage.getItem('mig-apparel-custom-categories');
       if (savedCats) setCustomCategories(JSON.parse(savedCats));
 
+      // Cek apakah ada parameter URL rahasia ?admin=1 atau ?admin=mig atau tersimpan sebelumnya
+      const params = new URLSearchParams(window.location.search);
+      const adminParam = params.get('admin');
+      const savedAdmin = localStorage.getItem('mig-apparel-admin-mode') === 'true';
+
+      if (adminParam === '1' || adminParam === 'mig' || adminParam === 'true' || savedAdmin) {
+        setIsAdmin(true);
+        localStorage.setItem('mig-apparel-admin-mode', 'true');
+      }
+
       if (window.location.hash.includes('detail') || window.location.search.includes('detail')) {
         setIsDetailOpen(true);
       }
@@ -43,6 +62,20 @@ export default function HomePage() {
       // Abaikan jika localStorage tidak tersedia
     }
   }, []);
+
+  const handleToggleAdmin = () => {
+    setIsAdmin((prev) => {
+      const next = !prev;
+      if (next) {
+        localStorage.setItem('mig-apparel-admin-mode', 'true');
+        showToast('🔓 Mode Admin Aktif: Tombol Atur Katalog Sekarang Terlihat');
+      } else {
+        localStorage.removeItem('mig-apparel-admin-mode');
+        showToast('🔒 Mode Admin Dinonaktifkan: Tampilan Toko Bersih untuk Pembeli');
+      }
+      return next;
+    });
+  };
 
   // 2. Simpan cart ke localStorage saat berubah
   useEffect(() => {
@@ -180,6 +213,8 @@ export default function HomePage() {
         onOpenCustomModal={() => setIsCustomModalOpen(true)}
         soundEnabled={soundEnabled}
         onToggleSound={() => setSoundEnabled((prev) => !prev)}
+        isAdmin={isAdmin}
+        onToggleAdmin={handleToggleAdmin}
       />
 
       {/* 2. Panggung Rak Gantungan 3D (Stage 1) */}
@@ -232,6 +267,13 @@ export default function HomePage() {
         onSaveCustom={handleSaveCustom}
         onResetCustom={handleResetCustom}
       />
+
+      {/* Toast Notifikasi Mode Rahasia */}
+      {toastMessage && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] px-5 py-3 rounded-full bg-ink text-surface text-[13px] font-semibold shadow-float flex items-center gap-2 animate-bounce">
+          <span>{toastMessage}</span>
+        </div>
+      )}
     </main>
   );
 }

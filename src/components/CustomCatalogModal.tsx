@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Upload, RotateCcw, Check } from 'lucide-react';
+import { X, Upload, RotateCcw, Check, Copy } from 'lucide-react';
 import { GarmentItem, CategoryData, CustomPhotoData, CustomCategoryData } from '@/types';
 
 interface CustomCatalogModalProps {
@@ -261,15 +261,33 @@ export function CustomCatalogModal({
         </div>
 
         {/* Tombol Aksi (Pill rounded-full sesuai Desain Sistem) */}
-        <div className="flex items-center justify-between pt-3 border-t border-line">
-          <button
-            type="button"
-            onClick={onResetCustom}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-[12px] font-semibold text-red-600 hover:bg-red-50 press-active"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reset Bawaan</span>
-          </button>
+        <div className="flex items-center justify-between pt-3 border-t border-line gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={onResetCustom}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-full text-[12px] font-semibold text-red-600 hover:bg-red-50 press-active"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Reset</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const config = {
+                  photos: customPhotos,
+                  categories: customCategories,
+                };
+                navigator.clipboard.writeText(JSON.stringify(config, null, 2));
+                alert('Konfigurasi berhasil disalin ke clipboard! Anda bisa kirimkan teks ini ke asisten AI untuk dijadikan permanen di website.');
+              }}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-full text-[12px] font-semibold text-muted hover:text-ink hover:bg-page press-active"
+              title="Salin data JSON untuk dijadikan permanen ke kode"
+            >
+              <Copy className="w-3.5 h-3.5" />
+              <span>Salin JSON</span>
+            </button>
+          </div>
 
           <div className="flex items-center gap-2">
             <button
