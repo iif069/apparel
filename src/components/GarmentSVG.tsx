@@ -25,7 +25,7 @@ export function GarmentSVG({
         <img
           src={custom.sideDataUrl}
           alt={`${item.name} tampak samping`}
-          className={`w-auto max-w-full h-full object-contain ${className}`}
+          className={`w-auto max-w-full h-full object-contain filter drop-shadow-md contrast-[1.03] ${className}`}
         />
       );
     }
@@ -86,17 +86,27 @@ export function GarmentSVG({
   const strokeColor = isLight ? '#d5d2de' : 'rgba(28, 27, 26, 0.14)';
 
   // -------------------------------------------------------------------------
-  // TAMPAK SAMPING — Kapsul vertikal bersih
+  // TAMPAK SAMPING — Kapsul vertikal dengan pencahayaan 3D kontras tinggi
   // -------------------------------------------------------------------------
   if (viewAngle.startsWith('side')) {
+    const gradId = `sideGrad-${item.id}`;
     return (
       <svg
-        className={`w-auto max-w-full h-full block ${className}`}
+        className={`w-auto max-w-full h-full block filter drop-shadow-md ${className}`}
         viewBox="0 0 300 350"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <rect x="101" y="6" width="98" height="314" rx="22" fill={hex} stroke={strokeColor} strokeWidth="2" />
+        <defs>
+          <linearGradient id={gradId} x1="101" y1="6" x2="199" y2="6" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.25" />
+            <stop offset="28%" stopColor="#ffffff" stopOpacity="0.05" />
+            <stop offset="65%" stopColor="#000000" stopOpacity="0" />
+            <stop offset="100%" stopColor="#000000" stopOpacity="0.32" />
+          </linearGradient>
+        </defs>
+        <rect x="101" y="6" width="98" height="314" rx="22" fill={hex} />
+        <rect x="101" y="6" width="98" height="314" rx="22" fill={`url(#${gradId})`} stroke={strokeColor} strokeWidth="2" />
       </svg>
     );
   }

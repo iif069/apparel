@@ -26,6 +26,14 @@ const cormorant = Cormorant_Garamond({
 export const metadata: Metadata = {
   title: 'MIG Apparel — Katalog Gantungan Interaktif',
   description: 'Katalog etalase gantungan baju 3D interaktif MIG Digital Printing. Kaos sablon, jersey printing, kemeja komunitas.',
+  icons: {
+    icon: [
+      { url: '/logo.svg', type: 'image/svg+xml' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/logo.svg',
+    apple: '/logo.svg',
+  },
 };
 
 export const viewport: Viewport = {

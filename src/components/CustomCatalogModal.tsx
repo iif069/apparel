@@ -71,29 +71,35 @@ export function CustomCatalogModal({
     reader.readAsDataURL(file);
   };
 
-  // Helper auto-generate tampak samping dari depan jika kosong
+  // Helper auto-generate tampak samping dari depan jika kosong (rasio narrow 0.3 sesuai panduan PDF)
   const autoGenerateSide = (frontUrl: string): Promise<string> => {
     return new Promise((resolve) => {
       const img = new Image();
       img.onerror = () => resolve(frontUrl);
       img.onload = () => {
+        // Lebar tampak samping sekitar 30% dari tinggi (rasio 0.28 - 0.33 sesuai panduan PDF)
+        const targetW = Math.max(90, Math.round(img.height * 0.3));
         const canvas = document.createElement('canvas');
-        canvas.width = img.width;
+        canvas.width = targetW;
         canvas.height = img.height;
         const ctx = canvas.getContext('2d');
         if (!ctx) return resolve(frontUrl);
 
-        const targetW = Math.round(img.width * 0.34);
-        const dstX = Math.round((img.width - targetW) / 2);
-        const srcX = Math.round(img.width * 0.24);
-        const srcW = Math.round(img.width * 0.52);
+        // Ambil bagian tengah vertikal baju tampak depan
+        const srcW = Math.round(img.width * 0.46);
+        const srcX = Math.round((img.width - srcW) / 2);
 
-        ctx.save();
-        ctx.beginPath();
-        ctx.ellipse(img.width / 2, img.height * 0.52, targetW * 0.52, img.height * 0.48, 0, 0, Math.PI * 2);
-        ctx.clip();
-        ctx.drawImage(img, srcX, 0, srcW, img.height, dstX, 0, targetW, img.height);
-        ctx.restore();
+        // Gambar potongan kain lurus dan solid (tanpa potongan elips transparan)
+        ctx.drawImage(img, srcX, 0, srcW, img.height, 0, 0, targetW, img.height);
+
+        // Tambahkan gradien pencahayaan halus agar tampak seperti lipatan pakaian 3D yang nyata
+        const grad = ctx.createLinearGradient(0, 0, targetW, 0);
+        grad.addColorStop(0, 'rgba(255, 255, 255, 0.14)');
+        grad.addColorStop(0.3, 'rgba(255, 255, 255, 0)');
+        grad.addColorStop(0.7, 'rgba(0, 0, 0, 0)');
+        grad.addColorStop(1, 'rgba(0, 0, 0, 0.22)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, targetW, img.height);
 
         resolve(canvas.toDataURL('image/png'));
       };

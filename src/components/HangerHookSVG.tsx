@@ -10,7 +10,7 @@ interface HangerHookSVGProps {
 
 export function HangerHookSVG({
   priceTagText,
-  showPriceTag = true,
+  showPriceTag = false,
   className = '',
 }: HangerHookSVGProps) {
   return (
@@ -60,7 +60,7 @@ export function HangerHookSVG({
         />
       </svg>
 
-      {/* 2. Tali & Label Harga Menggantung di Bahu Kanan Gantungan */}
+      {/* 2. Tali & Label Harga (Hanya ditampilkan jika diaktifkan secara eksplisit, bukan pop-up saat hover) */}
       {showPriceTag && priceTagText && (
         <div className="absolute top-[20px] left-[52px] pointer-events-none z-10">
           {/* Tali Benang Tag Miring */}

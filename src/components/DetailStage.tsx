@@ -190,15 +190,15 @@ export function DetailStage({
         <div className="w-full max-w-[1320px] mx-auto px-4 md:px-7 pt-0 md:pt-6 pb-36 md:pb-16">
           <div className="grid grid-cols-1 md:grid-cols-[460px_1fr] gap-4 md:gap-9 items-start">
             
-            {/* KOLOM KIRI: Panggung Baju 3D (TETAP MENEMPEL / STICKY DI HP & DESKTOP - Rapat tanpa celah dengan Navbar) */}
-            <div className="sticky top-0 z-30 bg-page self-stretch md:self-start w-auto -mx-4 md:mx-0 px-4 md:px-0 pt-0 pb-3 border-b md:border-b-0 border-line shadow-sm md:shadow-none flex flex-col items-center">
-              {/* Batang Gantungan Chrome (Menempel tepat di garis bawah navbar tanpa celah) */}
-              <div className="w-full h-[7px] md:h-[8px] bg-gradient-to-b from-[#d6d4de] via-white via-28% to-[#1c1b1a] relative z-10 pointer-events-none">
-                <div className="w-full h-[1.5px] md:h-[2px] bg-white/85" />
+            {/* KOLOM KIRI: Panggung Baju 3D (TETAP MENEMPEL / STICKY DI HP & DESKTOP DENGAN PADDING ELEGAN) */}
+            <div className="sticky top-0 z-30 bg-page self-stretch md:self-start w-auto -mx-4 md:mx-0 px-4 md:px-0 pt-3 md:pt-6 pb-4 border-b md:border-b-0 border-line shadow-sm md:shadow-none flex flex-col items-center">
+              {/* Batang Gantungan Chrome Halus */}
+              <div className="w-full max-w-[360px] h-[6px] md:h-[7px] bg-gradient-to-b from-[#d6d4de] via-white via-28% to-[#1c1b1a] relative z-10 rounded-full pointer-events-none mb-1 opacity-80">
+                <div className="w-full h-[1.5px] bg-white/85" />
               </div>
 
-              {/* Rotator Baju 3D (Kait atas menembus dan menggantung di batang rel chrome) */}
-              <div className="w-full flex justify-center -mt-2 md:-mt-2.5">
+              {/* Rotator Baju 3D (Posisi proporsional & nyaman di tengah panggung) */}
+              <div className="w-full flex justify-center pt-1 md:pt-2">
                 <GarmentRotator
                   item={currentItem}
                   categoryId={categoryData.id}
@@ -210,7 +210,7 @@ export function DetailStage({
               </div>
 
               {/* Tab Sudut Tampilan [Samping] [Depan] [Belakang] */}
-              <div className="w-full flex justify-center mt-2">
+              <div className="w-full flex justify-center mt-3">
                 <AngleTabs currentAngle={viewAngle} onSelectAngle={setViewAngle} />
               </div>
             </div>

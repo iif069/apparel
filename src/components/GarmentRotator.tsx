@@ -87,28 +87,28 @@ export function GarmentRotator({
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
       title="Geser ke kiri/kanan atau ketuk untuk memutar baju"
-      className="relative z-10 w-full max-w-[210px] md:max-w-[340px] h-[200px] md:h-[360px] flex flex-col items-center cursor-grab active:cursor-grabbing [perspective:1200px] select-none touch-pan-y"
+      className="relative z-10 w-full max-w-[240px] md:max-w-[360px] h-[240px] md:h-[380px] flex flex-col items-center justify-center cursor-grab active:cursor-grabbing [perspective:1200px] select-none touch-pan-y"
     >
-      {/* 1. Kait Gantungan Atas (Disembunyikan jika foto custom punya gantungan sendiri) */}
+      {/* 1. Kait Gantungan Atas (Disembunyikan jika foto custom punya gantungan sendiri - tanpa pop-up tooltip) */}
       {!hasOwnHanger && (
         <div className="w-[96px] md:w-[120px] h-[48px] md:h-[58px] flex-shrink-0 z-20">
-          <HangerHookSVG priceTagText={priceText} showPriceTag={true} />
+          <HangerHookSVG priceTagText={priceText} showPriceTag={false} />
         </div>
       )}
 
-      {/* 2. Panggung Baju Berputar 3D */}
+      {/* 2. Panggung Baju Berputar 3D (Sejajar dan proporsional di tengah) */}
       <div
-        className={`relative w-full flex-1 preserve-3d ${
+        className={`relative w-full flex-1 preserve-3d flex items-center justify-center ${
           isDragging ? 'transition-none' : 'transition-transform duration-500 ease-out'
         }`}
         style={{
           transform: `rotateY(${spinDeg}deg)`,
-          marginTop: hasOwnHanger ? '-30px' : '-3px',
+          marginTop: hasOwnHanger ? '0px' : '-4px',
         }}
       >
         {/* TAMPAK DEPAN / SAMPING */}
-        <div className="absolute inset-0 flex flex-col items-center justify-start backface-hidden">
-          <div className="h-[155px] md:h-[300px] max-h-[155px] md:max-h-[300px] w-auto max-w-full flex items-start justify-center">
+        <div className="absolute inset-0 flex flex-col items-center justify-center backface-hidden">
+          <div className="h-[200px] md:h-[320px] max-h-[200px] md:max-h-[320px] w-auto max-w-full flex items-center justify-center">
             <GarmentSVG
               item={item}
               categoryId={categoryId}
@@ -120,8 +120,8 @@ export function GarmentRotator({
         </div>
 
         {/* TAMPAK BELAKANG (180°) */}
-        <div className="absolute inset-0 flex flex-col items-center justify-start backface-hidden [transform:rotateY(180deg)]">
-          <div className="h-[155px] md:h-[300px] max-h-[155px] md:max-h-[300px] w-auto max-w-full flex items-start justify-center">
+        <div className="absolute inset-0 flex flex-col items-center justify-center backface-hidden [transform:rotateY(180deg)]">
+          <div className="h-[200px] md:h-[320px] max-h-[200px] md:max-h-[320px] w-auto max-w-full flex items-center justify-center">
             <GarmentSVG
               item={item}
               categoryId={categoryId}

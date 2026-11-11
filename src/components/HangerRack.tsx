@@ -160,25 +160,21 @@ export function HangerRack({
                   <div
                     key={item.id}
                     onPointerEnter={(e) => {
-                      // Desktop hover: otomatis tampak depan & bunyikan slide
+                      // Desktop hover: otomatis putar ke tampak depan & bunyikan slide halus (tanpa pop-up)
                       if (e.pointerType === 'mouse' && activeIndex !== idx) {
                         onSelectIndex(idx);
                         onPlaySound('slide');
                       }
                     }}
                     onClick={() => {
-                      if (isActive) {
-                        onPlaySound('open');
-                        onOpenDetail(idx);
-                      } else {
-                        onPlaySound('slide');
-                        onSelectIndex(idx);
-                      }
+                      // Klik produk: langsung buka pop-up layar penuh detail produk sesuai panduan PDF
+                      onPlaySound('open');
+                      onOpenDetail(idx);
                     }}
                     className={`hanger-slot flex flex-col items-center cursor-pointer transition-all duration-300 ease-out preserve-3d ${
                       isActive
                         ? 'w-[200px] md:w-[220px] scale-100 z-30 opacity-100'
-                        : 'w-[84px] md:w-[94px] scale-[0.92] z-10 opacity-80 hover:opacity-100'
+                        : 'w-[84px] md:w-[94px] scale-[0.92] z-10 opacity-100 hover:scale-[0.96]'
                     }`}
                     style={{
                       transform: isActive
@@ -188,9 +184,9 @@ export function HangerRack({
                         : 'rotateY(-30deg)',
                     }}
                   >
-                    {/* Gantungan Hook SVG (Kait Atas menempel pas di rel kawat chrome) */}
+                    {/* Gantungan Hook SVG (Kait Atas menempel pas di rel kawat chrome - tanpa pop-up tooltip saat hover) */}
                     <div className="w-[100px] md:w-[114px] h-[52px] md:h-[58px] flex-shrink-0">
-                      <HangerHookSVG priceTagText={priceText} showPriceTag={isActive} />
+                      <HangerHookSVG priceTagText={priceText} showPriceTag={false} />
                     </div>
 
                     {/* Siluet atau Foto Baju (Berputar tampak depan saat aktif / di-hover) */}
