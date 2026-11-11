@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>MIG Apparel — Katalog Gantungan Interaktif</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Cormorant+Garamond:ital,wght@1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="mig-base">
+  <!-- KEPALA TOKO: 1 BARIS RINGKAS DI HP MAUPUN DESKTOP -->
+  <header class="mig-topbar" id="topbar">
+    <div class="topbar-inner">
+      <button type="button" class="store-brand press" id="brand-home-btn" title="Kembali ke menu utama">
+        <img src="logo.svg" alt="Logo MIG" class="store-logo" onerror="this.style.display='none'" />
+        <span class="store-name">MIG Apparel</span>
+      </button>
+
+      <!-- Chip Kategori Desktop (Di HP pindah ke bawah header agar header tetap 1 baris tipis) -->
+      <nav class="mig-chips desktop-only-chips" aria-label="Kategori pakaian">
+        <button type="button" class="mig-chip press active" data-category="kaos">Kaos sablon</button>
+        <button type="button" class="mig-chip press" data-category="jersey">Jersey printing</button>
+        <button type="button" class="mig-chip press" data-category="puffer">Kemeja</button>
+      </nav>
+
+      <div class="topbar-right">
+        <button type="button" class="mig-btn mig-btn-secondary press desktop-only" id="upload-custom-btn" title="Atur foto produk, nama produk, dan judul kategori">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"/>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+          <span>Atur katalog</span>
+        </button>
+
+        <button type="button" class="mig-btn mig-btn-secondary mig-btn-icon press desktop-only" id="sound-toggle-btn" aria-label="Suara gantungan" aria-pressed="true" title="Suara gantungan">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path class="sound-wave" d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+        </button>
+
+        <button type="button" class="mig-btn mig-btn-secondary press cart-header-btn" id="cart-open-btn" aria-label="Buka keranjang belanja">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="8" cy="21" r="1"/>
+            <circle cx="19" cy="21" r="1"/>
+            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+          </svg>
+          <span class="cart-btn-label">Keranjang</span>
+          <span class="mig-cart-count tabular-nums" id="cart-count-badge">0</span>
+        </button>
+
+        <!-- Menu lainnya (khusus HP): berisi Atur katalog & Suara gantungan -->
+        <div class="more-menu-wrap mobile-only">
+          <button type="button" class="mig-btn mig-btn-secondary mig-btn-icon press" id="more-menu-btn" aria-label="Menu lainnya" aria-haspopup="true" aria-expanded="false">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/>
+            </svg>
+          </button>
+          <div class="more-menu is-hidden" id="more-menu" role="menu">
+            <button type="button" class="more-menu-item press" id="menu-custom-btn" role="menuitem">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9"/>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+              </svg>
+              <span>Atur katalog</span>
+            </button>
+            <button type="button" class="more-menu-item press" id="menu-sound-btn" role="menuitem">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+              <span id="menu-sound-label">Suara gantungan: aktif</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       STAGE 1: MENU UTAMA RAK GANTUNGAN BAJU INTERAKTIF
+       ========================================================= -->
+  <main class="stage-wrapper" id="app-stage">
+    <section class="rack-stage" id="rack-stage" aria-label="Rak gantungan pakaian interaktif">
+
+      <!-- Chip Kategori Khusus HP (Hanya tampil di layar Rak, tidak ikut ke halaman detail) -->
+      <div class="mobile-category-bar">
+        <nav class="mig-chips mobile-only-chips" aria-label="Kategori pakaian">
+          <button type="button" class="mig-chip press active" data-category="kaos">Kaos sablon</button>
+          <button type="button" class="mig-chip press" data-category="jersey">Jersey printing</button>
+          <button type="button" class="mig-chip press" data-category="puffer">Kemeja</button>
+        </nav>
+      </div>
+
+      <!-- Latar Polos & Tipografi Besar "APPAREL" (dipertahankan) -->
+      <div class="sky-backdrop" id="sky-backdrop">
+        <div class="hero-typography" id="hero-typography">
+          <h1 class="hero-giant-title" id="hero-giant-title">APPAREL</h1>
+        </div>
+
+        <div class="floor-stage">
+          <div class="floor-shadow-title" id="floor-shadow-title" aria-hidden="true">APPAREL</div>
+        </div>
+      </div>
+
+      <!-- Callout Kiri & Kanan (Desktop) — dipertahankan -->
+      <aside class="side-callout side-callout-left" aria-hidden="true">
+        <span class="callout-script">Tampil</span>
+        <span class="callout-bold">MENAWAN</span>
+      </aside>
+
+      <aside class="side-callout side-callout-right" id="quick-buy-callout" title="Ketuk baju untuk melihat detail">
+        <span class="callout-script">Langsung</span>
+        <span class="callout-bold">PILIH UKURAN</span>
+      </aside>
+
+      <!-- PIPA GANTUNGAN HORIZONTAL & DERETAN BAJU -->
+      <div class="rack-system">
+        <div class="rack-wire">
+          <div class="rack-wire-shine"></div>
+        </div>
+
+        <div class="hanger-rack-list" id="hanger-rack-list" role="list">
+          <!-- Diisi otomatis oleh app.js -->
+        </div>
+      </div>
+
+      <!-- BAR AKSI BAWAH RAK -->
+      <footer class="rack-footer">
+        <button type="button" class="rack-kicker press" id="hero-kicker-btn" title="Klik untuk mengubah judul kategori">
+          <span class="rack-kicker-dot" aria-hidden="true"></span>
+          <span id="hero-kicker">Katalog pakaian interaktif</span>
+        </button>
+
+        <div class="mig-floating-pill" id="active-product-pill">
+          <div class="floating-pill-info">
+            <span class="color-dot-22" id="pill-color-dot"></span>
+            <div class="floating-pill-text">
+              <span class="floating-pill-name" id="pill-name">Kaos Putih Netral</span>
+              <span class="floating-pill-price tabular-nums" id="pill-price">Mulai dari Rp 60.000</span>
+            </div>
+          </div>
+          <button type="button" class="mig-btn mig-btn-primary press" id="pill-inspect-btn">
+            <span>Lihat detail</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </div>
+        <p class="rack-micro-copy" id="rack-micro-copy">Ketuk baju untuk memutar atau membuka detail</p>
+      </footer>
+    </section>
+  </main>
+
+  <!-- =========================================================
+       STAGE 2: HALAMAN DETAIL PRODUK (FULL-SCREEN FLEX COLUMN)
+       1. Bagian Atas Tetap (.detail-fixed-header)
+       2. Isi Tengah Bergulir (.detail-scroll-area)
+       3. Kartu Total & Aksi: di desktop di kolom kanan, di HP menempel di bawah layar
+       ========================================================= -->
+  <section class="detail-overlay is-hidden" id="detail-stage" role="dialog" aria-modal="true" aria-label="Detail pakaian">
+    <!-- 1. BAGIAN ATAS TETAP (Tidak ikut tergulir) -->
+    <header class="detail-fixed-header" id="detail-fixed-header">
+      <div class="detail-header-inner">
+        <button type="button" class="mig-btn mig-btn-secondary press detail-back-btn" id="back-to-rack-btn" aria-label="Kembali ke rak">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span class="detail-back-label">Kembali ke rak</span>
+        </button>
+
+        <div class="detail-header-center">
+          <span class="mig-badge mig-badge-neutral tabular-nums detail-counter" id="detail-counter-badge">04 / 07</span>
+          <span class="detail-header-title" id="detail-header-title">Kaos Putih Netral</span>
+        </div>
+
+        <button type="button" class="mig-btn mig-btn-secondary press cart-header-btn" id="detail-cart-open-btn" aria-label="Buka keranjang">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="8" cy="21" r="1"/>
+            <circle cx="19" cy="21" r="1"/>
+            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+          </svg>
+          <span class="cart-btn-label">Keranjang</span>
+          <span class="mig-cart-count tabular-nums" id="detail-cart-count-badge">0</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 2. AREA TENGAH BERGULIR -->
+    <div class="detail-scroll-area" id="detail-scroll-area">
+      <div class="detail-container">
+        <div class="detail-grid">
+          <!-- KOLOM KIRI: Panggung Baju 3D (TETAP DIAM / TIDAK IKUT TERGULIR) -->
+          <div class="detail-col-visual">
+            <div class="detail-visual-stage">
+              <div class="detail-hanger-rod" aria-hidden="true"></div>
+              <div class="detail-garment-stage" id="detail-garment-stage" title="Geser ke kiri/kanan atau ketuk untuk memutar baju">
+                <div class="detail-hanger-hook" id="detail-hanger-hook"></div>
+                <div class="detail-garment-rotator" id="detail-garment-rotator"></div>
+              </div>
+
+              <!-- Pilihan Sudut Tampilan -->
+              <div class="detail-view-tabs" id="angle-tabs" role="tablist" aria-label="Sudut tampilan">
+                <button type="button" class="mig-chip press angle-tab" data-angle="side-left" role="tab">Samping</button>
+                <button type="button" class="mig-chip press angle-tab active" data-angle="front" role="tab">Depan</button>
+                <button type="button" class="mig-chip press angle-tab" data-angle="back" role="tab">Belakang</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- KOLOM KANAN: Info Produk, Warna, Ukuran, Tambahan, Total, Keterangan (AREA BERGULIR) -->
+          <div class="detail-col-buy">
+            <div class="mig-card detail-main-card">
+              <div class="detail-badge-row">
+                <span class="mig-badge mig-badge-success">
+                  <span class="mig-badge-dot"></span>
+                  <span>Stok tersedia</span>
+                </span>
+                <span class="mig-badge mig-badge-brand" id="detail-promo-badge">Bisa satuan &amp; lusinan</span>
+              </div>
+
+              <div class="detail-title-block">
+                <h2 class="detail-title" id="detail-title">Kaos Putih Netral</h2>
+                <p class="detail-subtitle" id="detail-subtitle">Kaos sablon custom DTF &amp; Plastisol standar MIG Digital Printing.</p>
+              </div>
+
+              <div class="detail-price-box">
+                <span class="price-prefix">Mulai dari</span>
+                <strong class="detail-price tabular-nums" id="detail-price">Rp 60.000</strong>
+              </div>
+
+              <!-- Warna di gantungan -->
+              <div class="detail-field-group">
+                <span class="detail-field-title">Warna di gantungan</span>
+                <div class="color-current-row">
+                  <div class="color-current-pill">
+                    <span class="color-dot-22" id="detail-color-dot"></span>
+                    <span id="detail-color-name">Putih</span>
+                  </div>
+                  <button type="button" class="mig-btn mig-btn-secondary press" id="color-change-btn" aria-expanded="false" aria-controls="detail-color-swatches">Ganti</button>
+                </div>
+                <div class="color-chips-wrap is-hidden" id="detail-color-swatches"></div>
+              </div>
+
+              <!-- Pilihan Ukuran -->
+              <div class="detail-field-group">
+                <div class="field-label-row">
+                  <span class="detail-field-title">Ukuran</span>
+                  <button type="button" class="mig-link-btn press" id="size-guide-btn">Panduan ukuran</button>
+                </div>
+                <div class="mig-select-wrap">
+                  <select id="detail-size-select" class="mig-input mig-select" aria-label="Pilih ukuran">
+                    <option value="">Pilih ukuran</option>
+                    <option value="S">Ukuran S</option>
+                    <option value="M">Ukuran M</option>
+                    <option value="L">Ukuran L</option>
+                    <option value="XL">Ukuran XL</option>
+                    <option value="XXL">Ukuran XXL</option>
+                  </select>
+                  <svg class="mig-select-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="size-rows" id="detail-size-rows"></div>
+              </div>
+
+              <!-- Tambahan Opsional -->
+              <div class="mig-optional-section">
+                <span class="detail-field-title">Tambahan (opsional)</span>
+                <div class="mig-choice-row">
+                  <button type="button" class="mig-choice-pill press" id="addon-custom-sablon" data-active="false">
+                    + Cetak logo / nama dada
+                  </button>
+                  <button type="button" class="mig-choice-pill press" id="addon-gift-box" data-active="false">
+                    + Kemasan kotak kado
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. KARTU TOTAL & AKSI (Desktop: di bawah kartu; HP: menempel tetap di bawah layar) -->
+            <div class="detail-order-card" id="detail-order-card">
+              <div class="order-total-bar">
+                <span class="order-total-label tabular-nums" id="order-total-label">Total · 1 pcs</span>
+                <strong class="order-total-price tabular-nums" id="order-total-price">Rp 60.000</strong>
+              </div>
+
+              <button type="button" class="mig-btn mig-btn-primary mig-btn-lg press" id="detail-add-cart-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="8" cy="21" r="1"/>
+                  <circle cx="19" cy="21" r="1"/>
+                  <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+                </svg>
+                <span>Masukkan keranjang</span>
+              </button>
+
+              <button type="button" class="mig-btn mig-btn-secondary mig-btn-lg press w-full" id="detail-buy-wa-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                </svg>
+                <span>Pesan langsung lewat WhatsApp</span>
+              </button>
+
+              <p class="store-info-line">
+                <span class="live-dot" aria-hidden="true"></span>
+                <span>MIG Digital Printing · Rajadesa, Ciamis · Buka 08.00–16.30</span>
+              </p>
+            </div>
+
+            <!-- 3. KARTU KETERANGAN PRODUK & SPESIFIKASI -->
+            <div class="mig-card detail-info-card">
+              <h3 class="detail-field-title">Keterangan produk</h3>
+              <p class="detail-description" id="detail-description"></p>
+              <div class="detail-specs-pills">
+                <div class="mig-capsule">
+                  <span class="capsule-label">Bahan utama</span>
+                  <strong class="capsule-value" id="spec-material">100% Cotton Combed 24s &amp; 30s Knitto</strong>
+                </div>
+                <div class="mig-capsule">
+                  <span class="capsule-label">Ketebalan &amp; kualitas</span>
+                  <strong class="capsule-value" id="spec-weight">Sablon DTF tajam · Jahitan rantai rapi</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       PANEL KERANJANG BELANJA
+       ========================================================= -->
+  <div class="drawer-backdrop is-hidden" id="cart-backdrop"></div>
+  <aside class="cart-drawer is-hidden" id="cart-drawer" aria-label="Keranjang belanja">
+    <div class="cart-drawer-header">
+      <div>
+        <h3 class="cart-drawer-title">Keranjang belanja</h3>
+        <p class="cart-drawer-sub" id="cart-drawer-sub">Belum ada barang dipilih</p>
+      </div>
+      <button type="button" class="mig-btn mig-btn-secondary mig-btn-icon press" id="cart-close-btn" aria-label="Tutup keranjang">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="cart-scroll-area">
+      <div class="cart-items-container" id="cart-items-container"></div>
+
+      <div class="checkout-form-card" id="checkout-form-card">
+        <h4 class="checkout-form-title">Data pemesan</h4>
+
+        <div class="mig-field">
+          <label class="mig-field-label" for="buyer-name">Nama lengkap</label>
+          <input type="text" id="buyer-name" class="mig-input" placeholder="Contoh: Budi Santoso" />
+          <p class="mig-field-error is-hidden" id="buyer-name-error">Nama lengkap wajib diisi</p>
+        </div>
+
+        <div class="mig-field">
+          <label class="mig-field-label" for="buyer-phone">Nomor WhatsApp</label>
+          <input type="tel" id="buyer-phone" class="mig-input" placeholder="0895 1040 5562" />
+        </div>
+
+        <div class="mig-field">
+          <span class="mig-field-label">Cara terima pesanan</span>
+          <div class="mig-choice-equal" id="fulfillment-choice">
+            <button type="button" class="mig-choice-pill press active" data-method="Ambil di toko">Ambil di toko</button>
+            <button type="button" class="mig-choice-pill press" data-method="Diantar kurir">Diantar kurir</button>
+          </div>
+        </div>
+
+        <div class="mig-field" id="address-field-wrap">
+          <label class="mig-field-label" for="buyer-address">Alamat atau patokan</label>
+          <input type="text" id="buyer-address" class="mig-input" placeholder="Contoh: Jl. Raya Rajadesa, dekat alun-alun" />
+        </div>
+
+        <div class="mig-field">
+          <label class="mig-field-label" for="buyer-note">Catatan tambahan (opsional)</label>
+          <textarea id="buyer-note" class="mig-textarea" rows="2" placeholder="Contoh: Sablon nama punggung &amp; nomor"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="cart-drawer-footer">
+      <div class="cart-summary-row">
+        <span class="summary-label">Total pesanan</span>
+        <strong class="summary-total-price tabular-nums" id="cart-total-price">Rp 0</strong>
+      </div>
+
+      <button type="button" class="mig-btn mig-btn-primary mig-btn-lg press w-full" id="checkout-wa-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+        </svg>
+        <span>Kirim pesanan ke WhatsApp</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- =========================================================
+       JENDELA PENGATURAN KATALOG: PRODUK, FOTO, & JUDUL KATEGORI
+       ========================================================= -->
+  <div class="modal-backdrop is-hidden" id="custom-modal-backdrop">
+    <div class="mig-modal-card mig-modal-card-wide" role="dialog" aria-labelledby="custom-modal-title">
+      <div class="mig-modal-header custom-modal-header">
+        <div class="custom-modal-head-row">
+          <div>
+            <h3 class="mig-modal-title" id="custom-modal-title">Atur produk &amp; kategori</h3>
+            <p class="mig-modal-subtitle">Ubah nama, harga, dan foto tiap gantungan.</p>
+          </div>
+          <button type="button" class="mig-btn mig-btn-secondary mig-btn-icon-lg press" id="custom-modal-close" aria-label="Tutup jendela">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+          </button>
+        </div>
+
+        <!-- Tab Pilihan di Dalam Modal: Produk vs Kategori -->
+        <div class="modal-tab-bar" role="tablist">
+          <button type="button" class="mig-chip modal-tab press active" id="modal-tab-product-btn" data-modal-tab="product" role="tab">Produk &amp; foto</button>
+          <button type="button" class="mig-chip modal-tab press" id="modal-tab-category-btn" data-modal-tab="category" role="tab">Judul &amp; keterangan</button>
+        </div>
+      </div>
+
+      <div class="mig-modal-body custom-modal-body">
+        <!-- PANEL 1: ATUR PRODUK & FOTO GANTUNGAN -->
+        <div class="modal-tab-panel modal-panel-split" id="modal-panel-product">
+          <div class="modal-col">
+            <div class="mig-field">
+              <label class="mig-field-label" for="custom-product-select" id="custom-product-select-label">Gantungan di kategori aktif</label>
+              <div class="mig-select-wrap has-dot">
+                <span class="color-dot-22 select-dot" id="custom-product-dot" aria-hidden="true"></span>
+                <select id="custom-product-select" class="mig-input mig-select"></select>
+                <svg class="mig-select-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+            </div>
+
+            <div class="mig-field">
+              <label class="mig-field-label" for="custom-name-input">Nama produk</label>
+              <input type="text" id="custom-name-input" class="mig-input" placeholder="Contoh: Jersey Polo SDN 2 Sirnabaya" />
+            </div>
+
+            <div class="modal-form-grid-2">
+              <div class="mig-field">
+                <label class="mig-field-label" for="custom-variant-input">Label warna</label>
+                <input type="text" id="custom-variant-input" class="mig-input" placeholder="Contoh: Biru elektrik" />
+              </div>
+
+              <div class="mig-field">
+                <label class="mig-field-label" for="custom-price-input">Harga satuan</label>
+                <input type="text" inputmode="numeric" id="custom-price-input" class="mig-input tabular-nums" placeholder="Rp 115.000" />
+              </div>
+            </div>
+
+            <label class="mig-switch-row" for="custom-own-hanger-check">
+              <span class="switch-text">
+                <strong>Foto sudah ada hanger</strong>
+                <span id="custom-own-hanger-hint">Hanger gantungan ke-2 disembunyikan</span>
+              </span>
+              <span class="mig-switch">
+                <input type="checkbox" id="custom-own-hanger-check" checked />
+                <span class="mig-switch-track" aria-hidden="true"></span>
+              </span>
+            </label>
+          </div>
+
+          <div class="photo-panel">
+            <span class="photo-panel-title">Foto 3 sudut</span>
+
+            <div class="photo-row">
+              <span class="photo-row-icon" id="custom-front-thumb">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </span>
+              <span class="photo-row-text">
+                <strong>Tampak depan</strong>
+                <span id="custom-front-status">0° · Belum ada foto</span>
+              </span>
+              <button type="button" class="mig-btn mig-btn-secondary press photo-pick-btn" data-file-target="custom-front-file">Pilih foto</button>
+              <input type="file" id="custom-front-file" accept="image/*" class="visually-hidden-file" />
+            </div>
+
+            <div class="photo-row">
+              <span class="photo-row-icon" id="custom-back-thumb">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </span>
+              <span class="photo-row-text">
+                <strong>Tampak belakang</strong>
+                <span id="custom-back-status">180° · Belum ada foto</span>
+              </span>
+              <button type="button" class="mig-btn mig-btn-secondary press photo-pick-btn" data-file-target="custom-back-file">Pilih foto</button>
+              <input type="file" id="custom-back-file" accept="image/*" class="visually-hidden-file" />
+            </div>
+
+            <div class="photo-row">
+              <span class="photo-row-icon" id="custom-side-thumb">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </span>
+              <span class="photo-row-text">
+                <strong>Tampak samping</strong>
+                <span id="custom-side-status">90° · Belum ada foto</span>
+              </span>
+              <button type="button" class="mig-btn mig-btn-secondary press photo-pick-btn" data-file-target="custom-side-file">Pilih foto</button>
+              <input type="file" id="custom-side-file" accept="image/*" class="visually-hidden-file" />
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL 2: ATUR JUDUL KATEGORI & KETERANGAN -->
+        <div class="modal-tab-panel is-hidden" id="modal-panel-category">
+          <div class="modal-form-grid-2">
+            <div class="mig-field">
+              <label class="mig-field-label" for="custom-cat-tab-input">Nama tombol tab kategori</label>
+              <input type="text" id="custom-cat-tab-input" class="mig-input" placeholder="Contoh: Jersey printing" />
+            </div>
+
+            <div class="mig-field">
+              <label class="mig-field-label" for="custom-cat-hero-input">Judul besar latar belakang</label>
+              <input type="text" id="custom-cat-hero-input" class="mig-input" placeholder="Contoh: APPAREL atau JERSEY" />
+            </div>
+          </div>
+
+          <div class="modal-form-grid-2">
+            <div class="mig-field">
+              <label class="mig-field-label" for="custom-cat-kicker-input">Keterangan singkat di bawah rak</label>
+              <input type="text" id="custom-cat-kicker-input" class="mig-input" placeholder="Contoh: Jersey Full Printing Sublimasi" />
+            </div>
+
+            <div class="mig-field">
+              <label class="mig-field-label" for="custom-cat-subtitle-input">Subjudul di bawah nama produk</label>
+              <input type="text" id="custom-cat-subtitle-input" class="mig-input" placeholder="Contoh: Jersey printing custom standar MIG Digital Printing." />
+            </div>
+          </div>
+
+          <div class="modal-form-grid-2">
+            <div class="mig-field">
+              <label class="mig-field-label" for="custom-cat-material-input">Bahan utama</label>
+              <input type="text" id="custom-cat-material-input" class="mig-input" placeholder="Contoh: Dryfit Milano &amp; Brazil UV" />
+            </div>
+
+            <div class="mig-field">
+              <label class="mig-field-label" for="custom-cat-weight-input">Ketebalan &amp; kualitas</label>
+              <input type="text" id="custom-cat-weight-input" class="mig-input" placeholder="Contoh: Sublimasi Epson Original" />
+            </div>
+          </div>
+
+          <div class="mig-field">
+            <label class="mig-field-label" for="custom-cat-desc-input">Keterangan lengkap produk</label>
+            <textarea id="custom-cat-desc-input" class="mig-textarea" rows="3" placeholder="Deskripsi produk kategori ini..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="mig-modal-footer custom-modal-footer">
+        <button type="button" class="mig-btn mig-btn-danger-soft mig-btn-lg press" id="custom-reset-btn">Kembalikan ke setelan bawaan</button>
+        <button type="button" class="mig-btn mig-btn-primary mig-btn-lg press" id="custom-save-btn">Simpan &amp; sesuaikan otomatis</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JENDELA PANDUAN UKURAN -->
+  <div class="modal-backdrop is-hidden" id="size-modal-backdrop">
+    <div class="mig-modal-card" role="dialog" aria-labelledby="size-modal-title">
+      <div class="mig-modal-header">
+        <h3 class="mig-modal-title" id="size-modal-title">Panduan ukuran</h3>
+        <button type="button" class="mig-btn mig-btn-secondary mig-btn-icon press" id="size-modal-close" aria-label="Tutup panduan">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="mig-modal-body">
+        <div class="size-table-wrap">
+          <table class="mig-size-table tabular-nums">
+            <thead>
+              <tr>
+                <th>Ukuran</th>
+                <th>Lebar dada</th>
+                <th>Panjang badan</th>
+                <th>Panjang lengan</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>S</strong></td><td>48 cm</td><td>68 cm</td><td>21 cm</td></tr>
+              <tr><td><strong>M</strong></td><td>50 cm</td><td>70 cm</td><td>22 cm</td></tr>
+              <tr><td><strong>L</strong></td><td>52 cm</td><td>72 cm</td><td>23 cm</td></tr>
+              <tr><td><strong>XL</strong></td><td>54 cm</td><td>74 cm</td><td>24 cm</td></tr>
+              <tr><td><strong>XXL</strong></td><td>56 cm</td><td>76 cm</td><td>25 cm</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="mig-modal-footer">
+        <button type="button" class="mig-btn mig-btn-primary press w-full" id="size-modal-ok">Mengerti</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="flying-item-layer" aria-hidden="true"></div>
+  <div class="mig-toast is-hidden" id="toast-notification" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
