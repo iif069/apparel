@@ -51,3 +51,24 @@ body {
   transform: scale(0.97);
   transition: transform 80ms ease-out;
 }
+
+/* Rotasi baju di rak: berputar dari samping ke depan (tanpa efek pop/membesar) */
+@keyframes garment-turn {
+  from { transform: rotateY(-85deg); }
+  to { transform: rotateY(0deg); }
+}
+@keyframes garment-turn-back {
+  from { transform: rotateY(60deg); }
+  to { transform: rotateY(0deg); }
+}
+.animate-garment-turn {
+  transform-origin: center top;
+  animation: garment-turn 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-garment-turn-back {
+  transform-origin: center top;
+  animation: garment-turn-back 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-garment-turn, .animate-garment-turn-back { animation: none; }
+}

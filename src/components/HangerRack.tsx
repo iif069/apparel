@@ -171,26 +171,22 @@ export function HangerRack({
                       onPlaySound('open');
                       onOpenDetail(idx);
                     }}
-                    className={`hanger-slot flex flex-col items-center cursor-pointer transition-all duration-300 ease-out preserve-3d ${
-                      isActive
-                        ? 'w-[200px] md:w-[220px] scale-100 z-30 opacity-100'
-                        : 'w-[84px] md:w-[94px] scale-[0.92] z-10 opacity-100 hover:scale-[0.96]'
+                    className={`hanger-slot flex flex-col items-center cursor-pointer transition-[width] duration-500 ease-out [perspective:900px] ${
+                      isActive ? 'w-[200px] md:w-[220px] z-30' : 'w-[84px] md:w-[94px] z-10'
                     }`}
-                    style={{
-                      transform: isActive
-                        ? 'rotateY(0deg)'
-                        : idx < activeIndex
-                        ? 'rotateY(30deg)'
-                        : 'rotateY(-30deg)',
-                    }}
                   >
-                    {/* Gantungan Hook SVG (Kait Atas menempel pas di rel kawat chrome - tanpa pop-up tooltip saat hover) */}
+                    {/* Gantungan Hook SVG + label harga (tampil pada baju yang sedang menghadap depan) */}
                     <div className="w-[100px] md:w-[114px] h-[52px] md:h-[58px] flex-shrink-0">
-                      <HangerHookSVG priceTagText={priceText} showPriceTag={false} />
+                      <HangerHookSVG priceTagText={priceText} showPriceTag={isActive} />
                     </div>
 
-                    {/* Siluet atau Foto Baju (Berputar tampak depan saat aktif / di-hover) */}
-                    <div className="w-full h-[230px] md:h-[260px] flex items-start justify-center -mt-1.5 transition-transform duration-300">
+                    {/* Siluet atau Foto Baju — berputar (rotateY) ke tampak depan saat aktif / di-hover, tanpa efek membesar */}
+                    <div
+                      key={isActive ? 'front' : 'side'}
+                      className={`w-full h-[230px] md:h-[260px] flex items-start justify-center -mt-1.5 ${
+                        isActive ? 'animate-garment-turn' : 'animate-garment-turn-back'
+                      }`}
+                    >
                       <GarmentSVG
                         item={item}
                         categoryId={categoryData.id}
