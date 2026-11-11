@@ -295,12 +295,12 @@ export function DetailStage({
                     <span className="text-[12px] text-brand font-medium">Panduan ukuran</span>
                   </div>
 
-                  {/* Dropdown Tambah Ukuran */}
+                  {/* Dropdown Tambah Ukuran (Pill rounded-full sesuai Desain Sistem) */}
                   <div className="relative">
                     <select
                       value=""
                       onChange={(e) => handleAddSize(e.target.value)}
-                      className="w-full h-11 px-3.5 pr-9 bg-surface border border-line rounded-2xl text-[13.5px] font-semibold text-ink appearance-none focus:outline-none focus:border-brand cursor-pointer"
+                      className="w-full h-11 px-4 pr-9 bg-surface border border-line rounded-full text-[13.5px] font-semibold text-ink appearance-none focus:outline-none focus:border-brand cursor-pointer"
                     >
                       <option value="">+ Pilih ukuran untuk ditambahkan</option>
                       {['S', 'M', 'L', 'XL', 'XXL'].map((sz) => (
@@ -309,7 +309,7 @@ export function DetailStage({
                         </option>
                       ))}
                     </select>
-                    <ChevronDown className="w-4 h-4 text-ink/50 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <ChevronDown className="w-4 h-4 text-ink/50 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
 
                   {/* Deretan Baris Ukuran & Kontrol Qty (+ / -) */}
@@ -317,14 +317,14 @@ export function DetailStage({
                     {Object.entries(sizeQtys).map(([sz, qty]) => (
                       <div
                         key={sz}
-                        className="flex items-center justify-between p-2.5 bg-page rounded-2xl border border-line"
+                        className="flex items-center justify-between py-2 px-4 bg-page rounded-full border border-line"
                       >
                         <span className="text-[13.5px] font-bold text-ink">Ukuran {sz}</span>
                         <div className="flex items-center gap-3">
                           <button
                             type="button"
                             onClick={() => handleUpdateQty(sz, -1)}
-                            className="w-8 h-8 rounded-full bg-surface border border-line flex items-center justify-center hover:bg-page press-active text-ink"
+                            className="w-7 h-7 rounded-full bg-surface border border-line flex items-center justify-center hover:bg-page press-active text-ink"
                           >
                             <Minus className="w-3.5 h-3.5" />
                           </button>
@@ -334,7 +334,7 @@ export function DetailStage({
                           <button
                             type="button"
                             onClick={() => handleUpdateQty(sz, 1)}
-                            className="w-8 h-8 rounded-full bg-surface border border-line flex items-center justify-center hover:bg-page press-active text-ink"
+                            className="w-7 h-7 rounded-full bg-surface border border-line flex items-center justify-center hover:bg-page press-active text-ink"
                           >
                             <Plus className="w-3.5 h-3.5" />
                           </button>
@@ -344,7 +344,7 @@ export function DetailStage({
                   </div>
                 </div>
 
-                {/* Tambahan Opsional */}
+                {/* Tambahan Opsional (Pill rounded-full sesuai Desain Sistem) */}
                 <div className="flex flex-col gap-2 pt-2 border-t border-line">
                   <span className="text-[13px] font-bold text-ink">Tambahan (opsional)</span>
                   <div className="flex flex-col sm:flex-row gap-2">
@@ -354,7 +354,7 @@ export function DetailStage({
                         setAddons((prev) => ({ ...prev, sablon: !prev.sablon }));
                         onPlaySound('click');
                       }}
-                      className={`flex-1 p-3 rounded-2xl border text-[13px] font-semibold text-left transition-all ${
+                      className={`flex-1 min-h-[44px] px-4 py-2.5 rounded-full border text-[13px] font-semibold text-center sm:text-left transition-all press-active ${
                         addons.sablon
                           ? 'bg-brand text-surface border-brand shadow-sm'
                           : 'bg-surface text-ink border-line hover:border-ink/30'
@@ -368,7 +368,7 @@ export function DetailStage({
                         setAddons((prev) => ({ ...prev, giftbox: !prev.giftbox }));
                         onPlaySound('click');
                       }}
-                      className={`flex-1 p-3 rounded-2xl border text-[13px] font-semibold text-left transition-all ${
+                      className={`flex-1 min-h-[44px] px-4 py-2.5 rounded-full border text-[13px] font-semibold text-center sm:text-left transition-all press-active ${
                         addons.giftbox
                           ? 'bg-brand text-surface border-brand shadow-sm'
                           : 'bg-surface text-ink border-line hover:border-ink/30'

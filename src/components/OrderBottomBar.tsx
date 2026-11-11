@@ -45,21 +45,21 @@ export function OrderBottomBar({
         </strong>
       </div>
 
-      {/* 2. Tombol Masukkan Keranjang (Full Width) */}
+      {/* 2. Tombol Masukkan Keranjang (Full Width - Pill rounded-full sesuai Desain Sistem) */}
       <button
         type="button"
         onClick={onAddToCart}
-        className="w-full flex items-center justify-center gap-2 h-11 md:h-12 px-5 rounded-2xl bg-brand hover:bg-brand-hover text-surface text-[14px] md:text-[15px] font-bold shadow-md hover:shadow-lg transition-all press-active"
+        className="w-full flex items-center justify-center gap-2 h-11 md:h-12 px-6 rounded-full bg-brand hover:bg-brand-hover text-surface text-[14px] md:text-[15px] font-bold shadow-md hover:shadow-lg transition-all press-active"
       >
         <ShoppingCart className="w-4 h-4" />
         <span>Masukkan keranjang</span>
       </button>
 
-      {/* 3. Tombol Pesan Langsung lewat WhatsApp (Full Width) */}
+      {/* 3. Tombol Pesan Langsung lewat WhatsApp (Full Width - Pill rounded-full sesuai Desain Sistem) */}
       <button
         type="button"
         onClick={onOrderViaWhatsApp}
-        className="w-full flex items-center justify-center gap-2 h-11 md:h-12 px-5 rounded-2xl bg-surface hover:bg-page text-ink border border-line hover:border-ink/30 text-[13.5px] md:text-[14px] font-semibold transition-all press-active"
+        className="w-full flex items-center justify-center gap-2 h-11 md:h-12 px-6 rounded-full bg-surface hover:bg-page text-ink border border-line hover:border-ink/30 text-[13.5px] md:text-[14px] font-semibold transition-all press-active"
       >
         <span className="text-[#25D366]">{WhatsAppIcon}</span>
         <span>Pesan langsung lewat WhatsApp</span>

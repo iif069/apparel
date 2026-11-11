@@ -156,7 +156,7 @@ export function CartDrawer({
           {/* Footer Checkout */}
           {cart.length > 0 && (
             <div className="p-5 border-t border-line bg-surface flex flex-col gap-3.5">
-              {/* Opsi Pengiriman */}
+              {/* Opsi Pengiriman (Pill rounded-full) */}
               <div className="flex flex-col gap-1.5">
                 <span className="text-[12px] font-bold text-ink">Metode Pengambilan</span>
                 <div className="grid grid-cols-2 gap-2">
@@ -165,7 +165,7 @@ export function CartDrawer({
                       key={method}
                       type="button"
                       onClick={() => setFulfillment(method)}
-                      className={`py-2 px-2.5 rounded-xl text-[12px] font-semibold border transition-all text-center ${
+                      className={`py-2 px-3 rounded-full text-[12px] font-semibold border transition-all text-center press-active ${
                         fulfillment === method
                           ? 'bg-brand text-surface border-brand shadow-sm'
                           : 'bg-page text-ink border-line hover:border-ink/30'
@@ -185,7 +185,7 @@ export function CartDrawer({
                   placeholder="Contoh: Nama di dada kiri, nomor tim..."
                   value={customerNote}
                   onChange={(e) => setCustomerNote(e.target.value)}
-                  className="w-full h-9 px-3 bg-page border border-line rounded-xl text-[12.5px] text-ink focus:outline-none focus:border-brand"
+                  className="w-full h-10 px-4 bg-page border border-line rounded-full text-[12.5px] text-ink focus:outline-none focus:border-brand"
                 />
               </div>
 
@@ -200,7 +200,7 @@ export function CartDrawer({
               <button
                 type="button"
                 onClick={handleCheckoutWA}
-                className="w-full h-12 rounded-2xl bg-[#25D366] hover:bg-[#20ba59] text-surface font-bold text-[14px] flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all press-active"
+                className="w-full h-12 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-surface font-bold text-[14px] flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all press-active"
               >
                 <span>Pesan lewat WhatsApp</span>
               </button>

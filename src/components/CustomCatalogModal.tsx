@@ -54,7 +54,7 @@ export function CustomCatalogModal({
     const catCustom = customCategories[categoryData.id] || {};
     setCatTabLabel(catCustom.tabLabel || categoryData.tabLabel);
     setCatHeroTitle(catCustom.heroTitle || categoryData.heroTitle);
-  }, [selectedItemId, categoryData, customPhotos, customCategories]);
+  }, [selectedItemId, categoryData, items, customPhotos, customCategories]);
 
   if (!isOpen) return null;
 
@@ -260,12 +260,12 @@ export function CustomCatalogModal({
           </div>
         </div>
 
-        {/* Tombol Aksi */}
+        {/* Tombol Aksi (Pill rounded-full sesuai Desain Sistem) */}
         <div className="flex items-center justify-between pt-3 border-t border-line">
           <button
             type="button"
             onClick={onResetCustom}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[12px] font-semibold text-red-600 hover:bg-red-50 press-active"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-[12px] font-semibold text-red-600 hover:bg-red-50 press-active"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Reset Bawaan</span>
@@ -275,14 +275,14 @@ export function CustomCatalogModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-[12.5px] font-semibold bg-page text-ink hover:bg-line press-active"
+              className="px-5 py-2 rounded-full text-[12.5px] font-semibold bg-page text-ink hover:bg-line press-active"
             >
               Batal
             </button>
             <button
               type="button"
               onClick={handleSave}
-              className="flex items-center gap-1.5 px-5 py-2 rounded-xl text-[12.5px] font-bold bg-brand text-surface hover:bg-brand-hover shadow-sm press-active"
+              className="flex items-center gap-1.5 px-5 py-2 rounded-full text-[12.5px] font-bold bg-brand text-surface hover:bg-brand-hover shadow-sm press-active"
             >
               <Check className="w-4 h-4" />
               <span>Simpan</span>
