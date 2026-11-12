@@ -274,7 +274,7 @@ export default function HomePage() {
         onPlaySound={playSound}
       />
 
-      {/* 4. Halaman Keranjang Belanja Penuh (Full Page) */}
+      {/* 4. Halaman Keranjang Belanja (Right Sidebar Drawer di Desktop & Mobile) */}
       <CartDrawer
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
@@ -290,6 +290,7 @@ export default function HomePage() {
             setIsDetailOpen(true);
           }
         }}
+        onPlaySound={playSound}
       />
 
       {/* 5. Modal Atur Katalog */}

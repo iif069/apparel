@@ -125,15 +125,17 @@ export function Topbar({
               </div>
             )}
 
-            {/* Desktop: Suara */}
-            <button
-              type="button"
-              onClick={onToggleSound}
-              title={soundEnabled ? 'Matikan suara' : 'Aktifkan suara'}
-              className="hidden md:flex items-center justify-center w-11 h-11 rounded-full bg-surface text-ink border border-line shadow-xs hover:bg-page transition-colors press-active"
-            >
-              {soundEnabled ? <Volume2 className="w-4 h-4 text-brand" /> : <VolumeX className="w-4 h-4 text-ink/40" />}
-            </button>
+            {/* Desktop: Suara (HANYA MUNCUL DI MODE ADMIN) */}
+            {isAdmin && (
+              <button
+                type="button"
+                onClick={onToggleSound}
+                title={soundEnabled ? 'Matikan suara (Mode Admin)' : 'Aktifkan suara (Mode Admin)'}
+                className="hidden md:flex items-center justify-center w-11 h-11 rounded-full bg-surface text-ink border border-line shadow-xs hover:bg-page transition-colors press-active"
+              >
+                {soundEnabled ? <Volume2 className="w-4 h-4 text-brand" /> : <VolumeX className="w-4 h-4 text-ink/40" />}
+              </button>
+            )}
 
             {/* Tombol Keranjang Belanja */}
             <button
@@ -156,58 +158,56 @@ export function Topbar({
               )}
             </button>
 
-            {/* Tombol Menu Lainnya di HP */}
-            <div className="relative md:hidden">
-              <button
-                type="button"
-                onClick={() => setShowMoreMenu((prev) => !prev)}
-                className="flex items-center justify-center w-11 h-11 rounded-full bg-surface text-ink border border-line shadow-xs hover:bg-page press-active"
-                aria-label="Menu lainnya"
-              >
-                <MoreVertical className="w-5 h-5 text-ink" />
-              </button>
+            {/* Tombol Menu Mode Admin di HP (Hanya muncul jika Mode Admin aktif) */}
+            {isAdmin && (
+              <div className="relative md:hidden">
+                <button
+                  type="button"
+                  onClick={() => setShowMoreMenu((prev) => !prev)}
+                  className="flex items-center justify-center w-11 h-11 rounded-full bg-brand-soft text-brand border border-brand/30 shadow-xs hover:bg-brand/10 press-active"
+                  aria-label="Menu Admin"
+                >
+                  <MoreVertical className="w-5 h-5 text-brand" />
+                </button>
 
-              {showMoreMenu && (
-                <div className="absolute right-0 top-13 w-52 bg-surface border border-line rounded-2xl shadow-float p-1.5 z-50 flex flex-col gap-1">
-                  {isAdmin && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowMoreMenu(false);
-                          onOpenCustomModal();
-                        }}
-                        className="flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-semibold text-brand hover:bg-brand-soft rounded-xl text-left"
-                      >
-                        <Edit3 className="w-4 h-4 text-brand" />
-                        <span>Atur katalog</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowMoreMenu(false);
-                          onToggleAdmin();
-                        }}
-                        className="flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-medium text-red-600 hover:bg-red-50 rounded-xl text-left"
-                      >
-                        <Lock className="w-4 h-4" />
-                        <span>Kunci / Keluar Admin</span>
-                      </button>
-                    </>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onToggleSound();
-                    }}
-                    className="flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-medium text-ink hover:bg-page rounded-xl text-left"
-                  >
-                    {soundEnabled ? <Volume2 className="w-4 h-4 text-brand" /> : <VolumeX className="w-4 h-4 text-ink/40" />}
-                    <span>Suara: {soundEnabled ? 'Aktif' : 'Mati'}</span>
-                  </button>
-                </div>
-              )}
-            </div>
+                {showMoreMenu && (
+                  <div className="absolute right-0 top-13 w-52 bg-surface border border-line rounded-2xl shadow-float p-1.5 z-50 flex flex-col gap-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowMoreMenu(false);
+                        onOpenCustomModal();
+                      }}
+                      className="flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-semibold text-brand hover:bg-brand-soft rounded-xl text-left"
+                    >
+                      <Edit3 className="w-4 h-4 text-brand" />
+                      <span>Atur katalog</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowMoreMenu(false);
+                        onToggleAdmin();
+                      }}
+                      className="flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-medium text-red-600 hover:bg-red-50 rounded-xl text-left"
+                    >
+                      <Lock className="w-4 h-4" />
+                      <span>Kunci / Keluar Admin</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onToggleSound();
+                      }}
+                      className="flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-medium text-ink hover:bg-page rounded-xl text-left"
+                    >
+                      {soundEnabled ? <Volume2 className="w-4 h-4 text-brand" /> : <VolumeX className="w-4 h-4 text-ink/40" />}
+                      <span>Suara: {soundEnabled ? 'Aktif' : 'Mati'}</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </header>
