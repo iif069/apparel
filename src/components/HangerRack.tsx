@@ -15,7 +15,15 @@ interface HangerRackProps {
   onSelectIndex: (index: number) => void;
   onOpenDetail: (index: number) => void;
   customPhotos: Record<string, CustomPhotoData>;
-  onPlaySound: (type: 'slide' | 'open') => void;
+  onPlaySound: (type: 'slide' | 'open' | 'click' | 'flip' | 'sway') => void;
+}
+
+interface SwayEvent {
+  targetIndex: number;
+  dir: 'left' | 'right';
+  token: number;
+  source: 'hover' | 'click' | 'drag' | 'category';
+  toggle: boolean;
 }
 
 export function HangerRack({
@@ -34,6 +42,21 @@ export function HangerRack({
   const dragStartXRef = useRef(0);
   const dragScrollLeftRef = useRef(0);
   const hasDraggedRef = useRef(false);
+
+  // Fisika & inersia ayunan saat digeser (drag / swipe / momentum)
+  const lastPointerXRef = useRef(0);
+  const lastPointerTimeRef = useRef(0);
+  const dragVelocityRef = useRef(0);
+  const lastScrollLeftRef = useRef(0);
+  const scrollEndTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastTapTimeRef = useRef(0);
+  const lastTappedIndexRef = useRef<number | null>(null);
+  const prevHoveredIndexRef = useRef<number>(activeIndex);
+  const swayToggleRef = useRef(false);
+
+  const [dragTilt, setDragTilt] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [swayEvent, setSwayEvent] = useState<SwayEvent | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const items = categoryData.rack;
@@ -42,7 +65,36 @@ export function HangerRack({
   const activeCustom = customPhotos[activeItem?.id];
   const activePrice = activeCustom?.price || activeItem?.price || 60000;
   const activeName = activeCustom?.name || activeItem?.name;
-  const activeColor = activeCustom?.colorName || activeItem?.colorName;
+
+  // Fungsi pemicu ayunan alami
+  const triggerSway = (
+    targetIndex: number,
+    dir: 'left' | 'right' = 'right',
+    source: 'hover' | 'click' | 'drag' | 'category' = 'hover'
+  ) => {
+    swayToggleRef.current = !swayToggleRef.current;
+    setSwayEvent({
+      targetIndex,
+      dir,
+      token: Date.now(),
+      source,
+      toggle: swayToggleRef.current,
+    });
+  };
+
+  // Efek ayunan lembut cascading saat kategori atau indeks aktif berganti
+  useEffect(() => {
+    triggerSway(activeIndex, 'right', 'category');
+  }, [categoryData.id, activeIndex]);
+
+  // Bersihkan timer scroll saat unmount
+  useEffect(() => {
+    return () => {
+      if (scrollEndTimeoutRef.current) {
+        clearTimeout(scrollEndTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Auto scroll ke active slot saat index berubah di mobile
   useEffect(() => {
@@ -61,36 +113,132 @@ export function HangerRack({
     }
   }, [displayIndex]);
 
-  // Pointer drag gestures untuk touch / swipe
+  // Pointer drag gestures untuk sentuhan / swipe / drag mouse
   const handlePointerDown = (e: React.PointerEvent) => {
     if (!rackListRef.current) return;
     isDraggingRef.current = true;
     hasDraggedRef.current = false;
     dragStartXRef.current = e.clientX;
+    lastPointerXRef.current = e.clientX;
+    lastPointerTimeRef.current = performance.now();
+    dragVelocityRef.current = 0;
     dragScrollLeftRef.current = rackListRef.current.scrollLeft;
+    setIsDragging(true);
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDraggingRef.current || !rackListRef.current) return;
     const dx = e.clientX - dragStartXRef.current;
-    if (Math.abs(dx) > 8) {
+    if (Math.abs(dx) > 6) {
       hasDraggedRef.current = true;
     }
     rackListRef.current.scrollLeft = dragScrollLeftRef.current - dx;
+
+    // Hitung kecepatan geser untuk inersia kemiringan fisik gantungan
+    const now = performance.now();
+    const dt = Math.max(now - lastPointerTimeRef.current, 10);
+    const stepDx = e.clientX - lastPointerXRef.current;
+    const currentVelocity = stepDx / dt;
+
+    lastPointerXRef.current = e.clientX;
+    lastPointerTimeRef.current = now;
+    dragVelocityRef.current = dragVelocityRef.current * 0.6 + currentVelocity * 0.4;
+
+    // Baju digeser ke kiri -> pakaian tertinggal ke kanan (rotasi positif)
+    const calculatedTilt = Math.max(-7.5, Math.min(7.5, -dragVelocityRef.current * 5.2));
+    setDragTilt(calculatedTilt);
   };
 
-  const handlePointerUp = (e: React.PointerEvent) => {
+  const handlePointerUp = () => {
     if (!isDraggingRef.current) return;
     isDraggingRef.current = false;
-    const moved = Math.abs(e.clientX - dragStartXRef.current);
-    if (moved > 20) {
+    setIsDragging(false);
+
+    const finalVelocity = dragVelocityRef.current;
+    const wasDragged = hasDraggedRef.current;
+    setDragTilt(0);
+
+    if (wasDragged) {
       onPlaySound('slide');
+      // Ayunan inersia alami saat dilepas setelah digeser
+      const dir: 'left' | 'right' = finalVelocity < 0 ? 'right' : 'left';
+      triggerSway(displayIndex, dir, 'drag');
+
+      // Di HP, cari baju terdekat dengan tengah setelah drag selesai
+      if (window.innerWidth <= 768 && rackListRef.current) {
+        const el = rackListRef.current;
+        const containerCenter = el.scrollLeft + el.clientWidth / 2;
+        const slots = el.querySelectorAll<HTMLElement>('.hanger-slot');
+        let closestIdx = displayIndex;
+        let minDistance = Infinity;
+
+        slots.forEach((slot, i) => {
+          const slotCenter = slot.offsetLeft + slot.offsetWidth / 2;
+          const dist = Math.abs(containerCenter - slotCenter);
+          if (dist < minDistance) {
+            minDistance = dist;
+            closestIdx = i;
+          }
+        });
+
+        if (closestIdx !== displayIndex) {
+          onSelectIndex(closestIdx);
+          setHoveredIndex(closestIdx);
+        }
+      }
+    }
+  };
+
+  // Deteksi scroll sentuh alami (trackpad / swipe HP momentum)
+  const handleScroll = () => {
+    const el = rackListRef.current;
+    if (!el || isDraggingRef.current) return;
+
+    const currentScrollLeft = el.scrollLeft;
+    const delta = currentScrollLeft - lastScrollLeftRef.current;
+    lastScrollLeftRef.current = currentScrollLeft;
+
+    if (Math.abs(delta) > 1.2) {
+      const scrollTilt = Math.max(-6, Math.min(6, delta * 0.28));
+      setDragTilt(scrollTilt);
+
+      if (scrollEndTimeoutRef.current) {
+        clearTimeout(scrollEndTimeoutRef.current);
+      }
+
+      scrollEndTimeoutRef.current = setTimeout(() => {
+        setDragTilt(0);
+        const dir: 'left' | 'right' = delta >= 0 ? 'right' : 'left';
+        triggerSway(displayIndex, dir, 'drag');
+
+        // Auto snap baju terdekat di tengah layar saat momentum scroll berhenti di HP
+        if (window.innerWidth <= 768 && rackListRef.current) {
+          const containerCenter = el.scrollLeft + el.clientWidth / 2;
+          const slots = el.querySelectorAll<HTMLElement>('.hanger-slot');
+          let closestIdx = displayIndex;
+          let minDistance = Infinity;
+
+          slots.forEach((slot, i) => {
+            const slotCenter = slot.offsetLeft + slot.offsetWidth / 2;
+            const dist = Math.abs(containerCenter - slotCenter);
+            if (dist < minDistance) {
+              minDistance = dist;
+              closestIdx = i;
+            }
+          });
+
+          if (closestIdx !== displayIndex) {
+            onSelectIndex(closestIdx);
+            setHoveredIndex(closestIdx);
+          }
+        }
+      }, 110);
     }
   };
 
   return (
     <section className="relative w-full flex-1 flex flex-col justify-between overflow-hidden bg-page select-none min-h-0">
-      {/* 1. Bar Kategori Khusus HP (3 Kolom Seimbang Sesuai Desain Sistem: tinggi 42px, font 13px) */}
+      {/* 1. Bar Kategori Khusus HP (3 Kolom Seimbang Sesuai Desain Sistem) */}
       {categories && categories.length > 0 && (
         <div className="md:hidden w-full px-3.5 pt-2.5 pb-1.5 z-20 flex-shrink-0">
           <nav className="grid grid-cols-3 gap-2 w-full" aria-label="Kategori pakaian">
@@ -112,7 +260,7 @@ export function HangerRack({
         </div>
       )}
 
-      {/* 2. Latar Polos & Tipografi Raksasa "APPAREL" dengan Refleksi Lantai Perspektif 3D Melebar & Transparan */}
+      {/* 2. Latar Polos & Tipografi Raksasa "APPAREL" dengan Refleksi Lantai Perspektif 3D */}
       <div className="absolute inset-0 pointer-events-none flex flex-col justify-center items-center overflow-hidden z-0">
         <div className="flex flex-col items-center select-none transform -translate-y-8 md:-translate-y-12">
           {/* Teks Atas Tegak */}
@@ -120,7 +268,7 @@ export function HangerRack({
             {categoryData.heroTitle || 'APPAREL'}
           </h1>
 
-          {/* Bayangan Lantai Perspektif 3D Mirrored Vertikal: Ukuran Sama, Jarak Sedikit, Flipped Vertikal, Melebar ke Depan & Fade Transparan */}
+          {/* Bayangan Lantai Perspektif 3D Mirrored Vertikal */}
           <div className="w-full flex justify-center [perspective:500px] mt-2 md:mt-3">
             <div
               className="origin-top [transform:rotateX(68deg)] filter blur-[0.5px]"
@@ -151,21 +299,22 @@ export function HangerRack({
         <span className="font-sans font-black text-2xl md:text-3xl text-ink tracking-tight">PILIH UKURAN</span>
       </aside>
 
-      {/* 4. PIPA GANTUNGAN CHROME HORIZONTAL & DERETAN BAJU */}
+      {/* 4. PIPA GANTUNGAN CHROME HORIZONTAL & DERETAN BAJU BERGOYANG ALAMI */}
       <div className="relative w-full z-10 flex-1 flex flex-col justify-center my-auto min-h-0">
         <div className="relative w-full">
-          {/* Batang Kawat Chrome Horizontal (Tepat menembus lengkung kait hanger) */}
+          {/* Batang Kawat Chrome Horizontal (Tepat menembus lengkung kait hanger di y=6px) */}
           <div className="absolute top-[5px] md:top-[6px] left-0 right-0 h-[7px] md:h-[8px] bg-gradient-to-b from-[#d6d4de] via-white via-28% to-[#1c1b1a] z-0 shadow-sm pointer-events-none">
             <div className="w-full h-[2px] bg-white/85" />
           </div>
 
-          {/* Deretan Baju Gantungan yang Bisa Digeser & Di-hover di Desktop */}
+          {/* Deretan Baju Gantungan yang Bisa Digeser, Di-hover, & Di-klik di HP */}
           <div
             ref={rackListRef}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
+            onScroll={handleScroll}
             className="w-full flex items-start justify-start md:justify-center overflow-x-auto no-scrollbar px-6 md:px-12 pt-0 pb-6 cursor-grab active:cursor-grabbing z-10"
           >
             <div className="flex items-start gap-1 md:gap-2.5 mx-auto">
@@ -174,32 +323,110 @@ export function HangerRack({
                 const custom = customPhotos[item.id];
                 const price = custom?.price || item.price;
                 const priceText = `Rp ${Math.round(price / 1000)}rb`;
-                // Deteksi apakah produk menggunakan foto asli (sudah memiliki gantungan baju sendiri pada foto)
                 const hasPhotoHanger = !!((custom && (custom.frontDataUrl || custom.sideDataUrl)) || item.front || item.side);
+
+                // Menentukan kelas animasi ayunan untuk gantungan ini
+                let swayClass = '';
+                let swayDelay = '0ms';
+
+                if (!isDragging && dragTilt === 0) {
+                  if (swayEvent) {
+                    const dist = Math.abs(idx - swayEvent.targetIndex);
+                    const dir = swayEvent.dir;
+                    const isAlt = swayEvent.toggle;
+
+                    if (dist === 0) {
+                      // Gantungan utama yang langsung tersentuh / diklik / di-hover
+                      if (dir === 'right') {
+                        swayClass = isAlt ? 'animate-sway-right-alt' : 'animate-sway-right';
+                      } else {
+                        swayClass = isAlt ? 'animate-sway-left-alt' : 'animate-sway-left';
+                      }
+                      swayDelay = '0ms';
+                    } else if (dist === 1) {
+                      // Efek getar simpatik gantungan persis di sampingnya
+                      swayClass = dir === 'right' ? 'animate-sway-soft-right' : 'animate-sway-soft-left';
+                      swayDelay = '50ms';
+                    } else if (swayEvent.source === 'drag' && dist === 2) {
+                      // Ombak inersia saat rel digeser merambat ke tetangga kedua
+                      swayClass = dir === 'right' ? 'animate-sway-soft-right' : 'animate-sway-soft-left';
+                      swayDelay = '100ms';
+                    } else if (swayEvent.source === 'category') {
+                      // Gelombang cascading saat kategori produk diganti
+                      const delay = Math.abs(idx - swayEvent.targetIndex) * 55;
+                      swayClass = dir === 'right' ? 'animate-sway-soft-right' : 'animate-sway-soft-left';
+                      swayDelay = `${delay}ms`;
+                    }
+                  }
+
+                  // Jika tidak ada aksi, pakaian bernapas lembut ditiup angin ruangan butik
+                  if (!swayClass) {
+                    swayClass = idx % 2 === 0 ? 'animate-hanger-idle-a' : 'animate-hanger-idle-b';
+                    swayDelay = `${(idx * 0.4).toFixed(2)}s`;
+                  }
+                }
+
+                // Kemiringan inersia dinamis saat digeser / di-drag
+                const itemTilt = dragTilt !== 0 ? (isDisplayFront ? dragTilt : dragTilt * 0.92) : 0;
 
                 return (
                   <div
                     key={item.id}
                     onPointerEnter={(e) => {
-                      if (e.pointerType === 'mouse' && displayIndex !== idx) {
+                      if (e.pointerType !== 'mouse') return;
+
+                      // Deteksi arah sentuhan kursor (kiri vs kanan)
+                      const prevIdx = prevHoveredIndexRef.current;
+                      const dir: 'left' | 'right' = idx >= prevIdx ? 'right' : 'left';
+                      prevHoveredIndexRef.current = idx;
+
+                      // Picu ayunan alami saat kursor mouse menyentuh produk
+                      triggerSway(idx, dir, 'hover');
+                      onPlaySound('sway');
+
+                      if (displayIndex !== idx) {
                         setHoveredIndex(idx);
                         onSelectIndex(idx);
-                        onPlaySound('slide');
                       }
                     }}
                     onClick={() => {
-                      // Hindari klik jika pengguna sedang drag/geser rel
+                      // Hindari klik jika pengguna sedang drag / geser rel
                       if (hasDraggedRef.current) return;
 
-                      // Jika baju sudah menghadap depan (tampak depan) → klik masuk ke detail
-                      // Jika masih menyamping (misal di HP) → klik sekali memutar ke depan
-                      if (displayIndex === idx) {
-                        onPlaySound('open');
-                        onOpenDetail(idx);
-                      } else {
-                        onPlaySound('slide');
+                      const now = Date.now();
+                      const isTouchDevice =
+                        typeof window !== 'undefined' &&
+                        (window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 768);
+                      const isQuickDoubleTap =
+                        now - lastTapTimeRef.current < 650 && lastTappedIndexRef.current === idx;
+                      lastTapTimeRef.current = now;
+                      lastTappedIndexRef.current = idx;
+
+                      if (displayIndex !== idx) {
+                        // 1. Ketuk baju lain yang sedang menyamping (misal di HP):
+                        // Putar menghadap ke depan & berikan ayunan alami
+                        onPlaySound('sway');
+                        triggerSway(idx, 'right', 'click');
                         onSelectIndex(idx);
                         setHoveredIndex(idx);
+                      } else {
+                        // 2. Ketuk baju yang SUDAH menghadap depan:
+                        if (isTouchDevice) {
+                          // Di layar HP: ketukan membuat baju bergoyang alami!
+                          // Jika diketuk dua kali cepat (double-tap): buka panggung detail.
+                          // Pengguna HP juga selalu memiliki tombol pill "Lihat detail →" di bawah.
+                          onPlaySound('sway');
+                          triggerSway(idx, 'right', 'click');
+
+                          if (isQuickDoubleTap) {
+                            onPlaySound('open');
+                            onOpenDetail(idx);
+                          }
+                        } else {
+                          // Di Desktop: klik baju depan membuka detail
+                          onPlaySound('open');
+                          onOpenDetail(idx);
+                        }
                       }
                     }}
                     className={`hanger-slot flex flex-col items-center cursor-pointer transition-[width] duration-300 ease-out [perspective:1000px] ${
@@ -208,63 +435,78 @@ export function HangerRack({
                         : 'w-[58px] md:w-[68px] z-10'
                     }`}
                   >
-                    {/* Gantungan Hook SVG + label harga (menyesuaikan sudut pandang samping vs depan) */}
-                    <div className="w-[100px] md:w-[110px] h-[52px] md:h-[58px] flex-shrink-0">
-                      <HangerHookSVG
-                        priceTagText={priceText}
-                        showPriceTag={isDisplayFront}
-                        isSideView={!isDisplayFront}
-                        hideHangerBody={hasPhotoHanger}
-                      />
-                    </div>
-
-                    {/* Panggung Baju 3D (Dua Sisi: Samping & Depan berputar mulus tanpa lonjakan ukuran / pop-up) */}
+                    {/* PEMBUNGKUS FISIKA AYUNAN GANTUNGAN (Hanger Assembly)
+                        Berporos tepat di lengkung kait kawat atas (50% 6px) */}
                     <div
-                      className={`relative w-full h-[230px] md:h-[260px] flex items-start justify-center [perspective:1000px] ${
-                        hasPhotoHanger ? '-mt-[26px] md:-mt-[30px]' : '-mt-1.5'
-                      }`}
+                      className={`hanger-assembly w-full flex flex-col items-center pointer-events-auto ${swayClass}`}
+                      style={{
+                        animationDelay: swayDelay,
+                        transform: itemTilt !== 0 ? `rotateZ(${itemTilt}deg)` : undefined,
+                        transition: isDragging
+                          ? 'transform 75ms ease-out'
+                          : itemTilt !== 0
+                          ? 'transform 180ms ease-out'
+                          : undefined,
+                      }}
                     >
-                      {/* SISI SAMPING (Tampil saat menyamping di rak) */}
-                      <div
-                        className={`absolute inset-0 flex items-start justify-center transition-all duration-250 ease-out origin-center ${
-                          isDisplayFront
-                            ? 'opacity-0 [transform:rotateY(-85deg)] pointer-events-none'
-                            : 'opacity-100 [transform:rotateY(0deg)]'
-                        }`}
-                        style={{
-                          transitionDelay: isDisplayFront ? '0ms' : '80ms',
-                        }}
-                      >
-                        <div className="h-full w-auto flex items-start justify-center">
-                          <GarmentSVG
-                            item={item}
-                            categoryId={categoryData.id}
-                            viewAngle="side-left"
-                            custom={custom}
-                            className="max-h-full drop-shadow-md"
-                          />
-                        </div>
+                      {/* Gantungan Hook SVG + label harga */}
+                      <div className="w-[100px] md:w-[110px] h-[52px] md:h-[58px] flex-shrink-0">
+                        <HangerHookSVG
+                          priceTagText={priceText}
+                          showPriceTag={isDisplayFront}
+                          isSideView={!isDisplayFront}
+                          hideHangerBody={hasPhotoHanger}
+                        />
                       </div>
 
-                      {/* SISI DEPAN (Berputar masuk saat aktif/di-hover, ukuran stabil tanpa melompat) */}
+                      {/* Panggung Baju 3D (Dua Sisi: Samping & Depan berputar mulus tanpa lonjakan ukuran) */}
                       <div
-                        className={`absolute inset-0 flex items-start justify-center transition-all duration-300 ease-out origin-center ${
-                          isDisplayFront
-                            ? 'opacity-100 [transform:rotateY(0deg)]'
-                            : 'opacity-0 [transform:rotateY(85deg)] pointer-events-none'
+                        className={`relative w-full h-[230px] md:h-[260px] flex items-start justify-center [perspective:1000px] ${
+                          hasPhotoHanger ? '-mt-[26px] md:-mt-[30px]' : '-mt-1.5'
                         }`}
-                        style={{
-                          transitionDelay: isDisplayFront ? '80ms' : '0ms',
-                        }}
                       >
-                        <div className="h-full w-auto flex-shrink-0 flex items-start justify-center">
-                          <GarmentSVG
-                            item={item}
-                            categoryId={categoryData.id}
-                            viewAngle="front"
-                            custom={custom}
-                            className="max-h-full drop-shadow-md"
-                          />
+                        {/* SISI SAMPING (Tampil saat menyamping di rak) */}
+                        <div
+                          className={`absolute inset-0 flex items-start justify-center transition-all duration-250 ease-out origin-center ${
+                            isDisplayFront
+                              ? 'opacity-0 [transform:rotateY(-85deg)] pointer-events-none'
+                              : 'opacity-100 [transform:rotateY(0deg)]'
+                          }`}
+                          style={{
+                            transitionDelay: isDisplayFront ? '0ms' : '80ms',
+                          }}
+                        >
+                          <div className="h-full w-auto flex items-start justify-center">
+                            <GarmentSVG
+                              item={item}
+                              categoryId={categoryData.id}
+                              viewAngle="side-left"
+                              custom={custom}
+                              className="max-h-full drop-shadow-md"
+                            />
+                          </div>
+                        </div>
+
+                        {/* SISI DEPAN (Berputar masuk saat aktif/di-hover, ukuran stabil tanpa melompat) */}
+                        <div
+                          className={`absolute inset-0 flex items-start justify-center transition-all duration-300 ease-out origin-center ${
+                            isDisplayFront
+                              ? 'opacity-100 [transform:rotateY(0deg)]'
+                              : 'opacity-0 [transform:rotateY(85deg)] pointer-events-none'
+                          }`}
+                          style={{
+                            transitionDelay: isDisplayFront ? '80ms' : '0ms',
+                          }}
+                        >
+                          <div className="h-full w-auto flex-shrink-0 flex items-start justify-center">
+                            <GarmentSVG
+                              item={item}
+                              categoryId={categoryData.id}
+                              viewAngle="front"
+                              custom={custom}
+                              className="max-h-full drop-shadow-md"
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -276,7 +518,7 @@ export function HangerRack({
         </div>
       </div>
 
-      {/* 5. BAR AKSI BAWAH RAK (Pas di 100vh tanpa perlu scroll di HP) */}
+      {/* 5. BAR AKSI BAWAH RAK */}
       <footer className="relative w-full z-20 px-4 md:px-8 pt-1 pb-[max(14px,calc(10px+env(safe-area-inset-bottom)))] md:py-4 flex flex-col sm:flex-row items-center justify-between gap-2.5 md:gap-3 max-w-[1340px] mx-auto flex-shrink-0">
         <div className="hidden sm:flex items-center gap-2 text-ink/75 font-medium text-[13px] bg-surface border border-line px-3.5 py-1.5 rounded-full">
           <span className="w-2 h-2 rounded-full bg-brand animate-pulse" />

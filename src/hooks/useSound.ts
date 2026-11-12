@@ -20,7 +20,7 @@ export function useSound(enabled: boolean = true) {
   }, []);
 
   const playSound = useCallback(
-    (type: 'slide' | 'open' | 'click' | 'flip' = 'slide') => {
+    (type: 'slide' | 'open' | 'click' | 'flip' | 'sway' = 'slide') => {
       if (!enabled) return;
       const ctx = getAudioContext();
       if (!ctx) return;
@@ -40,6 +40,17 @@ export function useSound(enabled: boolean = true) {
         gain.connect(ctx.destination);
         osc.start(now);
         osc.stop(now + 0.12);
+      } else if (type === 'sway') {
+        // Suara ayunan lembut gantungan baju di kawat chrome
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(260, now);
+        osc.frequency.exponentialRampToValueAtTime(140, now + 0.14);
+        gain.gain.setValueAtTime(0.035, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.14);
       } else if (type === 'open') {
         // Suara transisi buka detail panggung
         osc.type = 'sine';
