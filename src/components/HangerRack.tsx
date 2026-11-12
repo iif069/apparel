@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { GarmentItem, CategoryData, CustomPhotoData, CategoryId } from '@/types';
 import { HangerHookSVG } from './HangerHookSVG';
@@ -33,9 +33,12 @@ export function HangerRack({
   const isDraggingRef = useRef(false);
   const dragStartXRef = useRef(0);
   const dragScrollLeftRef = useRef(0);
+  const hasDraggedRef = useRef(false);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const items = categoryData.rack;
-  const activeItem = items[activeIndex] || items[0];
+  const displayIndex = hoveredIndex !== null ? hoveredIndex : activeIndex;
+  const activeItem = items[displayIndex] || items[0];
   const activeCustom = customPhotos[activeItem?.id];
   const activePrice = activeCustom?.price || activeItem?.price || 60000;
   const activeName = activeCustom?.name || activeItem?.name;
@@ -46,7 +49,7 @@ export function HangerRack({
     const el = rackListRef.current;
     if (!el) return;
     const slots = el.querySelectorAll<HTMLElement>('.hanger-slot');
-    const target = slots[activeIndex];
+    const target = slots[displayIndex];
     if (target && window.innerWidth <= 768) {
       const containerW = el.clientWidth;
       const targetLeft = target.offsetLeft;
@@ -56,12 +59,13 @@ export function HangerRack({
         behavior: 'smooth',
       });
     }
-  }, [activeIndex]);
+  }, [displayIndex]);
 
   // Pointer drag gestures untuk touch / swipe
   const handlePointerDown = (e: React.PointerEvent) => {
     if (!rackListRef.current) return;
     isDraggingRef.current = true;
+    hasDraggedRef.current = false;
     dragStartXRef.current = e.clientX;
     dragScrollLeftRef.current = rackListRef.current.scrollLeft;
   };
@@ -69,6 +73,9 @@ export function HangerRack({
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDraggingRef.current || !rackListRef.current) return;
     const dx = e.clientX - dragStartXRef.current;
+    if (Math.abs(dx) > 8) {
+      hasDraggedRef.current = true;
+    }
     rackListRef.current.scrollLeft = dragScrollLeftRef.current - dx;
   };
 
@@ -82,10 +89,10 @@ export function HangerRack({
   };
 
   return (
-    <section className="relative w-full min-h-[calc(100vh-64px)] md:min-h-[calc(100vh-68px)] flex flex-col justify-between overflow-hidden bg-page select-none">
+    <section className="relative w-full flex-1 flex flex-col justify-between overflow-hidden bg-page select-none min-h-0">
       {/* 1. Bar Kategori Khusus HP (3 Kolom Seimbang Sesuai Desain Sistem: tinggi 42px, font 13px) */}
       {categories && categories.length > 0 && (
-        <div className="md:hidden w-full px-3.5 pt-3 pb-2 z-20">
+        <div className="md:hidden w-full px-3.5 pt-2.5 pb-1.5 z-20 flex-shrink-0">
           <nav className="grid grid-cols-3 gap-2 w-full" aria-label="Kategori pakaian">
             {categories.map((cat) => (
               <button
@@ -105,18 +112,30 @@ export function HangerRack({
         </div>
       )}
 
-      {/* 2. Latar Polos & Tipografi Raksasa "APPAREL" */}
+      {/* 2. Latar Polos & Tipografi Raksasa "APPAREL" dengan Refleksi Lantai Perspektif 3D Melebar & Transparan */}
       <div className="absolute inset-0 pointer-events-none flex flex-col justify-center items-center overflow-hidden z-0">
-        <h1 className="font-display text-[20vw] md:text-[18vw] leading-none text-[#ebe8f2] tracking-wider select-none transform -translate-y-8 md:-translate-y-12">
-          {categoryData.heroTitle || 'APPAREL'}
-        </h1>
-        {/* Bayangan Lantai Perspektif 3D */}
-        <div className="absolute bottom-16 md:bottom-20 w-full flex justify-center [perspective:800px]">
-          <div
-            className="font-display text-[15vw] md:text-[14vw] leading-none text-[#ded9e8]/50 tracking-wider select-none origin-bottom [transform:rotateX(75deg)_scaleY(0.5)] opacity-60 filter blur-[1px]"
-            aria-hidden="true"
-          >
-            {categoryData.watermark || 'APPAREL'}
+        <div className="flex flex-col items-center select-none transform -translate-y-8 md:-translate-y-12">
+          {/* Teks Atas Tegak */}
+          <h1 className="font-display text-[32vw] md:text-[18vw] leading-none text-[#ebe8f2] tracking-wider select-none">
+            {categoryData.heroTitle || 'APPAREL'}
+          </h1>
+
+          {/* Bayangan Lantai Perspektif 3D Mirrored Vertikal: Ukuran Sama, Jarak Sedikit, Flipped Vertikal, Melebar ke Depan & Fade Transparan */}
+          <div className="w-full flex justify-center [perspective:500px] mt-2 md:mt-3">
+            <div
+              className="origin-top [transform:rotateX(68deg)] filter blur-[0.5px]"
+              style={{
+                maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.35) 40%, rgba(0,0,0,0) 85%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.35) 40%, rgba(0,0,0,0) 85%)',
+              }}
+            >
+              <div
+                className="font-display text-[32vw] md:text-[18vw] leading-none text-[#ded9e8] tracking-wider select-none [transform:scaleY(-1)]"
+                aria-hidden="true"
+              >
+                {categoryData.watermark || 'APPAREL'}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -133,10 +152,10 @@ export function HangerRack({
       </aside>
 
       {/* 4. PIPA GANTUNGAN CHROME HORIZONTAL & DERETAN BAJU */}
-      <div className="relative w-full z-10 flex-1 flex flex-col justify-center my-auto">
+      <div className="relative w-full z-10 flex-1 flex flex-col justify-center my-auto min-h-0">
         <div className="relative w-full">
-          {/* Batang Kawat Chrome Horizontal (Tepat menembus lubang lengkung kait hanger) */}
-          <div className="absolute top-[16px] md:top-[18px] left-0 right-0 h-[8px] bg-gradient-to-b from-[#d6d4de] via-white via-28% to-[#1c1b1a] z-0 shadow-sm pointer-events-none">
+          {/* Batang Kawat Chrome Horizontal (Tepat menembus lengkung kait hanger) */}
+          <div className="absolute top-[5px] md:top-[6px] left-0 right-0 h-[7px] md:h-[8px] bg-gradient-to-b from-[#d6d4de] via-white via-28% to-[#1c1b1a] z-0 shadow-sm pointer-events-none">
             <div className="w-full h-[2px] bg-white/85" />
           </div>
 
@@ -147,63 +166,107 @@ export function HangerRack({
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
-            className="w-full flex items-start justify-start md:justify-center overflow-x-auto no-scrollbar px-6 md:px-16 pt-0 pb-6 cursor-grab active:cursor-grabbing z-10"
+            className="w-full flex items-start justify-start md:justify-center overflow-x-auto no-scrollbar px-6 md:px-12 pt-0 pb-6 cursor-grab active:cursor-grabbing z-10"
           >
-            <div className="flex items-start gap-1 md:gap-3 mx-auto">
+            <div className="flex items-start gap-1 md:gap-2.5 mx-auto">
               {items.map((item, idx) => {
-                const isActive = idx === activeIndex;
+                const isDisplayFront = idx === displayIndex;
                 const custom = customPhotos[item.id];
                 const price = custom?.price || item.price;
                 const priceText = `Rp ${Math.round(price / 1000)}rb`;
+                // Deteksi apakah produk menggunakan foto asli (sudah memiliki gantungan baju sendiri pada foto)
+                const hasPhotoHanger = !!((custom && (custom.frontDataUrl || custom.sideDataUrl)) || item.front || item.side);
 
                 return (
                   <div
                     key={item.id}
                     onPointerEnter={(e) => {
-                      // Desktop hover: otomatis putar ke tampak depan & bunyikan slide halus (tanpa pop-up)
-                      if (e.pointerType === 'mouse' && activeIndex !== idx) {
+                      if (e.pointerType === 'mouse' && displayIndex !== idx) {
+                        setHoveredIndex(idx);
                         onSelectIndex(idx);
                         onPlaySound('slide');
                       }
                     }}
                     onClick={() => {
-                      // Klik baju yang sudah menghadap depan → buka detail.
-                      // Klik baju yang masih tampak samping (HP, tanpa hover) → putar ke depan dulu.
-                      if (isActive) {
+                      // Hindari klik jika pengguna sedang drag/geser rel
+                      if (hasDraggedRef.current) return;
+
+                      // Jika baju sudah menghadap depan (tampak depan) → klik masuk ke detail
+                      // Jika masih menyamping (misal di HP) → klik sekali memutar ke depan
+                      if (displayIndex === idx) {
                         onPlaySound('open');
                         onOpenDetail(idx);
                       } else {
                         onPlaySound('slide');
                         onSelectIndex(idx);
+                        setHoveredIndex(idx);
                       }
                     }}
-                    className={`hanger-slot flex flex-col items-center cursor-pointer transition-[width] duration-400 ease-out [perspective:1000px] ${
-                      isActive ? 'w-[190px] md:w-[210px] z-30' : 'w-[84px] md:w-[94px] z-10'
+                    className={`hanger-slot flex flex-col items-center cursor-pointer transition-[width] duration-300 ease-out [perspective:1000px] ${
+                      isDisplayFront
+                        ? 'w-[210px] md:w-[240px] z-30'
+                        : 'w-[58px] md:w-[68px] z-10'
                     }`}
                   >
-                    {/* Gantungan Hook SVG + label harga (memudar halus saat aktif) */}
-                    <div className="w-[100px] md:w-[114px] h-[52px] md:h-[58px] flex-shrink-0">
-                      <HangerHookSVG priceTagText={priceText} showPriceTag={isActive} />
+                    {/* Gantungan Hook SVG + label harga (menyesuaikan sudut pandang samping vs depan) */}
+                    <div className="w-[100px] md:w-[110px] h-[52px] md:h-[58px] flex-shrink-0">
+                      <HangerHookSVG
+                        priceTagText={priceText}
+                        showPriceTag={isDisplayFront}
+                        isSideView={!isDisplayFront}
+                        hideHangerBody={hasPhotoHanger}
+                      />
                     </div>
 
-                    {/* Siluet atau Foto Baju — Berputar halus secara 3D (rotateY), murni rotasi tanpa lonjakan membesar */}
+                    {/* Panggung Baju 3D (Dua Sisi: Samping & Depan berputar mulus tanpa lonjakan ukuran / pop-up) */}
                     <div
-                      className="w-full h-[230px] md:h-[260px] flex items-start justify-center -mt-1.5 transition-transform duration-400 ease-out [transform-style:preserve-3d]"
-                      style={{
-                        transform: isActive
-                          ? 'rotateY(0deg) translateY(-2px)'
-                          : idx < activeIndex
-                          ? 'rotateY(28deg)'
-                          : 'rotateY(-28deg)',
-                      }}
+                      className={`relative w-full h-[230px] md:h-[260px] flex items-start justify-center [perspective:1000px] ${
+                        hasPhotoHanger ? '-mt-[26px] md:-mt-[30px]' : '-mt-1.5'
+                      }`}
                     >
-                      <GarmentSVG
-                        item={item}
-                        categoryId={categoryData.id}
-                        viewAngle={isActive ? 'front' : 'side-left'}
-                        custom={custom}
-                        className="max-h-full drop-shadow-md"
-                      />
+                      {/* SISI SAMPING (Tampil saat menyamping di rak) */}
+                      <div
+                        className={`absolute inset-0 flex items-start justify-center transition-all duration-250 ease-out origin-center ${
+                          isDisplayFront
+                            ? 'opacity-0 [transform:rotateY(-85deg)] pointer-events-none'
+                            : 'opacity-100 [transform:rotateY(0deg)]'
+                        }`}
+                        style={{
+                          transitionDelay: isDisplayFront ? '0ms' : '80ms',
+                        }}
+                      >
+                        <div className="h-full w-auto flex items-start justify-center">
+                          <GarmentSVG
+                            item={item}
+                            categoryId={categoryData.id}
+                            viewAngle="side-left"
+                            custom={custom}
+                            className="max-h-full drop-shadow-md"
+                          />
+                        </div>
+                      </div>
+
+                      {/* SISI DEPAN (Berputar masuk saat aktif/di-hover, ukuran stabil tanpa melompat) */}
+                      <div
+                        className={`absolute inset-0 flex items-start justify-center transition-all duration-300 ease-out origin-center ${
+                          isDisplayFront
+                            ? 'opacity-100 [transform:rotateY(0deg)]'
+                            : 'opacity-0 [transform:rotateY(85deg)] pointer-events-none'
+                        }`}
+                        style={{
+                          transitionDelay: isDisplayFront ? '80ms' : '0ms',
+                        }}
+                      >
+                        <div className="h-full w-auto flex-shrink-0 flex items-start justify-center">
+                          <GarmentSVG
+                            item={item}
+                            categoryId={categoryData.id}
+                            viewAngle="front"
+                            custom={custom}
+                            className="max-h-full drop-shadow-md"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 );
@@ -213,9 +276,9 @@ export function HangerRack({
         </div>
       </div>
 
-      {/* 5. BAR AKSI BAWAH RAK */}
-      <footer className="relative w-full z-20 px-4 md:px-8 py-3 md:py-4 flex flex-col sm:flex-row items-center justify-between gap-3 max-w-[1340px] mx-auto">
-        <div className="flex items-center gap-2 text-ink/75 font-medium text-[13px] bg-surface border border-line px-3.5 py-1.5 rounded-full">
+      {/* 5. BAR AKSI BAWAH RAK (Pas di 100vh tanpa perlu scroll di HP) */}
+      <footer className="relative w-full z-20 px-4 md:px-8 pt-1 pb-[max(14px,calc(10px+env(safe-area-inset-bottom)))] md:py-4 flex flex-col sm:flex-row items-center justify-between gap-2.5 md:gap-3 max-w-[1340px] mx-auto flex-shrink-0">
+        <div className="hidden sm:flex items-center gap-2 text-ink/75 font-medium text-[13px] bg-surface border border-line px-3.5 py-1.5 rounded-full">
           <span className="w-2 h-2 rounded-full bg-brand animate-pulse" />
           <span>{categoryData.kicker}</span>
         </div>
@@ -224,9 +287,9 @@ export function HangerRack({
         <div
           onClick={() => {
             onPlaySound('open');
-            onOpenDetail(activeIndex);
+            onOpenDetail(displayIndex);
           }}
-          className="flex items-center justify-between gap-4 bg-surface border border-line px-4 py-2 rounded-full shadow-xs hover:border-brand/40 cursor-pointer transition-all press-active max-w-[360px] w-full sm:w-auto"
+          className="flex items-center justify-between gap-3 md:gap-4 bg-surface border border-line px-4 py-2 rounded-full shadow-xs hover:border-brand/40 cursor-pointer transition-all press-active max-w-[380px] w-full sm:w-auto"
         >
           <div className="flex items-center gap-2.5 min-w-0">
             <span

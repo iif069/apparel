@@ -5,12 +5,16 @@ import React from 'react';
 interface HangerHookSVGProps {
   priceTagText?: string;
   showPriceTag?: boolean;
+  isSideView?: boolean;
+  hideHangerBody?: boolean;
   className?: string;
 }
 
 export function HangerHookSVG({
   priceTagText,
   showPriceTag = false,
+  isSideView = false,
+  hideHangerBody = false,
   className = '',
 }: HangerHookSVGProps) {
   return (
@@ -44,20 +48,23 @@ export function HangerHookSVG({
 
         {/* Leher & Kait Melengkung Masuk ke Pipa Wire */}
         <path
-          d="M 60 27 C 60 18, 56 12, 59 7 C 61 3, 67 3, 68 7 C 69 11, 66 14, 63 15"
+          d="M 60 28 C 60 18, 56 12, 59 7 C 61 3, 67 3, 68 7 C 69 11, 66 14, 63 15"
           stroke="url(#hangerChromeGrad)"
           strokeWidth="3.2"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
 
-        {/* Bahu Gantungan Melengkung Proporsional Mengikuti Lekuk Kerah Baju */}
-        <path
-          d="M 12 55 Q 60 28 108 55"
-          stroke="url(#hangerBodyGrad)"
-          strokeWidth="7.5"
-          strokeLinecap="round"
-        />
+        {/* Bahu Gantungan Melengkung: Sesuai Sudut Pandang (Disembunyikan jika foto baju sudah memiliki gantungan sendiri) */}
+        {!hideHangerBody && (
+          <path
+            d={isSideView ? "M 44 49 Q 60 32 76 49" : "M 12 55 Q 60 28 108 55"}
+            stroke="url(#hangerBodyGrad)"
+            strokeWidth="7.5"
+            strokeLinecap="round"
+            className="transition-all duration-300 ease-out"
+          />
+        )}
       </svg>
 
       {/* 2. Tali & Label Harga (Memudar halus saat baju aktif/di-hover) */}

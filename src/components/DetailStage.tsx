@@ -187,18 +187,13 @@ export function DetailStage({
         onScroll={handleScroll}
         className="relative flex-1 w-full overflow-y-auto overflow-x-hidden no-scrollbar"
       >
-        <div className="w-full max-w-[1320px] mx-auto px-4 md:px-7 pt-0 md:pt-6 pb-36 md:pb-16">
+        <div className="w-full max-w-[1320px] mx-auto px-4 md:px-7 pt-0 md:pt-6 pb-[260px] md:pb-16">
           <div className="grid grid-cols-1 md:grid-cols-[460px_1fr] gap-4 md:gap-9 items-start">
             
-            {/* KOLOM KIRI: Panggung Baju 3D (TETAP MENEMPEL / STICKY DI HP & DESKTOP DENGAN PADDING ELEGAN) */}
-            <div className="sticky top-0 z-30 bg-page self-stretch md:self-start w-auto -mx-4 md:mx-0 px-4 md:px-0 pt-3 md:pt-6 pb-4 border-b md:border-b-0 border-line shadow-sm md:shadow-none flex flex-col items-center">
-              {/* Batang Gantungan Chrome Halus */}
-              <div className="w-full max-w-[360px] h-[6px] md:h-[7px] bg-gradient-to-b from-[#d6d4de] via-white via-28% to-[#1c1b1a] relative z-10 rounded-full pointer-events-none mb-1 opacity-80">
-                <div className="w-full h-[1.5px] bg-white/85" />
-              </div>
-
-              {/* Rotator Baju 3D (Posisi proporsional & nyaman di tengah panggung) */}
-              <div className="w-full flex justify-center pt-1 md:pt-2">
+            {/* KOLOM KIRI: Panggung Baju 3D (Non-sticky di HP agar leluasa di-scroll, Sticky di Desktop) */}
+            <div className="relative md:sticky md:top-6 z-10 md:z-30 bg-page self-stretch md:self-start w-auto px-0 pt-2 md:pt-6 pb-2 md:pb-4 flex flex-col items-center">
+              {/* Rotator Baju 3D */}
+              <div className="relative w-full flex justify-center">
                 <GarmentRotator
                   item={currentItem}
                   categoryId={categoryData.id}
@@ -210,15 +205,15 @@ export function DetailStage({
               </div>
 
               {/* Tab Sudut Tampilan [Samping] [Depan] [Belakang] */}
-              <div className="w-full flex justify-center mt-3">
+              <div className="w-full flex justify-center mt-2.5 md:mt-3">
                 <AngleTabs currentAngle={viewAngle} onSelectAngle={setViewAngle} />
               </div>
             </div>
 
             {/* KOLOM KANAN: Informasi Produk, Warna, Ukuran, Tambahan & Order */}
-            <div className="flex flex-col gap-4 md:gap-5 pt-2 md:pt-0">
+            <div className="flex flex-col gap-3 md:gap-5 pt-1 md:pt-0">
               {/* Kartu Utama Produk */}
-              <div className="bg-surface border border-line rounded-3xl p-5 md:p-7 flex flex-col gap-5 shadow-soft">
+              <div className="bg-surface border border-line rounded-2xl md:rounded-3xl p-4 sm:p-5 md:p-7 flex flex-col gap-4 md:gap-5 shadow-soft">
                 {/* Badge Status */}
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">

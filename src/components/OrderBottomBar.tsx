@@ -29,10 +29,10 @@ export function OrderBottomBar({
 
   return (
     <div
-      className={`flex flex-col gap-3 p-4 md:p-5 bg-surface border border-line rounded-3xl shadow-float ${
+      className={`flex flex-col gap-3 bg-surface ${
         isMobileFloating
-          ? 'fixed left-3 right-3 bottom-[calc(12px+env(safe-area-inset-bottom))] z-40 md:static md:bottom-auto md:left-auto md:right-auto md:shadow-soft'
-          : ''
+          ? 'fixed left-0 right-0 bottom-0 z-40 p-4 pt-3.5 pb-[max(16px,calc(12px+env(safe-area-inset-bottom)))] border-t border-line rounded-t-3xl shadow-[0_-6px_24px_rgba(0,0,0,0.07)]'
+          : 'p-4 md:p-5 border border-line rounded-3xl shadow-soft'
       } ${className}`}
     >
       {/* 1. Baris Pertama: Total di Kiri, Harga di Kanan */}

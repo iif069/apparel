@@ -25,7 +25,7 @@ export function GarmentSVG({
         <img
           src={custom.sideDataUrl}
           alt={`${item.name} tampak samping`}
-          className={`w-auto max-w-full h-full object-contain filter drop-shadow-md contrast-[1.03] ${className}`}
+          className={`h-full w-auto max-w-none object-contain object-top filter drop-shadow-md contrast-[1.03] ${className}`}
         />
       );
     }
@@ -34,7 +34,7 @@ export function GarmentSVG({
         <img
           src={custom.frontDataUrl}
           alt={`${item.name} tampak depan`}
-          className={`w-auto max-w-full h-full object-contain ${className}`}
+          className={`w-auto max-w-full h-full object-contain object-top ${className}`}
         />
       );
     }
@@ -43,7 +43,7 @@ export function GarmentSVG({
         <img
           src={custom.backDataUrl || custom.frontDataUrl}
           alt={`${item.name} tampak belakang`}
-          className={`w-auto max-w-full h-full object-contain ${className}`}
+          className={`w-auto max-w-full h-full object-contain object-top ${className}`}
         />
       );
     }
@@ -55,7 +55,7 @@ export function GarmentSVG({
       <img
         src={item.side}
         alt={`${item.name} tampak samping`}
-        className={`w-auto max-w-full h-full object-contain ${className}`}
+        className={`h-full w-auto max-w-none object-contain object-top ${className}`}
       />
     );
   }
@@ -64,7 +64,7 @@ export function GarmentSVG({
       <img
         src={item.front}
         alt={`${item.name} tampak depan`}
-        className={`w-auto max-w-full h-full object-contain ${className}`}
+        className={`w-auto max-w-full h-full object-contain object-top ${className}`}
       />
     );
   }
@@ -74,7 +74,7 @@ export function GarmentSVG({
       <img
         src={backSrc}
         alt={`${item.name} tampak belakang`}
-        className={`w-auto max-w-full h-full object-contain ${className}`}
+        className={`w-auto max-w-full h-full object-contain object-top ${className}`}
       />
     );
   }
@@ -86,71 +86,107 @@ export function GarmentSVG({
   const strokeColor = isLight ? '#d5d2de' : 'rgba(28, 27, 26, 0.14)';
 
   // -------------------------------------------------------------------------
-  // TAMPAK SAMPING — Siluet baju gantung proporsional (tinggi dan letak kerah pas dengan tampak depan)
+  // TAMPAK SAMPING — Siluet baju gantung streetwear ramping & proporsional (tinggi pas dengan tampak depan)
   // -------------------------------------------------------------------------
   if (viewAngle.startsWith('side')) {
     const gradId = `sideGrad-${item.id}`;
+    const sleeveFill = item.shadow || '#000000';
     return (
       <svg
-        className={`w-auto max-w-full h-full block filter drop-shadow-md ${className}`}
-        viewBox="0 0 120 350"
+        className={`h-full w-auto max-w-none block filter drop-shadow-md ${className}`}
+        viewBox="0 0 100 350"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          <linearGradient id={gradId} x1="20" y1="36" x2="105" y2="36" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.22" />
-            <stop offset="30%" stopColor="#ffffff" stopOpacity="0.04" />
-            <stop offset="70%" stopColor="#000000" stopOpacity="0" />
-            <stop offset="100%" stopColor="#000000" stopOpacity="0.30" />
+          {/* Gradien shading kontras tinggi untuk volume 3D kain lipatan ramping */}
+          <linearGradient id={gradId} x1="34" y1="36" x2="72" y2="36" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#ffffff" stopOpacity={isLight ? "0.60" : "0.35"} />
+            <stop offset="20%" stopColor="#ffffff" stopOpacity="0.10" />
+            <stop offset="55%" stopColor="#000000" stopOpacity="0" />
+            <stop offset="85%" stopColor="#000000" stopOpacity={isLight ? "0.28" : "0.45"} />
+            <stop offset="100%" stopColor="#000000" stopOpacity={isLight ? "0.50" : "0.70"} />
           </linearGradient>
         </defs>
 
-        {/* Badan Baju Tampak Samping (Menggantung dari bahu gantungan Y=36 sampai keliman bawah Y=322) */}
+        {/* 1. Badan Baju Lipat Tampak Samping (Ramping, jatuh natural dari bahu Y=36 ke keliman Y=322) */}
         <path
-          d="M 45 36 
-             C 65 34, 85 40, 92 48 
-             C 98 56, 96 110, 94 180 
-             C 92 250, 95 316, 90 322 
-             C 85 326, 40 326, 35 322 
-             C 30 316, 32 240, 34 160 
-             C 36 100, 32 50, 36 42 
+          d="M 46 36 
+             C 58 33, 66 38, 70 46 
+             C 74 56, 73 120, 71 180 
+             C 69 240, 71 314, 68 322 
+             C 65 326, 39 326, 36 322 
+             C 33 314, 35 240, 37 160 
+             C 38 100, 36 50, 40 42 
              Z"
           fill={hex}
           stroke={strokeColor}
-          strokeWidth="2"
+          strokeWidth="1.8"
           strokeLinejoin="round"
         />
 
-        {/* Shading 3D Lekukan Lipatan Kain */}
+        {/* 2. Shading gradien 3D kontras tinggi pada lekukan silinder kain */}
         <path
-          d="M 45 36 
-             C 65 34, 85 40, 92 48 
-             C 98 56, 96 110, 94 180 
-             C 92 250, 95 316, 90 322 
-             C 85 326, 40 326, 35 322 
-             C 30 316, 32 240, 34 160 
-             C 36 100, 32 50, 36 42 
+          d="M 46 36 
+             C 58 33, 66 38, 70 46 
+             C 74 56, 73 120, 71 180 
+             C 69 240, 71 314, 68 322 
+             C 65 326, 39 326, 36 322 
+             C 33 314, 35 240, 37 160 
+             C 38 100, 36 50, 40 42 
              Z"
           fill={`url(#${gradId})`}
         />
 
-        {/* Lipatan Lengan Jatuh ke Bawah */}
+        {/* 3. Kerah Baju Tampak Samping di Puncak Bahu */}
         <path
-          d="M 52 48 
-             C 58 80, 56 140, 55 190 
-             C 54 210, 68 210, 70 190 
-             C 72 140, 74 80, 72 48"
-          stroke={strokeColor}
-          strokeWidth="1.8"
+          d="M 42 38 Q 48 33 54 38"
+          stroke={isLight ? '#c8c5d2' : 'rgba(255,255,255,0.28)'}
+          strokeWidth="2.2"
           strokeLinecap="round"
-          fill={item.shadow || '#000000'}
-          fillOpacity="0.12"
+          fill="none"
         />
 
-        {/* Garis Lipatan Kain Vertikal Halus */}
-        <line x1="42" y1="80" x2="40" y2="280" stroke="rgba(255,255,255,0.18)" strokeWidth="1.2" strokeLinecap="round" />
-        <line x1="82" y1="90" x2="80" y2="290" stroke="rgba(0,0,0,0.18)" strokeWidth="1.2" strokeLinecap="round" />
+        {/* 4. Lipatan Lengan Jatuh Ramping ke Samping dengan Ujung Manset */}
+        <path
+          d="M 48 48 
+             C 55 75, 57 130, 56 185 
+             C 55 196, 64 196, 65 185 
+             C 67 130, 65 75, 62 48 
+             Z"
+          stroke={strokeColor}
+          strokeWidth="1.4"
+          strokeLinejoin="round"
+          fill={sleeveFill}
+          fillOpacity={isLight ? "0.14" : "0.26"}
+        />
+
+        {/* Garis jahitan keliman lengan */}
+        <path
+          d="M 55 183 Q 60 186 65 183"
+          stroke={isLight ? '#b8b5c2' : 'rgba(255,255,255,0.22)'}
+          strokeWidth="1.2"
+          strokeLinecap="round"
+          fill="none"
+        />
+
+        {/* Aksen visual kategori: Jersey punya garis sport, Kemeja punya tepi kancing */}
+        {categoryId === 'jersey' && (
+          <path
+            d="M 42 140 L 70 118 L 71 142 L 41 165 Z"
+            fill="#7b29ba"
+            fillOpacity="0.85"
+          />
+        )}
+        {categoryId === 'puffer' && (
+          <path
+            d="M 68 48 L 67 320"
+            stroke={isLight ? '#1c1b1a' : '#ffffff'}
+            strokeWidth="1.4"
+            strokeDasharray="3 3"
+            strokeOpacity="0.4"
+          />
+        )}
       </svg>
     );
   }

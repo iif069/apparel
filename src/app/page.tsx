@@ -202,7 +202,7 @@ export default function HomePage() {
   const cartTotalCount = cart.reduce((acc, it) => acc + it.totalQty, 0);
 
   return (
-    <main className="min-h-screen bg-page flex flex-col relative overflow-x-hidden">
+    <main className="h-[100dvh] max-h-[100dvh] w-full bg-page flex flex-col relative overflow-hidden select-none md:select-auto">
       {/* 1. Bar Atas (Header Toko & Kategori) */}
       <Topbar
         currentCategory={currentCategory}

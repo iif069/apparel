@@ -60,7 +60,11 @@ export function Topbar({
             className="flex items-center gap-2.5 cursor-pointer select-none group"
             title={isAdmin ? "Mode Admin Aktif (Klik 5x untuk keluar)" : "MIG Apparel"}
           >
-            <img src="/logo.svg" alt="MIG Logo" className="w-[30px] h-[30px] md:w-[34px] md:h-[34px] object-contain transition-transform group-active:scale-95" />
+            <img
+              src="/logo.svg"
+              alt="MIG Logo"
+              className="w-[30px] h-[30px] md:w-[34px] md:h-[34px] rounded-full object-cover overflow-hidden transition-transform group-active:scale-95"
+            />
             <div className="flex items-center gap-2">
               <span className="font-bold text-[17px] md:text-[19px] tracking-tight text-ink">MIG Apparel</span>
               {isAdmin && (

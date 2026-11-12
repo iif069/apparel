@@ -20,7 +20,7 @@ export function AngleTabs({ currentAngle, onSelectAngle, className = '' }: Angle
     <div
       role="tablist"
       aria-label="Sudut tampilan"
-      className={`inline-flex items-center justify-center gap-2 p-1 bg-surface border border-line rounded-full shadow-sm ${className}`}
+      className={`inline-flex items-center justify-center gap-1.5 md:gap-2 p-1 bg-surface border border-line rounded-full shadow-sm ${className}`}
     >
       {tabs.map((tab) => {
         const isActive =
@@ -33,7 +33,7 @@ export function AngleTabs({ currentAngle, onSelectAngle, className = '' }: Angle
             role="tab"
             aria-selected={isActive}
             onClick={() => onSelectAngle(tab.angle)}
-            className={`min-w-[80px] md:min-w-[96px] h-9 md:h-10 px-3 rounded-full text-[12px] md:text-[13px] font-semibold transition-all press-active ${
+            className={`min-w-[74px] md:min-w-[96px] h-8 md:h-10 px-2.5 md:px-3 rounded-full text-[12px] md:text-[13px] font-semibold transition-all press-active ${
               isActive
                 ? 'bg-ink text-surface shadow-sm'
                 : 'text-ink/70 hover:text-ink hover:bg-page'
