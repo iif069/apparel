@@ -1,9 +1,11 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 export function useSound(enabled: boolean = true) {
   const audioCtxRef = useRef<AudioContext | null>(null);
+  const clickBufferRef = useRef<AudioBuffer | null>(null);
+  const whooshBufferRef = useRef<AudioBuffer | null>(null);
 
   const getAudioContext = useCallback(() => {
     if (typeof window === 'undefined') return null;
@@ -21,6 +23,66 @@ export function useSound(enabled: boolean = true) {
     return audioCtxRef.current;
   }, []);
 
+  // Preload and decode audio buffers for instant zero-latency playback
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    let isMounted = true;
+
+    const loadBuffers = async () => {
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+
+        // Fetch click sound (creatorshome-mouse-click)
+        fetch('/sounds/click.mp3')
+          .then((res) => res.arrayBuffer())
+          .then((buf) => ctx.decodeAudioData(buf))
+          .then((decoded) => {
+            if (isMounted) clickBufferRef.current = decoded;
+          })
+          .catch(() => {});
+
+        // Fetch whoosh sound (dragon-studio-simple-whoosh)
+        fetch('/sounds/whoosh.mp3')
+          .then((res) => res.arrayBuffer())
+          .then((buf) => ctx.decodeAudioData(buf))
+          .then((decoded) => {
+            if (isMounted) whooshBufferRef.current = decoded;
+          })
+          .catch(() => {});
+      } catch {
+        // Fallback to synthesized audio
+      }
+    };
+
+    loadBuffers();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [getAudioContext]);
+
+  const playBuffer = useCallback(
+    (buffer: AudioBuffer, volume: number = 0.5, rate: number = 1.0) => {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      try {
+        const source = ctx.createBufferSource();
+        const gain = ctx.createGain();
+        source.buffer = buffer;
+        source.playbackRate.value = rate;
+        gain.gain.value = volume;
+        source.connect(gain);
+        gain.connect(ctx.destination);
+        source.start(0);
+      } catch {
+        // Ignore playback errors
+      }
+    },
+    [getAudioContext]
+  );
+
   const playSound = useCallback(
     (type: 'slide' | 'open' | 'click' | 'flip' | 'sway' = 'click') => {
       if (!enabled) return;
@@ -30,8 +92,12 @@ export function useSound(enabled: boolean = true) {
       const now = ctx.currentTime;
 
       if (type === 'click') {
-        // Efek Suara Ketukan / Klik Produk (Crisp & Punchy Tactile Pop)
-        // Layer 1: High crisp click transient
+        if (clickBufferRef.current) {
+          playBuffer(clickBufferRef.current, 0.75, 1.0);
+          return;
+        }
+
+        // Fallback Web Audio Synth
         const oscHigh = ctx.createOscillator();
         const gainHigh = ctx.createGain();
         oscHigh.type = 'sine';
@@ -44,20 +110,22 @@ export function useSound(enabled: boolean = true) {
         oscHigh.start(now);
         oscHigh.stop(now + 0.05);
 
-        // Layer 2: Tactile body thud
         const oscBody = ctx.createOscillator();
         const gainBody = ctx.createGain();
         oscBody.type = 'triangle';
         oscBody.frequency.setValueAtTime(180, now);
         oscBody.frequency.exponentialRampToValueAtTime(75, now + 0.06);
-        gainBody.gain.setValueAtTime(0.20, now);
+        gainBody.gain.setValueAtTime(0.2, now);
         gainBody.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
         oscBody.connect(gainBody);
         gainBody.connect(ctx.destination);
         oscBody.start(now);
         oscBody.stop(now + 0.06);
       } else if (type === 'open') {
-        // Efek Suara Membuka Detail Produk / Keranjang (Uplifting Boutique Chime)
+        if (whooshBufferRef.current) {
+          playBuffer(whooshBufferRef.current, 0.6, 1.05);
+          return;
+        }
         const freqs = [380, 520, 780];
         freqs.forEach((freq, idx) => {
           const osc = ctx.createOscillator();
@@ -73,7 +141,10 @@ export function useSound(enabled: boolean = true) {
           osc.stop(now + delay + 0.22);
         });
       } else if (type === 'flip') {
-        // Efek Suara Memutar / Membalik Baju 180° (Cloth Swish & Click)
+        if (whooshBufferRef.current) {
+          playBuffer(whooshBufferRef.current, 0.55, 1.25);
+          return;
+        }
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'triangle';
@@ -87,7 +158,10 @@ export function useSound(enabled: boolean = true) {
         osc.start(now);
         osc.stop(now + 0.16);
       } else if (type === 'sway') {
-        // Efek Suara Sentuhan Gantungan Baju di Kawat Butik (Gentle Chime Swish)
+        if (clickBufferRef.current) {
+          playBuffer(clickBufferRef.current, 0.45, 1.15);
+          return;
+        }
         const osc1 = ctx.createOscillator();
         const gain1 = ctx.createGain();
         osc1.type = 'sine';
@@ -99,20 +173,11 @@ export function useSound(enabled: boolean = true) {
         gain1.connect(ctx.destination);
         osc1.start(now);
         osc1.stop(now + 0.14);
-
-        const osc2 = ctx.createOscillator();
-        const gain2 = ctx.createGain();
-        osc2.type = 'triangle';
-        osc2.frequency.setValueAtTime(280, now);
-        osc2.frequency.exponentialRampToValueAtTime(140, now + 0.12);
-        gain2.gain.setValueAtTime(0.12, now);
-        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-        osc2.connect(gain2);
-        gain2.connect(ctx.destination);
-        osc2.start(now);
-        osc2.stop(now + 0.12);
       } else if (type === 'slide') {
-        // Efek Gesekan Gantungan / Ganti Kategori (Smooth Air Slide)
+        if (whooshBufferRef.current) {
+          playBuffer(whooshBufferRef.current, 0.45, 0.95);
+          return;
+        }
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'triangle';
@@ -126,7 +191,7 @@ export function useSound(enabled: boolean = true) {
         osc.stop(now + 0.14);
       }
     },
-    [enabled, getAudioContext]
+    [enabled, getAudioContext, playBuffer]
   );
 
   return { playSound };

@@ -76,7 +76,7 @@ export function BackgroundMusic({ soundEnabled }: BackgroundMusicProps) {
       <button
         type="button"
         onClick={toggleMusic}
-        title={isPlaying ? 'Jeda Musik Latar (Purrple Cat - Coffee Jelly)' : 'Putar Musik Latar'}
+        title={isPlaying ? 'Jeda Musik Latar' : 'Putar Musik Latar'}
         className={`group flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-md border shadow-sm transition-all duration-300 press-active ${
           isPlaying
             ? 'bg-white/90 border-[#7B29BA]/30 text-ink shadow-[0_4px_16px_rgba(123,41,186,0.15)] hover:bg-white'
@@ -96,7 +96,7 @@ export function BackgroundMusic({ soundEnabled }: BackgroundMusicProps) {
         )}
 
         <span className="text-[11.5px] font-semibold tracking-tight">
-          {isPlaying ? 'Cinematic' : 'BGM'}
+          {isPlaying ? 'Music' : 'BGM'}
         </span>
 
         {/* Ikon Speaker Mute/Unmute */}
