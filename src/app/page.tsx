@@ -141,6 +141,32 @@ export default function HomePage() {
     setIsCartOpen(true);
   };
 
+  const handleUpdateCartQty = (cartId: string, delta: number) => {
+    setCart((prev) => {
+      return prev
+        .map((item) => {
+          if (item.cartId !== cartId) return item;
+          const currentTotal = item.totalQty;
+          const newTotal = currentTotal + delta;
+          if (newTotal <= 0) return null;
+          const unitPrice = Math.round(item.totalPrice / Math.max(1, currentTotal));
+          const firstKey = Object.keys(item.sizes)[0] || 'M';
+          const newSizes = {
+            ...item.sizes,
+            [firstKey]: Math.max(1, (item.sizes[firstKey] || 1) + delta),
+          };
+          const recalculatedQty = Object.values(newSizes).reduce((acc, q) => acc + q, 0);
+          return {
+            ...item,
+            sizes: newSizes,
+            totalQty: recalculatedQty,
+            totalPrice: unitPrice * recalculatedQty,
+          };
+        })
+        .filter(Boolean) as CartItem[];
+    });
+  };
+
   const handleOrderViaWhatsApp = (order: {
     item: CategoryData['rack'][0];
     categoryId: CategoryId;
@@ -248,12 +274,13 @@ export default function HomePage() {
         onPlaySound={playSound}
       />
 
-      {/* 4. Panel Keranjang Belanja */}
+      {/* 4. Halaman Keranjang Belanja Penuh (Full Page) */}
       <CartDrawer
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         cart={cart}
         onRemoveItem={(id) => setCart((prev) => prev.filter((it) => it.cartId !== id))}
+        onUpdateQty={handleUpdateCartQty}
         onClearCart={() => setCart([])}
       />
 
