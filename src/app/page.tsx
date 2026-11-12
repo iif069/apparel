@@ -9,6 +9,7 @@ import { HangerRack } from '@/components/HangerRack';
 import { DetailStage } from '@/components/DetailStage';
 import { CartDrawer } from '@/components/CartDrawer';
 import { CustomCatalogModal } from '@/components/CustomCatalogModal';
+import { BackgroundMusic } from '@/components/BackgroundMusic';
 
 export default function HomePage() {
   const [currentCategory, setCurrentCategory] = useState<CategoryId>('kaos');
@@ -303,6 +304,9 @@ export default function HomePage() {
         onSaveCustom={handleSaveCustom}
         onResetCustom={handleResetCustom}
       />
+
+      {/* 6. Pemutar Musik Latar Bebas Lisensi (Lofi Chill) */}
+      <BackgroundMusic soundEnabled={soundEnabled} />
 
       {/* Toast Notifikasi Mode Rahasia */}
       {toastMessage && (
