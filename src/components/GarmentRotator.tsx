@@ -91,11 +91,11 @@ export function GarmentRotator({
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
       title="Geser ke kiri/kanan atau ketuk untuk memutar baju"
-      className="relative z-10 w-full max-w-[300px] md:max-w-[380px] h-[290px] md:h-[390px] flex flex-col items-center justify-center cursor-grab active:cursor-grabbing [perspective:1200px] select-none touch-pan-y"
+      className="relative z-10 w-full max-w-[300px] md:max-w-[400px] lg:max-w-[440px] h-[290px] md:h-[420px] lg:h-[460px] flex flex-col items-center justify-center cursor-grab active:cursor-grabbing [perspective:1200px] select-none touch-pan-y"
     >
       {/* 1. Kait Gantungan Atas (Disembunyikan jika foto custom punya gantungan sendiri - tanpa pop-up tooltip) */}
       {!hasOwnHanger && (
-        <div className="w-[104px] md:w-[124px] h-[48px] md:h-[58px] flex-shrink-0 z-20">
+        <div className="w-[104px] md:w-[130px] h-[48px] md:h-[60px] flex-shrink-0 z-20">
           <HangerHookSVG priceTagText={priceText} showPriceTag={false} />
         </div>
       )}
@@ -112,7 +112,7 @@ export function GarmentRotator({
       >
         {/* TAMPAK DEPAN / SAMPING */}
         <div className="absolute inset-0 flex flex-col items-center justify-center backface-hidden">
-          <div className="h-[245px] md:h-[330px] max-h-[245px] md:max-h-[330px] w-auto max-w-full flex items-center justify-center">
+          <div className="h-[245px] md:h-[360px] lg:h-[410px] max-h-[245px] md:max-h-[360px] lg:max-h-[410px] w-auto max-w-full flex items-center justify-center">
             <GarmentSVG
               item={item}
               categoryId={categoryId}
@@ -125,7 +125,7 @@ export function GarmentRotator({
 
         {/* TAMPAK BELAKANG (180°) */}
         <div className="absolute inset-0 flex flex-col items-center justify-center backface-hidden [transform:rotateY(180deg)]">
-          <div className="h-[245px] md:h-[330px] max-h-[245px] md:max-h-[330px] w-auto max-w-full flex items-center justify-center">
+          <div className="h-[245px] md:h-[360px] lg:h-[410px] max-h-[245px] md:max-h-[360px] lg:max-h-[410px] w-auto max-w-full flex items-center justify-center">
             <GarmentSVG
               item={item}
               categoryId={categoryId}
