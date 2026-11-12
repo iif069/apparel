@@ -226,22 +226,22 @@ export function CartDrawer({
                 return (
                   <div
                     key={item.cartId}
-                    className="group bg-white rounded-[24px] border border-slate-100 shadow-sm p-4 sm:p-5 flex flex-col gap-3.5 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
+                    className="bg-white rounded-[24px] border border-slate-100 shadow-sm p-4 sm:p-5 flex flex-col gap-3.5 transition-all hover:shadow-md"
                   >
                     {/* Header Item: Foto Thumbnail + Nama + Badge + Tombol Trash */}
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3.5 min-w-0">
-                        {/* Thumbnail Squircle dengan Efek Hover Zoom & Shimmer */}
-                        <div className="w-14 h-14 rounded-2xl bg-[#f5f4f8] border border-slate-200/70 flex items-center justify-center flex-shrink-0 relative overflow-hidden shimmer-container group-hover:border-[#7B29BA]/40 transition-colors">
+                        {/* Thumbnail Squircle */}
+                        <div className="w-14 h-14 rounded-2xl bg-[#f5f4f8] border border-slate-200/70 flex items-center justify-center flex-shrink-0 relative overflow-hidden">
                           {item.frontPhoto ? (
                             <img
                               src={item.frontPhoto}
                               alt={item.name}
-                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                              className="w-full h-full object-cover"
                             />
                           ) : (
                             <span
-                              className="w-7 h-7 rounded-xl border-2 border-white shadow-xs transition-transform duration-300 group-hover:scale-110"
+                              className="w-7 h-7 rounded-xl border-2 border-white shadow-xs"
                               style={{ backgroundColor: item.hex }}
                             />
                           )}

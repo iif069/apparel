@@ -287,11 +287,11 @@ export function DetailStage({
                         setColorPickerOpen(false);
                         onPlaySound('slide');
                       }}
-                      className={`flex items-center gap-2 p-2 rounded-xl text-left transition-all duration-200 press-active ${
-                        idx === itemIndex ? 'bg-brand-soft border border-brand/50 shadow-2xs scale-[1.02]' : 'hover:bg-page hover:scale-[1.02]'
+                      className={`flex items-center gap-2 p-2 rounded-xl text-left transition-all ${
+                        idx === itemIndex ? 'bg-brand-soft border border-brand/50' : 'hover:bg-page'
                       }`}
                     >
-                      <span className="w-4 h-4 rounded-full border border-line flex-shrink-0 transition-transform duration-200 hover:scale-125" style={{ backgroundColor: it.hex }} />
+                      <span className="w-4 h-4 rounded-full border border-line flex-shrink-0" style={{ backgroundColor: it.hex }} />
                       <span className="text-[12px] font-medium text-ink truncate">{it.colorName}</span>
                     </button>
                   ))}
@@ -487,11 +487,11 @@ export function DetailStage({
                           setColorPickerOpen(false);
                           onPlaySound('slide');
                         }}
-                        className={`flex items-center gap-2 p-2 rounded-xl text-left transition-all duration-200 press-active ${
-                          idx === itemIndex ? 'bg-brand-soft border border-brand/50 shadow-2xs scale-[1.02]' : 'hover:bg-page hover:scale-[1.02]'
+                        className={`flex items-center gap-2 p-2 rounded-xl text-left transition-all ${
+                          idx === itemIndex ? 'bg-brand-soft border border-brand/50' : 'hover:bg-page'
                         }`}
                       >
-                        <span className="w-4 h-4 rounded-full border border-line flex-shrink-0 transition-transform duration-200 hover:scale-125" style={{ backgroundColor: it.hex }} />
+                        <span className="w-4 h-4 rounded-full border border-line flex-shrink-0" style={{ backgroundColor: it.hex }} />
                         <span className="text-[12px] font-medium text-ink truncate">{it.colorName}</span>
                       </button>
                     ))}

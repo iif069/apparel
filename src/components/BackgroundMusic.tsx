@@ -96,7 +96,7 @@ export function BackgroundMusic({ soundEnabled }: BackgroundMusicProps) {
         )}
 
         <span className="text-[11.5px] font-semibold tracking-tight">
-          {isPlaying ? 'Lofi Chill' : 'BGM'}
+          {isPlaying ? 'Cinematic' : 'BGM'}
         </span>
 
         {/* Ikon Speaker Mute/Unmute */}

@@ -373,7 +373,7 @@ export function HangerRack({
                         onOpenDetail(idx);
                       }
                     }}
-                    className={`hanger-slot group flex flex-col items-center cursor-pointer transition-[width] duration-300 ease-out [perspective:1000px] ${
+                    className={`hanger-slot flex flex-col items-center cursor-pointer transition-[width] duration-300 ease-out [perspective:1000px] ${
                       isDisplayFront
                         ? 'w-[210px] md:w-[240px] z-30'
                         : 'w-[58px] md:w-[68px] z-10'
@@ -394,7 +394,7 @@ export function HangerRack({
                       }}
                     >
                       {/* Gantungan Hook SVG + label harga */}
-                      <div className="w-[100px] md:w-[110px] h-[52px] md:h-[58px] flex-shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5">
+                      <div className="w-[100px] md:w-[110px] h-[52px] md:h-[58px] flex-shrink-0">
                         <HangerHookSVG
                           priceTagText={priceText}
                           showPriceTag={isDisplayFront}
@@ -420,13 +420,13 @@ export function HangerRack({
                             transitionDelay: isDisplayFront ? '0ms' : '80ms',
                           }}
                         >
-                          <div className="h-full w-auto flex items-start justify-center garment-card-interactive active:scale-95 transition-transform duration-100">
+                          <div className="h-full w-auto flex items-start justify-center">
                             <GarmentSVG
                               item={item}
                               categoryId={categoryData.id}
                               viewAngle="side-left"
                               custom={custom}
-                              className="max-h-full drop-shadow-md group-hover:drop-shadow-[0_8px_18px_rgba(123,41,186,0.25)] transition-all duration-200"
+                              className="max-h-full drop-shadow-md"
                             />
                           </div>
                         </div>
@@ -442,16 +442,13 @@ export function HangerRack({
                             transitionDelay: isDisplayFront ? '80ms' : '0ms',
                           }}
                         >
-                          {/* Aura Spotlight Belakang saat baju depan di-hover */}
-                          <div className="absolute inset-0 -z-10 rounded-full bg-[#7B29BA]/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none scale-75" />
-
-                          <div className="h-full w-auto flex-shrink-0 flex items-start justify-center garment-card-interactive shimmer-container rounded-2xl active:scale-95 transition-transform duration-100">
+                          <div className="h-full w-auto flex-shrink-0 flex items-start justify-center">
                             <GarmentSVG
                               item={item}
                               categoryId={categoryData.id}
                               viewAngle="front"
                               custom={custom}
-                              className="max-h-full drop-shadow-md group-hover:drop-shadow-[0_14px_28px_rgba(123,41,186,0.3)] transition-all duration-300"
+                              className="max-h-full drop-shadow-md"
                             />
                           </div>
                         </div>
