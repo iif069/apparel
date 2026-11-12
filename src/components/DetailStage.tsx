@@ -141,26 +141,36 @@ export function DetailStage({
       className="fixed inset-0 z-50 bg-page flex flex-col w-full h-[100dvh] overflow-hidden"
     >
       {/* 1. HEADER DETAIL TETAP DI ATAS (z-index 50) */}
-      <header className="flex-shrink-0 w-full h-[62px] md:h-[68px] bg-surface border-b border-line flex items-center z-50 px-4 md:px-7">
+      <header className="flex-shrink-0 w-full h-[72px] md:h-[76px] bg-surface border-b border-line flex items-center z-50 px-4 md:px-7">
         <div className="w-full max-w-[1340px] mx-auto flex items-center justify-between gap-3">
-          {/* Tombol Kembali ke Rak */}
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-full bg-surface text-ink border border-line hover:bg-page transition-colors press-active"
-          >
-            <ArrowLeft className="w-4 h-4 text-ink" />
-            <span className="hidden sm:inline text-[13px] font-semibold">Kembali ke rak</span>
-          </button>
+          {/* Tombol Kembali ke Rak (Sama persis dengan tombol Back di Keranjang) */}
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-11 h-11 rounded-full bg-surface border border-line shadow-xs flex items-center justify-center hover:bg-page text-ink transition-colors press-active"
+              aria-label="Kembali ke rak"
+              title="Kembali ke rak"
+            >
+              <ArrowLeft className="w-5 h-5 stroke-[2.2]" />
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="hidden md:inline-block text-[14px] font-bold text-ink/80 hover:text-ink transition-colors cursor-pointer"
+            >
+              Kembali ke rak
+            </button>
+          </div>
 
           {/* Tengah: Nomor Indeks (04/07) atau Judul saat di-scroll */}
           <div className="flex items-center justify-center min-w-0">
             {isScrolled ? (
-              <span className="text-[15px] md:text-[16px] font-bold text-ink truncate max-w-[200px] md:max-w-[400px]">
+              <span className="text-[16px] md:text-[17px] font-bold text-ink truncate max-w-[180px] sm:max-w-[280px] md:max-w-[420px]">
                 {productName}
               </span>
             ) : (
-              <span className="px-3 py-1 rounded-full text-[12px] font-bold bg-[#eceaf2] text-ink/80 tabular-nums">
+              <span className="px-3.5 py-1.5 rounded-full text-[13px] font-bold bg-[#eceaf2] text-ink/80 tabular-nums">
                 {counterText}
               </span>
             )}
@@ -170,13 +180,21 @@ export function DetailStage({
           <button
             type="button"
             onClick={onOpenCart}
-            className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-full bg-surface text-ink border border-line hover:bg-page transition-colors press-active"
+            className="relative flex items-center justify-center w-11 h-11 md:w-auto md:h-11 md:px-4 md:gap-2.5 rounded-full bg-surface text-ink border border-line shadow-xs hover:bg-page transition-colors press-active"
+            aria-label={`Keranjang belanja (${cartCount} barang)`}
           >
-            <ShoppingCart className="w-4 h-4 text-ink" />
-            <span className="hidden sm:inline text-[13px] font-semibold">Keranjang</span>
-            <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold rounded-full bg-brand text-surface">
-              {cartCount}
-            </span>
+            <ShoppingCart className="w-5 h-5 text-ink" />
+            <span className="hidden md:inline text-[13.5px] font-bold">Keranjang</span>
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 md:static md:top-auto md:right-auto inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold rounded-full bg-brand text-surface shadow-xs">
+                {cartCount}
+              </span>
+            )}
+            {cartCount === 0 && (
+              <span className="hidden md:inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold rounded-full bg-line text-ink/60">
+                0
+              </span>
+            )}
           </button>
         </div>
       </header>

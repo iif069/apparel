@@ -52,27 +52,34 @@ export function Topbar({
 
   return (
     <>
-      <header className="sticky top-0 w-full h-[64px] md:h-[68px] z-50 bg-surface border-b border-line flex items-center px-4 md:px-7">
+      <header className="sticky top-0 w-full h-[72px] md:h-[76px] z-50 bg-surface border-b border-line flex items-center px-4 md:px-7">
         <div className="w-full max-w-[1340px] mx-auto flex items-center justify-between gap-3">
           {/* Logo & Brand (Secret click area) */}
           <div
             onClick={handleLogoSecretClick}
-            className="flex items-center gap-2.5 cursor-pointer select-none group"
+            className="flex items-center gap-3 cursor-pointer select-none group"
             title={isAdmin ? "Mode Admin Aktif (Klik 5x untuk keluar)" : "MIG Apparel"}
           >
             <img
               src="/logo.svg"
               alt="MIG Logo"
-              className="w-[30px] h-[30px] md:w-[34px] md:h-[34px] rounded-full object-cover overflow-hidden transition-transform group-active:scale-95"
+              className="w-[38px] h-[38px] md:w-[42px] md:h-[42px] rounded-full object-cover overflow-hidden transition-transform group-active:scale-95 shadow-xs border border-line/60"
             />
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-[17px] md:text-[19px] tracking-tight text-ink">MIG Apparel</span>
-              {isAdmin && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-brand text-surface shadow-xs animate-pulse">
-                  <Unlock className="w-2.5 h-2.5" />
-                  ADMIN
+            <div className="flex flex-col justify-center">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-[18px] md:text-[20px] tracking-tight text-ink leading-tight">
+                  MIG Apparel
                 </span>
-              )}
+                {isAdmin && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-brand text-surface shadow-xs animate-pulse">
+                    <Unlock className="w-2.5 h-2.5" />
+                    ADMIN
+                  </span>
+                )}
+              </div>
+              <span className="text-[11.5px] md:text-[12px] text-ink/55 font-medium leading-none mt-0.5">
+                MIG Digital Printing · Rajadesa
+              </span>
             </div>
           </div>
 
@@ -123,7 +130,7 @@ export function Topbar({
               type="button"
               onClick={onToggleSound}
               title={soundEnabled ? 'Matikan suara' : 'Aktifkan suara'}
-              className="hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-surface text-ink border border-line hover:bg-page transition-colors press-active"
+              className="hidden md:flex items-center justify-center w-11 h-11 rounded-full bg-surface text-ink border border-line shadow-xs hover:bg-page transition-colors press-active"
             >
               {soundEnabled ? <Volume2 className="w-4 h-4 text-brand" /> : <VolumeX className="w-4 h-4 text-ink/40" />}
             </button>
@@ -132,13 +139,21 @@ export function Topbar({
             <button
               type="button"
               onClick={onOpenCart}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-surface text-ink border border-line hover:bg-page transition-colors press-active relative"
+              className="relative flex items-center justify-center w-11 h-11 md:w-auto md:h-11 md:px-4 md:gap-2.5 rounded-full bg-surface text-ink border border-line shadow-xs hover:bg-page transition-colors press-active"
+              aria-label={`Keranjang belanja (${cartCount} barang)`}
             >
-              <ShoppingCart className="w-4 h-4 text-ink" />
-              <span className="hidden sm:inline text-[13px] font-semibold">Keranjang</span>
-              <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold rounded-full bg-brand text-surface">
-                {cartCount}
-              </span>
+              <ShoppingCart className="w-5 h-5 text-ink" />
+              <span className="hidden md:inline text-[13.5px] font-bold">Keranjang</span>
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 md:static md:top-auto md:right-auto inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold rounded-full bg-brand text-surface shadow-xs">
+                  {cartCount}
+                </span>
+              )}
+              {cartCount === 0 && (
+                <span className="hidden md:inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold rounded-full bg-line text-ink/60">
+                  0
+                </span>
+              )}
             </button>
 
             {/* Tombol Menu Lainnya di HP */}
@@ -146,13 +161,14 @@ export function Topbar({
               <button
                 type="button"
                 onClick={() => setShowMoreMenu((prev) => !prev)}
-                className="flex items-center justify-center w-9 h-9 rounded-full bg-surface text-ink border border-line hover:bg-page press-active"
+                className="flex items-center justify-center w-11 h-11 rounded-full bg-surface text-ink border border-line shadow-xs hover:bg-page press-active"
+                aria-label="Menu lainnya"
               >
-                <MoreVertical className="w-4 h-4" />
+                <MoreVertical className="w-5 h-5 text-ink" />
               </button>
 
               {showMoreMenu && (
-                <div className="absolute right-0 top-11 w-48 bg-surface border border-line rounded-2xl shadow-float p-1.5 z-50 flex flex-col gap-1">
+                <div className="absolute right-0 top-13 w-52 bg-surface border border-line rounded-2xl shadow-float p-1.5 z-50 flex flex-col gap-1">
                   {isAdmin && (
                     <>
                       <button
@@ -161,7 +177,7 @@ export function Topbar({
                           setShowMoreMenu(false);
                           onOpenCustomModal();
                         }}
-                        className="flex items-center gap-2.5 px-3 py-2 text-[13px] font-semibold text-brand hover:bg-brand-soft rounded-xl text-left"
+                        className="flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-semibold text-brand hover:bg-brand-soft rounded-xl text-left"
                       >
                         <Edit3 className="w-4 h-4 text-brand" />
                         <span>Atur katalog</span>
@@ -172,7 +188,7 @@ export function Topbar({
                           setShowMoreMenu(false);
                           onToggleAdmin();
                         }}
-                        className="flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium text-red-600 hover:bg-red-50 rounded-xl text-left"
+                        className="flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-medium text-red-600 hover:bg-red-50 rounded-xl text-left"
                       >
                         <Lock className="w-4 h-4" />
                         <span>Kunci / Keluar Admin</span>
@@ -184,7 +200,7 @@ export function Topbar({
                     onClick={() => {
                       onToggleSound();
                     }}
-                    className="flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium text-ink hover:bg-page rounded-xl text-left"
+                    className="flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-medium text-ink hover:bg-page rounded-xl text-left"
                   >
                     {soundEnabled ? <Volume2 className="w-4 h-4 text-brand" /> : <VolumeX className="w-4 h-4 text-ink/40" />}
                     <span>Suara: {soundEnabled ? 'Aktif' : 'Mati'}</span>
