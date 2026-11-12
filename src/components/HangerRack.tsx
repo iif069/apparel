@@ -463,39 +463,41 @@ export function HangerRack({
       </div>
 
       {/* 5. BAR AKSI BAWAH RAK */}
-      <footer className="relative w-full z-20 px-4 md:px-8 pt-1 pb-[max(14px,calc(10px+env(safe-area-inset-bottom)))] md:py-4 flex flex-col sm:flex-row items-center justify-between gap-2.5 md:gap-3 max-w-[1340px] mx-auto flex-shrink-0">
+      <footer className="relative w-full z-20 px-4 md:px-8 pt-1 pb-[max(18px,calc(14px+env(safe-area-inset-bottom)))] md:py-4 flex flex-col sm:flex-row items-center justify-between gap-2.5 md:gap-3 max-w-[1340px] mx-auto flex-shrink-0">
         <div className="hidden sm:flex items-center gap-2 text-ink/75 font-medium text-[13px] bg-surface border border-line px-3.5 py-1.5 rounded-full">
           <span className="w-2 h-2 rounded-full bg-brand animate-pulse" />
           <span>{categoryData.kicker}</span>
         </div>
 
-        {/* Info Produk Aktif & Tombol Buka Detail */}
+        {/* Info Produk Aktif & Tombol Buka Detail (Ukuran Font & Tombol Proporsional Sesuai UI/UX MIG) */}
         <div
           onClick={() => {
             onPlaySound('open');
             onOpenDetail(displayIndex);
           }}
-          className="flex items-center justify-between gap-3 md:gap-4 bg-surface border border-line px-4 py-2 rounded-full shadow-xs hover:border-brand/40 cursor-pointer transition-all press-active max-w-[380px] w-full sm:w-auto"
+          className="flex items-center justify-between gap-3 sm:gap-5 bg-surface/95 backdrop-blur-md border border-line px-4 py-2.5 sm:px-5 sm:py-3 rounded-full shadow-[0_6px_24px_rgba(0,0,0,0.08)] hover:border-brand/40 cursor-pointer transition-all press-active w-full max-w-[440px] sm:w-auto"
         >
-          <div className="flex items-center gap-2.5 min-w-0">
+          <div className="flex items-center gap-3 min-w-0">
             <span
-              className="w-4 h-4 rounded-full border border-line flex-shrink-0"
+              className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-surface ring-1 ring-line/80 shadow-xs flex-shrink-0"
               style={{ backgroundColor: activeItem?.hex || '#ffffff' }}
             />
             <div className="flex flex-col min-w-0">
-              <span className="text-[13px] font-bold text-ink truncate">{activeName}</span>
-              <span className="text-[11.5px] text-ink/60 truncate">
-                Mulai dari Rp {activePrice.toLocaleString('id-ID')}
+              <span className="text-[15px] sm:text-[16px] font-bold text-ink truncate leading-tight">
+                {activeName}
+              </span>
+              <span className="text-[13px] sm:text-[13.5px] text-ink/65 font-medium truncate leading-normal">
+                Mulai dari <strong className="text-ink font-bold tabular-nums">Rp {activePrice.toLocaleString('id-ID')}</strong>
               </span>
             </div>
           </div>
 
           <button
             type="button"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand text-surface text-[12px] font-bold shadow-xs whitespace-nowrap"
+            className="flex items-center gap-2 h-11 sm:h-12 px-4 sm:px-5 rounded-full bg-brand hover:bg-brand-hover active:scale-95 text-surface text-[14px] sm:text-[15px] font-bold shadow-sm hover:shadow-md transition-all whitespace-nowrap flex-shrink-0"
           >
             <span>Lihat detail</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       </footer>
