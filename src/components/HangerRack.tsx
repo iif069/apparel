@@ -40,6 +40,7 @@ export function HangerRack({
   const rackListRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
   const dragStartXRef = useRef(0);
+  const dragStartYRef = useRef(0);
   const dragScrollLeftRef = useRef(0);
   const hasDraggedRef = useRef(false);
 
@@ -49,8 +50,6 @@ export function HangerRack({
   const dragVelocityRef = useRef(0);
   const lastScrollLeftRef = useRef(0);
   const scrollEndTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const lastTapTimeRef = useRef(0);
-  const lastTappedIndexRef = useRef<number | null>(null);
   const prevHoveredIndexRef = useRef<number>(activeIndex);
   const swayToggleRef = useRef(false);
 
@@ -96,20 +95,23 @@ export function HangerRack({
     };
   }, []);
 
-  // Auto scroll ke active slot saat index berubah di mobile
+  // Auto scroll ke active slot saat index dipilih di HP
   useEffect(() => {
     const el = rackListRef.current;
     if (!el) return;
     const slots = el.querySelectorAll<HTMLElement>('.hanger-slot');
     const target = slots[displayIndex];
     if (target && window.innerWidth <= 768) {
-      const containerW = el.clientWidth;
-      const targetLeft = target.offsetLeft;
-      const targetW = target.offsetWidth;
-      el.scrollTo({
-        left: targetLeft - containerW / 2 + targetW / 2,
-        behavior: 'smooth',
-      });
+      const timer = setTimeout(() => {
+        const containerW = el.clientWidth;
+        const targetLeft = target.offsetLeft;
+        const targetW = target.offsetWidth;
+        el.scrollTo({
+          left: targetLeft - containerW / 2 + targetW / 2,
+          behavior: 'smooth',
+        });
+      }, 50);
+      return () => clearTimeout(timer);
     }
   }, [displayIndex]);
 
@@ -119,22 +121,32 @@ export function HangerRack({
     isDraggingRef.current = true;
     hasDraggedRef.current = false;
     dragStartXRef.current = e.clientX;
+    dragStartYRef.current = e.clientY;
     lastPointerXRef.current = e.clientX;
     lastPointerTimeRef.current = performance.now();
     dragVelocityRef.current = 0;
     dragScrollLeftRef.current = rackListRef.current.scrollLeft;
-    setIsDragging(true);
+
+    if (e.pointerType === 'mouse') {
+      setIsDragging(true);
+    }
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDraggingRef.current || !rackListRef.current) return;
     const dx = e.clientX - dragStartXRef.current;
-    if (Math.abs(dx) > 6) {
+    const dy = e.clientY - dragStartYRef.current;
+    if (Math.hypot(dx, dy) > 10) {
       hasDraggedRef.current = true;
     }
-    rackListRef.current.scrollLeft = dragScrollLeftRef.current - dx;
 
-    // Hitung kecepatan geser untuk inersia kemiringan fisik gantungan
+    // Hanya ubah scrollLeft secara manual jika menggunakan mouse desktop
+    // Di perangkat layar sentuh (HP), biarkan browser menangani native scrolling secara mulus
+    if (e.pointerType === 'mouse') {
+      rackListRef.current.scrollLeft = dragScrollLeftRef.current - dx;
+    }
+
+    // Hitung kecepatan geser untuk kemiringan halus (subtle tilt)
     const now = performance.now();
     const dt = Math.max(now - lastPointerTimeRef.current, 10);
     const stepDx = e.clientX - lastPointerXRef.current;
@@ -144,8 +156,8 @@ export function HangerRack({
     lastPointerTimeRef.current = now;
     dragVelocityRef.current = dragVelocityRef.current * 0.6 + currentVelocity * 0.4;
 
-    // Baju digeser ke kiri -> pakaian tertinggal ke kanan (rotasi positif)
-    const calculatedTilt = Math.max(-7.5, Math.min(7.5, -dragVelocityRef.current * 5.2));
+    // Maksimal kemiringan diperhalus menjadi 2.8 derajat
+    const calculatedTilt = Math.max(-2.8, Math.min(2.8, -dragVelocityRef.current * 2.5));
     setDragTilt(calculatedTilt);
   };
 
@@ -154,52 +166,30 @@ export function HangerRack({
     isDraggingRef.current = false;
     setIsDragging(false);
 
-    const finalVelocity = dragVelocityRef.current;
     const wasDragged = hasDraggedRef.current;
     setDragTilt(0);
 
     if (wasDragged) {
       onPlaySound('slide');
-      // Ayunan inersia alami saat dilepas setelah digeser
-      const dir: 'left' | 'right' = finalVelocity < 0 ? 'right' : 'left';
-      triggerSway(displayIndex, dir, 'drag');
-
-      // Di HP, cari baju terdekat dengan tengah setelah drag selesai
-      if (window.innerWidth <= 768 && rackListRef.current) {
-        const el = rackListRef.current;
-        const containerCenter = el.scrollLeft + el.clientWidth / 2;
-        const slots = el.querySelectorAll<HTMLElement>('.hanger-slot');
-        let closestIdx = displayIndex;
-        let minDistance = Infinity;
-
-        slots.forEach((slot, i) => {
-          const slotCenter = slot.offsetLeft + slot.offsetWidth / 2;
-          const dist = Math.abs(containerCenter - slotCenter);
-          if (dist < minDistance) {
-            minDistance = dist;
-            closestIdx = i;
-          }
-        });
-
-        if (closestIdx !== displayIndex) {
-          onSelectIndex(closestIdx);
-          setHoveredIndex(closestIdx);
-        }
-      }
+      // Beri sedikit jeda agar event click sintesis yang menyusul pointerup tetap terdeteksi sebagai drag
+      setTimeout(() => {
+        hasDraggedRef.current = false;
+      }, 100);
     }
   };
 
   // Deteksi scroll sentuh alami (trackpad / swipe HP momentum)
   const handleScroll = () => {
     const el = rackListRef.current;
-    if (!el || isDraggingRef.current) return;
+    if (!el) return;
 
     const currentScrollLeft = el.scrollLeft;
     const delta = currentScrollLeft - lastScrollLeftRef.current;
     lastScrollLeftRef.current = currentScrollLeft;
 
     if (Math.abs(delta) > 1.2) {
-      const scrollTilt = Math.max(-6, Math.min(6, delta * 0.28));
+      // Kemiringan sangat halus selama scroll (maksimal 2.0 derajat)
+      const scrollTilt = Math.max(-2.0, Math.min(2.0, delta * 0.1));
       setDragTilt(scrollTilt);
 
       if (scrollEndTimeoutRef.current) {
@@ -208,31 +198,7 @@ export function HangerRack({
 
       scrollEndTimeoutRef.current = setTimeout(() => {
         setDragTilt(0);
-        const dir: 'left' | 'right' = delta >= 0 ? 'right' : 'left';
-        triggerSway(displayIndex, dir, 'drag');
-
-        // Auto snap baju terdekat di tengah layar saat momentum scroll berhenti di HP
-        if (window.innerWidth <= 768 && rackListRef.current) {
-          const containerCenter = el.scrollLeft + el.clientWidth / 2;
-          const slots = el.querySelectorAll<HTMLElement>('.hanger-slot');
-          let closestIdx = displayIndex;
-          let minDistance = Infinity;
-
-          slots.forEach((slot, i) => {
-            const slotCenter = slot.offsetLeft + slot.offsetWidth / 2;
-            const dist = Math.abs(containerCenter - slotCenter);
-            if (dist < minDistance) {
-              minDistance = dist;
-              closestIdx = i;
-            }
-          });
-
-          if (closestIdx !== displayIndex) {
-            onSelectIndex(closestIdx);
-            setHoveredIndex(closestIdx);
-          }
-        }
-      }, 110);
+      }, 100);
     }
   };
 
@@ -390,43 +356,21 @@ export function HangerRack({
                       }
                     }}
                     onClick={() => {
-                      // Hindari klik jika pengguna sedang drag / geser rel
+                      // Hindari klik jika pengguna baru saja menggeser/swipe rel
                       if (hasDraggedRef.current) return;
 
-                      const now = Date.now();
-                      const isTouchDevice =
-                        typeof window !== 'undefined' &&
-                        (window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 768);
-                      const isQuickDoubleTap =
-                        now - lastTapTimeRef.current < 650 && lastTappedIndexRef.current === idx;
-                      lastTapTimeRef.current = now;
-                      lastTappedIndexRef.current = idx;
-
                       if (displayIndex !== idx) {
-                        // 1. Ketuk baju lain yang sedang menyamping (misal di HP):
-                        // Putar menghadap ke depan & berikan ayunan alami
+                        // 1. Ketuk baju yang masih menyamping (misal di HP):
+                        // Putar menghadap ke depan & bunyikan efek ayunan lembut
                         onPlaySound('sway');
                         triggerSway(idx, 'right', 'click');
                         onSelectIndex(idx);
                         setHoveredIndex(idx);
                       } else {
-                        // 2. Ketuk baju yang SUDAH menghadap depan:
-                        if (isTouchDevice) {
-                          // Di layar HP: ketukan membuat baju bergoyang alami!
-                          // Jika diketuk dua kali cepat (double-tap): buka panggung detail.
-                          // Pengguna HP juga selalu memiliki tombol pill "Lihat detail →" di bawah.
-                          onPlaySound('sway');
-                          triggerSway(idx, 'right', 'click');
-
-                          if (isQuickDoubleTap) {
-                            onPlaySound('open');
-                            onOpenDetail(idx);
-                          }
-                        } else {
-                          // Di Desktop: klik baju depan membuka detail
-                          onPlaySound('open');
-                          onOpenDetail(idx);
-                        }
+                        // 2. Ketuk baju yang SUDAH tampak depan (baik di HP maupun Desktop):
+                        // Klik sekali lagi LANGSUNG masuk ke panggung detail!
+                        onPlaySound('open');
+                        onOpenDetail(idx);
                       }
                     }}
                     className={`hanger-slot flex flex-col items-center cursor-pointer transition-[width] duration-300 ease-out [perspective:1000px] ${
