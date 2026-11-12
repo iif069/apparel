@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { ArrowLeft, Trash2, ShoppingBag, Plus, Minus, Store, Truck, Clock } from 'lucide-react';
+import React from 'react';
+import { ArrowLeft, Trash2, ShoppingBag, Clock } from 'lucide-react';
 import { CartItem } from '@/types';
 
 interface CartDrawerProps {
@@ -11,6 +11,7 @@ interface CartDrawerProps {
   onRemoveItem: (cartId: string) => void;
   onUpdateQty?: (cartId: string, delta: number) => void;
   onClearCart: () => void;
+  onOpenItemDetail?: (itemId: string) => void;
 }
 
 export function CartDrawer({
@@ -18,13 +19,9 @@ export function CartDrawer({
   onClose,
   cart,
   onRemoveItem,
-  onUpdateQty,
   onClearCart,
+  onOpenItemDetail,
 }: CartDrawerProps) {
-  const [fulfillment, setFulfillment] = useState<'Ambil di toko' | 'Kirim via ekspedisi'>('Ambil di toko');
-  const [customerName, setCustomerName] = useState('');
-  const [customerNote, setCustomerNote] = useState('');
-
   if (!isOpen) return null;
 
   const totalAmount = cart.reduce((acc, item) => acc + item.totalPrice, 0);
@@ -41,13 +38,8 @@ export function CartDrawer({
     if (cart.length === 0) return;
 
     let text = `Halo MIG Digital Printing, saya mau pesan apparel dari katalog:\n\n`;
-    if (customerName.trim()) {
-      text += `*Nama Pemesan:* ${customerName.trim()}\n\n`;
-    }
-
-    text += `*DAFTAR PESANAN:*\n`;
     cart.forEach((item, idx) => {
-      text += `${idx + 1}. *${item.name}* (${item.colorName})\n`;
+      text += `*${idx + 1}. ${item.name}* (${item.colorName})\n`;
       const sizeBreakdown = Object.entries(item.sizes)
         .map(([sz, qty]) => `${sz}: ${qty} pcs`)
         .join(', ');
@@ -57,315 +49,211 @@ export function CartDrawer({
       text += `   - Subtotal: Rp ${item.totalPrice.toLocaleString('id-ID')}\n\n`;
     });
 
-    text += `*Total Keseluruhan:* Rp ${totalAmount.toLocaleString('id-ID')} (${totalItems} pcs)\n`;
-    text += `*Metode Pengambilan:* ${fulfillment}\n`;
-    if (customerNote.trim()) {
-      text += `*Catatan Tambahan:* ${customerNote.trim()}\n`;
-    }
-    text += `\nMohon informasi ketersediaan bahan dan instruksi pembayaran/pengambilan ya. Terima kasih!`;
+    text += `*Total Pembayaran:* Rp ${totalAmount.toLocaleString('id-ID')} (${totalItems} pcs)\n\n`;
+    text += `Catatan: Desain dan logo akan saya kirimkan lewat WhatsApp ini setelah pesanan dibuat.\n`;
+    text += `Mohon konfirmasi pesanan dan nomor rekening ya. Terima kasih!`;
 
     const encoded = encodeURIComponent(text);
     window.open(`https://wa.me/6281222400922?text=${encoded}`, '_blank');
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-slate-900/60 backdrop-blur-xs flex justify-center">
-      {/* Bingkai ala Aplikasi HP (Max-width 520px di desktop, 100% di HP) */}
-      <div className="w-full max-w-[520px] h-full bg-[#faf9f6] flex flex-col shadow-2xl relative overflow-hidden">
+    <div className="fixed inset-0 z-50 overflow-hidden bg-[#f8f7fb] flex justify-center">
+      {/* Bingkai Shell Aplikasi Mobile-First (Persis sesuai referensi web pembeli MIG) */}
+      <div className="w-full max-w-[480px] h-full bg-[#f8f7fb] flex flex-col relative overflow-hidden">
         
-        {/* 1. HEADER HALAMAN KERANJANG (Sesuai Standar Web Pembeli MIG) */}
-        <header className="sticky top-0 z-40 bg-white border-b border-line px-4 py-3 flex items-center justify-between flex-shrink-0 shadow-xs">
+        {/* 1. HEADER KERANJANG (Tombol Back Panah Kiri + Judul "Keranjang") */}
+        <header className="sticky top-0 z-40 bg-[#f8f7fb]/95 backdrop-blur-md px-4 py-3.5 flex items-center gap-3 flex-shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="flex items-center gap-2.5 text-ink hover:text-brand transition-colors group press-active py-1"
+            className="w-10 h-10 -ml-1 rounded-full flex items-center justify-center hover:bg-slate-200/60 text-slate-900 transition-colors press-active"
             aria-label="Kembali ke katalog"
           >
-            <div className="w-9 h-9 rounded-full bg-[#f1efe9] group-hover:bg-brand-soft border border-line flex items-center justify-center transition-colors">
-              <ArrowLeft className="w-5 h-5 text-ink group-hover:text-brand" />
-            </div>
-            <div className="flex flex-col text-left">
-              <span className="text-[16px] md:text-[17px] font-bold text-ink leading-tight">Keranjang Saya</span>
-              <span className="text-[11px] text-ink/60">MIG Digital Printing</span>
-            </div>
+            <ArrowLeft className="w-6 h-6 stroke-[2.2]" />
           </button>
-
-          {/* Ikon Keranjang + Badge Mini di Kanan */}
-          <div className="w-9 h-9 rounded-full bg-[#f1efe9] border border-line flex items-center justify-center relative">
-            <ShoppingBag className="w-4 h-4 text-ink" />
-            {totalItems > 0 && (
-              <span className="absolute -top-1 -right-1 bg-brand text-surface text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center shadow-xs">
-                {totalItems}
-              </span>
-            )}
-          </div>
+          <h1 className="text-[21px] font-bold text-slate-900 tracking-tight">Keranjang</h1>
         </header>
 
-        {/* 2. SUBHEADER & TOMBOL KOSONGKAN */}
-        <div className="px-4 py-2.5 bg-[#f3f1ec] border-b border-line/80 flex items-center justify-between flex-shrink-0">
-          <p className="text-[13px] text-ink/75 font-semibold">
-            {cart.length > 0 ? `${totalItems} item terpilih siap diproses` : 'Belum ada barang dipilih.'}
-          </p>
-
-          {cart.length > 0 && (
+        {/* 2. SUBHEADER (Tombol Hapus Semua Merah di Kanan Atas) */}
+        {cart.length > 0 && (
+          <div className="flex justify-end px-5 pt-1 pb-2 flex-shrink-0">
             <button
               type="button"
               onClick={() => {
-                if (window.confirm('Kosongkan semua barang dari keranjang?')) {
+                if (window.confirm('Hapus semua barang dari keranjang?')) {
                   onClearCart();
                 }
               }}
-              className="flex items-center gap-1.5 text-[12px] font-bold text-ink/65 hover:text-red-600 bg-white border border-line/80 hover:border-red-300 px-3 py-1 rounded-full transition-all press-active shadow-2xs"
+              className="flex items-center gap-1.5 text-red-600 hover:text-red-700 text-[14px] font-semibold transition-colors press-active"
             >
-              <Trash2 className="w-3.5 h-3.5" />
-              <span>Kosongkan</span>
+              <Trash2 className="w-4 h-4" />
+              <span>Hapus semua</span>
             </button>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* 3. AREA DAFTAR ITEM KERANJANG (Scrollable Area) */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3.5 no-scrollbar">
+        {/* 3. AREA KARTU PRODUK (Scrollable Area) */}
+        <div className="flex-1 overflow-y-auto px-4 pb-28 space-y-4 no-scrollbar">
           {cart.length === 0 ? (
             /* Tampilan Keranjang Kosong */
-            <div className="h-full flex flex-col items-center justify-center text-center py-16 px-4">
-              <div className="w-20 h-20 rounded-full bg-[#f1efe9] border border-line flex items-center justify-center text-ink/40 mb-4 shadow-inner">
+            <div className="h-full flex flex-col items-center justify-center text-center py-20 px-6">
+              <div className="w-20 h-20 rounded-full bg-white border border-slate-200/80 flex items-center justify-center text-slate-400 mb-4 shadow-xs">
                 <ShoppingBag className="w-9 h-9 stroke-[1.5]" />
               </div>
-              <h3 className="text-[17px] font-bold text-ink">Keranjang Anda Kosong</h3>
-              <p className="text-[13px] text-ink/60 mt-1 max-w-[260px] leading-relaxed">
-                Pilih pakaian dari rak katalog dan tambahkan ukuran yang Anda inginkan.
+              <h3 className="text-[18px] font-bold text-slate-900">Keranjang masih kosong</h3>
+              <p className="text-[13.5px] text-slate-500 mt-1 max-w-[260px] leading-relaxed">
+                Pilih pakaian dari rak katalog dan tentukan ukuran yang ingin dipesan.
               </p>
               <button
                 type="button"
                 onClick={onClose}
-                className="mt-6 px-6 py-2.5 rounded-full bg-brand hover:bg-brand-hover text-surface text-[14px] font-bold shadow-md press-active"
+                className="mt-6 px-7 py-3 rounded-full bg-[#7B29BA] hover:bg-[#6A21A3] text-white text-[14.5px] font-bold shadow-md press-active"
               >
                 Mulai Belanja
               </button>
             </div>
           ) : (
             <>
-              {/* Kartu per Item Keranjang */}
-              {cart.map((item) => (
-                <div
-                  key={item.cartId}
-                  className="bg-white rounded-2xl border border-line p-3.5 sm:p-4 shadow-xs flex flex-col gap-2.5 transition-all"
-                >
-                  {/* Baris 1: Foto/Swatch + Nama + Tombol Hapus */}
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3 min-w-0">
-                      {/* Swatch Warna / Thumbnail */}
-                      <div className="w-11 h-11 rounded-xl bg-page border border-line flex items-center justify-center flex-shrink-0 relative overflow-hidden shadow-2xs">
-                        {item.frontPhoto ? (
-                          <img
-                            src={item.frontPhoto}
-                            alt={item.name}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <span
-                            className="w-5 h-5 rounded-full border-2 border-white shadow-xs"
-                            style={{ backgroundColor: item.hex }}
-                          />
-                        )}
+              {/* Kartu per Item Keranjang (Rounded 28px Putih Bersih) */}
+              {cart.map((item) => {
+                const sizeSummary = Object.entries(item.sizes)
+                  .map(([sz, qty]) => `${sz}: ${qty} pcs`)
+                  .join(', ');
+                const addonsList: string[] = [];
+                if (item.addons.sablon) addonsList.push('Sablon Logo/Nama');
+                if (item.addons.giftbox) addonsList.push('Kemasan Kado');
+                const specText = addonsList.length > 0 
+                  ? `${sizeSummary} · ${addonsList.join(' · ')}` 
+                  : `${sizeSummary} · 100% Cotton Distro`;
+
+                return (
+                  <div
+                    key={item.cartId}
+                    className="bg-white rounded-[28px] border border-slate-100 shadow-sm p-5 flex flex-col gap-3.5 transition-all"
+                  >
+                    {/* Header Item: Foto Thumbnail + Nama + Badge + Tombol Trash */}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-3.5 min-w-0">
+                        {/* Thumbnail Squircle */}
+                        <div className="w-14 h-14 rounded-2xl bg-[#f5f4f8] border border-slate-200/70 flex items-center justify-center flex-shrink-0 relative overflow-hidden">
+                          {item.frontPhoto ? (
+                            <img
+                              src={item.frontPhoto}
+                              alt={item.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <span
+                              className="w-7 h-7 rounded-xl border-2 border-white shadow-xs"
+                              style={{ backgroundColor: item.hex }}
+                            />
+                          )}
+                        </div>
+
+                        {/* Nama Produk & Badge */}
+                        <div className="flex flex-col min-w-0">
+                          <h4 className="text-[17px] font-bold text-slate-900 leading-snug truncate">
+                            {item.name}
+                          </h4>
+                          <span className="text-[13.5px] text-slate-500 font-normal">
+                            {item.totalQty} pcs ({item.colorName})
+                          </span>
+
+                          {/* Pill Badge Ungu */}
+                          <div className="mt-1.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 text-[#7B29BA] text-[11.5px] font-semibold w-fit">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#7B29BA]" />
+                            <span>Kualitas Sablon Distro & Jahitan Rapi</span>
+                          </div>
+                        </div>
                       </div>
 
-                      <div className="flex flex-col min-w-0">
-                        <h4 className="text-[15px] font-bold text-ink truncate leading-tight">
-                          {item.name}
-                        </h4>
-                        <span className="text-[12px] text-ink/65 font-medium mt-0.5">
-                          Warna: {item.colorName}
-                        </span>
+                      {/* Tombol Hapus (Trash Icon Outline di Kanan Atas) */}
+                      <button
+                        type="button"
+                        onClick={() => onRemoveItem(item.cartId)}
+                        className="text-slate-400 hover:text-red-600 transition-colors p-1 -mr-1"
+                        aria-label="Hapus produk ini"
+                        title="Hapus produk ini"
+                      >
+                        <Trash2 className="w-5 h-5 stroke-[1.8]" />
+                      </button>
+                    </div>
+
+                    {/* Kotak Varian & Rincian Ukuran (Latar Abu-abu Keunguan Halus #f5f4f8) */}
+                    <div className="bg-[#f5f4f8] rounded-2xl p-4 flex flex-col gap-2">
+                      <p className="text-[14px] font-bold text-slate-900 leading-snug">
+                        {specText}
+                      </p>
+                      <div className="flex items-center justify-between text-[13.5px] pt-1">
+                        <span className="text-slate-500">{item.totalQty} pcs</span>
+                        <strong className="text-[15px] font-bold text-slate-900 tabular-nums">
+                          Rp {item.totalPrice.toLocaleString('id-ID')}
+                        </strong>
                       </div>
                     </div>
 
-                    {/* Tombol Hapus Item */}
+                    {/* Link + Tambah Ukuran Lain */}
                     <button
                       type="button"
-                      onClick={() => onRemoveItem(item.cartId)}
-                      className="w-8 h-8 rounded-full border border-transparent hover:border-red-200 text-ink/40 hover:text-red-600 hover:bg-red-50 flex items-center justify-center transition-all press-active flex-shrink-0"
-                      aria-label="Hapus item"
-                      title="Hapus barang ini"
+                      onClick={() => {
+                        if (onOpenItemDetail) {
+                          onOpenItemDetail(item.itemId);
+                        } else {
+                          onClose();
+                        }
+                      }}
+                      className="text-[#7B29BA] hover:text-[#6A21A3] font-bold text-[14px] flex items-center gap-1.5 w-fit active:scale-95 transition-all pt-0.5"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <span className="text-base leading-none">+</span>
+                      <span>Tambah ukuran lain</span>
                     </button>
-                  </div>
 
-                  {/* Baris Varian & Rincian Ukuran */}
-                  <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-line/60">
-                    <span className="text-[11.5px] font-semibold text-ink/60">Ukuran:</span>
-                    {Object.entries(item.sizes).map(([sz, qty]) => (
-                      <span
-                        key={sz}
-                        className="px-2 py-0.5 rounded-md bg-[#f1efe9] text-ink text-[11px] font-bold border border-line"
-                      >
-                        {sz} ({qty} pcs)
-                      </span>
-                    ))}
-
-                    {/* Badge Addons Tambahan */}
-                    {item.addons.sablon && (
-                      <span className="px-2 py-0.5 rounded-md bg-purple-50 text-brand text-[11px] font-semibold border border-purple-200">
-                        + Sablon Dada
-                      </span>
-                    )}
-                    {item.addons.giftbox && (
-                      <span className="px-2 py-0.5 rounded-md bg-purple-50 text-brand text-[11px] font-semibold border border-purple-200">
-                        + Kotak Kado
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Baris Harga & Pengatur Kuantitas */}
-                  <div className="flex items-center justify-between pt-2 border-t border-line/60">
-                    <div className="flex flex-col">
-                      <span className="text-[11px] text-ink/60 font-medium">
-                        Harga: Rp {Math.round(item.totalPrice / Math.max(1, item.totalQty)).toLocaleString('id-ID')} /pcs
-                      </span>
-                      <strong className="text-[15px] font-extrabold text-ink tabular-nums">
-                        Rp {item.totalPrice.toLocaleString('id-ID')}
-                      </strong>
-                    </div>
-
-                    {/* Kontrol Kuantitas (+ / -) */}
-                    <div className="flex items-center gap-1.5 bg-[#f6f5f1] border border-line rounded-lg p-1">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (onUpdateQty) {
-                            onUpdateQty(item.cartId, -1);
-                          } else if (item.totalQty <= 1) {
-                            onRemoveItem(item.cartId);
-                          }
-                        }}
-                        className="w-7 h-7 rounded-md bg-white border border-line/80 flex items-center justify-center text-ink text-sm font-bold hover:bg-page press-active"
-                        aria-label="Kurangi kuantitas"
-                      >
-                        <Minus className="w-3.5 h-3.5" />
-                      </button>
-                      <span className="min-w-[28px] text-center font-bold text-[13.5px] text-ink tabular-nums">
-                        {item.totalQty}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (onUpdateQty) {
-                            onUpdateQty(item.cartId, 1);
-                          }
-                        }}
-                        className="w-7 h-7 rounded-md bg-white border border-line/80 flex items-center justify-center text-ink text-sm font-bold hover:bg-page press-active"
-                        aria-label="Tambah kuantitas"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                      </button>
+                    {/* Card Pemberitahuan Desain WhatsApp */}
+                    <div className="bg-[#f5f4f8] rounded-2xl p-3.5 flex items-center gap-3 mt-1">
+                      <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#25D366] shadow-xs flex-shrink-0">
+                        {WhatsAppIcon}
+                      </div>
+                      <p className="text-[13px] text-slate-700 font-medium leading-snug">
+                        Desain dikirim lewat WhatsApp setelah pesanan dibuat.
+                      </p>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
 
-              {/* 4. INFORMASI PENGAMBILAN & FORM PEMESAN (Ala Web Pembeli MIG) */}
-              <div className="mt-4 bg-white rounded-2xl border border-line p-4 space-y-3.5 shadow-xs">
-                {/* Info Jadwal Pengambilan */}
-                <div className="flex items-start gap-3 bg-purple-50/70 border border-purple-200/80 p-3 rounded-xl">
-                  <div className="w-7 h-7 rounded-full bg-brand/10 text-brand flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Clock className="w-4 h-4" />
-                  </div>
-                  <div className="text-[12.5px] text-ink leading-relaxed">
-                    <span className="font-bold text-brand block mb-0.5">Estimasi Pengambilan: Jam 15.00</span>
-                    Pesanan dapat diambil di toko <b>MIG Digital Printing</b> atau dikirim via kurir ekspedisi.
-                  </div>
-                </div>
-
-                {/* Pilihan Metode Pengambilan */}
-                <div className="space-y-1.5">
-                  <label className="text-[12px] font-bold text-ink block">Metode Pengambilan:</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setFulfillment('Ambil di toko')}
-                      className={`h-10 px-3 rounded-xl text-[12.5px] font-bold border flex items-center justify-center gap-1.5 transition-all press-active ${
-                        fulfillment === 'Ambil di toko'
-                          ? 'bg-brand text-white border-brand shadow-xs'
-                          : 'bg-page text-ink border-line hover:border-ink/40'
-                      }`}
-                    >
-                      <Store className="w-4 h-4" />
-                      <span>Ambil di Toko</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setFulfillment('Kirim via ekspedisi')}
-                      className={`h-10 px-3 rounded-xl text-[12.5px] font-bold border flex items-center justify-center gap-1.5 transition-all press-active ${
-                        fulfillment === 'Kirim via ekspedisi'
-                          ? 'bg-brand text-white border-brand shadow-xs'
-                          : 'bg-page text-ink border-line hover:border-ink/40'
-                      }`}
-                    >
-                      <Truck className="w-4 h-4" />
-                      <span>Kirim Ekspedisi</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Form Nama Pemesan */}
-                <div className="space-y-1">
-                  <label htmlFor="customerName" className="text-[12px] font-bold text-ink block">
-                    Nama Pemesan (opsional)
-                  </label>
-                  <input
-                    id="customerName"
-                    type="text"
-                    placeholder="mis. Budi Santoso"
-                    value={customerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
-                    className="w-full h-11 px-3.5 bg-page border border-line rounded-xl text-[13px] text-ink focus:outline-none focus:border-brand transition-colors"
-                  />
-                </div>
-
-                {/* Catatan Tambahan */}
-                <div className="space-y-1">
-                  <label htmlFor="customerNote" className="text-[12px] font-bold text-ink block">
-                    Catatan Pesanan (opsional)
-                  </label>
-                  <input
-                    id="customerNote"
-                    type="text"
-                    placeholder="mis. Tambah tulisan di dada kiri..."
-                    value={customerNote}
-                    onChange={(e) => setCustomerNote(e.target.value)}
-                    className="w-full h-11 px-3.5 bg-page border border-line rounded-xl text-[13px] text-ink focus:outline-none focus:border-brand transition-colors"
-                  />
-                </div>
+              {/* Perkiraan Waktu Pengerjaan */}
+              <div className="flex items-center gap-2 text-[13px] text-slate-500 font-normal px-2 pt-1 pb-4">
+                <Clock className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                <span>Perkiraan jadi 1-2 hari setelah desain disetujui</span>
               </div>
             </>
           )}
         </div>
 
-        {/* 5. FOOTER CHECKOUT (Sticky Bottom Bar Sesuai Web Pembeli) */}
+        {/* 4. FLOATING CHECKOUT BAR (Pill Melayang Putih Sesuai Referensi Gambar) */}
         {cart.length > 0 && (
-          <footer className="sticky bottom-0 z-30 bg-white border-t border-line px-4 pt-3 pb-[max(18px,calc(14px+env(safe-area-inset-bottom)))] shadow-[0_-6px_24px_rgba(0,0,0,0.06)] flex-shrink-0">
-            <div className="flex items-center justify-between gap-3">
+          <div className="fixed bottom-0 left-0 right-0 z-50 p-4 pb-[max(18px,calc(14px+env(safe-area-inset-bottom)))] pointer-events-none flex justify-center">
+            <div className="w-full max-w-[480px] bg-white rounded-full p-2.5 pl-6 pr-2.5 shadow-[0_10px_35px_rgba(0,0,0,0.14)] border border-slate-100 flex items-center justify-between pointer-events-auto">
               <div className="flex flex-col min-w-0">
-                <span className="text-[11px] text-ink/60 uppercase font-bold tracking-wider">Total Pembayaran</span>
-                <strong className="text-[18px] sm:text-[20px] font-black text-ink tabular-nums leading-tight">
+                <span className="text-[12px] text-slate-500 font-medium">
+                  Total · {totalItems} pcs
+                </span>
+                <strong className="text-[20px] font-black text-slate-900 tracking-tight leading-none mt-0.5 tabular-nums">
                   Rp {totalAmount.toLocaleString('id-ID')}
                 </strong>
-                <span className="text-[11px] text-ink/60">{totalItems} pcs barang</span>
               </div>
 
-              {/* Tombol Hijau WhatsApp ala Web Pembeli MIG */}
+              {/* Tombol Ungu Solid "Checkout" Sesuai Referensi */}
               <button
                 type="button"
                 onClick={handleCheckoutWA}
-                className="h-12 px-5 rounded-full bg-[#25D366] hover:bg-[#20ba59] active:scale-95 text-white font-bold text-[14px] flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all whitespace-nowrap flex-shrink-0"
+                className="bg-[#7B29BA] hover:bg-[#6A21A3] active:scale-95 text-white font-bold text-[15px] px-8 py-3.5 rounded-full shadow-sm hover:shadow-md transition-all whitespace-nowrap"
               >
-                <span>{WhatsAppIcon}</span>
-                <span>Checkout via WhatsApp</span>
+                Checkout
               </button>
             </div>
-          </footer>
+          </div>
         )}
 
       </div>

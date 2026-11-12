@@ -282,6 +282,14 @@ export default function HomePage() {
         onRemoveItem={(id) => setCart((prev) => prev.filter((it) => it.cartId !== id))}
         onUpdateQty={handleUpdateCartQty}
         onClearCart={() => setCart([])}
+        onOpenItemDetail={(itemId) => {
+          setIsCartOpen(false);
+          const idx = activeCategoryData.rack.findIndex((it) => it.id === itemId);
+          if (idx !== -1) {
+            setActiveSlotIndex(idx);
+            setIsDetailOpen(true);
+          }
+        }}
       />
 
       {/* 5. Modal Atur Katalog */}
