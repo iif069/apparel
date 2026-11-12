@@ -58,9 +58,14 @@ export function CartDrawer({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-[#f8f7fb] flex justify-center">
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      className="fixed inset-0 z-50 overflow-hidden bg-slate-900/40 backdrop-blur-xs flex justify-center"
+    >
       {/* Bingkai Shell Aplikasi Mobile-First (Persis sesuai referensi web pembeli MIG) */}
-      <div className="w-full max-w-[480px] h-full bg-[#f8f7fb] flex flex-col relative overflow-hidden">
+      <div className="w-full max-w-[480px] h-full bg-[#f8f7fb] flex flex-col relative overflow-hidden sm:shadow-2xl sm:border-x sm:border-slate-200/80">
         
         {/* 1. HEADER KERANJANG (Tombol Back Panah Kiri + Judul "Keranjang") */}
         <header className="sticky top-0 z-40 bg-[#f8f7fb]/95 backdrop-blur-md px-4 py-3.5 flex items-center gap-3 flex-shrink-0">
