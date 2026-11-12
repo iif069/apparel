@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { GarmentItem, CategoryData, CustomPhotoData, CategoryId } from '@/types';
 import { HangerHookSVG } from './HangerHookSVG';
 import { GarmentSVG } from './GarmentSVG';
@@ -34,15 +34,30 @@ export function HangerRack({
   const dragStartXRef = useRef(0);
   const dragScrollLeftRef = useRef(0);
   const hasDraggedRef = useRef(false);
+  const desktopDragStartXRef = useRef(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const items = categoryData.rack;
+  const n = items.length;
   const displayIndex = hoveredIndex !== null ? hoveredIndex : activeIndex;
   const activeItem = items[displayIndex] || items[0];
   const activeCustom = customPhotos[activeItem?.id];
   const activePrice = activeCustom?.price || activeItem?.price || 60000;
   const activeName = activeCustom?.name || activeItem?.name;
   const activeColor = activeCustom?.colorName || activeItem?.colorName;
+
+  // Indeks untuk produk kiri dan kanan pada tampilan desktop
+  const hasMultiple = n > 1;
+  const leftIndex = (displayIndex - 1 + n) % n;
+  const rightIndex = (displayIndex + 1) % n;
+  const leftItem = items[leftIndex];
+  const rightItem = items[rightIndex];
+  const leftCustom = leftItem ? customPhotos[leftItem.id] : undefined;
+  const rightCustom = rightItem ? customPhotos[rightItem.id] : undefined;
+
+  const hasPhotoHangerCenter = !!((activeCustom && (activeCustom.frontDataUrl || activeCustom.sideDataUrl)) || activeItem?.front || activeItem?.side);
+  const hasPhotoHangerLeft = !!((leftCustom && (leftCustom.frontDataUrl || leftCustom.sideDataUrl)) || leftItem?.front || leftItem?.side);
+  const hasPhotoHangerRight = !!((rightCustom && (rightCustom.frontDataUrl || rightCustom.sideDataUrl)) || rightItem?.front || rightItem?.side);
 
   // Auto scroll ke active slot saat index berubah di mobile
   useEffect(() => {
@@ -61,7 +76,25 @@ export function HangerRack({
     }
   }, [displayIndex]);
 
-  // Pointer drag gestures untuk touch / swipe
+  // Keyboard navigation untuk desktop (Panah Kiri & Kanan)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) return;
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        onPlaySound('slide');
+        onSelectIndex((displayIndex - 1 + n) % n);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        onPlaySound('slide');
+        onSelectIndex((displayIndex + 1) % n);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [displayIndex, n, onSelectIndex, onPlaySound]);
+
+  // Pointer drag gestures untuk touch / swipe di HP
   const handlePointerDown = (e: React.PointerEvent) => {
     if (!rackListRef.current) return;
     isDraggingRef.current = true;
@@ -159,40 +192,30 @@ export function HangerRack({
             <div className="w-full h-[2px] bg-white/85" />
           </div>
 
-          {/* Deretan Baju Gantungan yang Bisa Digeser & Di-hover di Desktop */}
+          {/* ============================================================== */}
+          {/* A. TAMPILAN KHUSUS MOBILE (TETAP SAMA SEPERTI SEBELUMNYA)       */}
+          {/* ============================================================== */}
           <div
             ref={rackListRef}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
-            className="w-full flex items-start justify-start md:justify-center overflow-x-auto no-scrollbar px-6 md:px-12 pt-0 pb-6 cursor-grab active:cursor-grabbing z-10"
+            className="md:hidden w-full flex items-start justify-start overflow-x-auto no-scrollbar px-6 pt-0 pb-6 cursor-grab active:cursor-grabbing z-10"
           >
-            <div className="flex items-start gap-1 md:gap-2.5 mx-auto">
+            <div className="flex items-start gap-1 mx-auto">
               {items.map((item, idx) => {
                 const isDisplayFront = idx === displayIndex;
                 const custom = customPhotos[item.id];
                 const price = custom?.price || item.price;
                 const priceText = `Rp ${Math.round(price / 1000)}rb`;
-                // Deteksi apakah produk menggunakan foto asli (sudah memiliki gantungan baju sendiri pada foto)
                 const hasPhotoHanger = !!((custom && (custom.frontDataUrl || custom.sideDataUrl)) || item.front || item.side);
 
                 return (
                   <div
                     key={item.id}
-                    onPointerEnter={(e) => {
-                      if (e.pointerType === 'mouse' && displayIndex !== idx) {
-                        setHoveredIndex(idx);
-                        onSelectIndex(idx);
-                        onPlaySound('slide');
-                      }
-                    }}
                     onClick={() => {
-                      // Hindari klik jika pengguna sedang drag/geser rel
                       if (hasDraggedRef.current) return;
-
-                      // Jika baju sudah menghadap depan (tampak depan) → klik masuk ke detail
-                      // Jika masih menyamping (misal di HP) → klik sekali memutar ke depan
                       if (displayIndex === idx) {
                         onPlaySound('open');
                         onOpenDetail(idx);
@@ -203,13 +226,11 @@ export function HangerRack({
                       }
                     }}
                     className={`hanger-slot flex flex-col items-center cursor-pointer transition-[width] duration-300 ease-out [perspective:1000px] ${
-                      isDisplayFront
-                        ? 'w-[210px] md:w-[240px] z-30'
-                        : 'w-[58px] md:w-[68px] z-10'
+                      isDisplayFront ? 'w-[210px] z-30' : 'w-[58px] z-10'
                     }`}
                   >
-                    {/* Gantungan Hook SVG + label harga (menyesuaikan sudut pandang samping vs depan) */}
-                    <div className="w-[100px] md:w-[110px] h-[52px] md:h-[58px] flex-shrink-0">
+                    {/* Hook */}
+                    <div className="w-[100px] h-[52px] flex-shrink-0">
                       <HangerHookSVG
                         priceTagText={priceText}
                         showPriceTag={isDisplayFront}
@@ -218,13 +239,13 @@ export function HangerRack({
                       />
                     </div>
 
-                    {/* Panggung Baju 3D (Dua Sisi: Samping & Depan berputar mulus tanpa lonjakan ukuran / pop-up) */}
+                    {/* Panggung Baju 3D Mobile */}
                     <div
-                      className={`relative w-full h-[230px] md:h-[260px] flex items-start justify-center [perspective:1000px] ${
-                        hasPhotoHanger ? '-mt-[26px] md:-mt-[30px]' : '-mt-1.5'
+                      className={`relative w-full h-[230px] flex items-start justify-center [perspective:1000px] ${
+                        hasPhotoHanger ? '-mt-[26px]' : '-mt-1.5'
                       }`}
                     >
-                      {/* SISI SAMPING (Tampil saat menyamping di rak) */}
+                      {/* Sisi Samping */}
                       <div
                         className={`absolute inset-0 flex items-start justify-center transition-all duration-250 ease-out origin-center ${
                           isDisplayFront
@@ -246,7 +267,7 @@ export function HangerRack({
                         </div>
                       </div>
 
-                      {/* SISI DEPAN (Berputar masuk saat aktif/di-hover, ukuran stabil tanpa melompat) */}
+                      {/* Sisi Depan */}
                       <div
                         className={`absolute inset-0 flex items-start justify-center transition-all duration-300 ease-out origin-center ${
                           isDisplayFront
@@ -273,6 +294,196 @@ export function HangerRack({
               })}
             </div>
           </div>
+
+          {/* ============================================================== */}
+          {/* B. TAMPILAN KHUSUS DESKTOP (KIRI KANAN AJA, PRODUK DITENGAH)     */}
+          {/* ============================================================== */}
+          <div
+            onPointerDown={(e) => {
+              desktopDragStartXRef.current = e.clientX;
+            }}
+            onPointerUp={(e) => {
+              const dx = e.clientX - desktopDragStartXRef.current;
+              if (dx > 45 && hasMultiple) {
+                onPlaySound('slide');
+                onSelectIndex(leftIndex);
+              } else if (dx < -45 && hasMultiple) {
+                onPlaySound('slide');
+                onSelectIndex(rightIndex);
+              }
+            }}
+            className="hidden md:flex items-start justify-center w-full z-10 px-8 py-0 select-none"
+          >
+            <div className="relative flex items-start justify-center gap-4 lg:gap-7 xl:gap-9 mx-auto">
+              {/* 1. Baju Gantungan Samping Kiri (Previous Item) */}
+              {hasMultiple && leftItem && (
+                <div
+                  onClick={() => {
+                    onPlaySound('slide');
+                    onSelectIndex(leftIndex);
+                  }}
+                  title={`Pilih ${leftCustom?.name || leftItem.name}`}
+                  className="flex flex-col items-center cursor-pointer group transition-all duration-300 hover:scale-105 active:scale-95 w-[75px] lg:w-[85px] z-10"
+                >
+                  {/* Hook Menempel Pas ke Kawat Chrome */}
+                  <div className="w-[105px] h-[58px] -mt-[3.5px] flex-shrink-0">
+                    <HangerHookSVG
+                      isSideView={true}
+                      showPriceTag={false}
+                      hideHangerBody={hasPhotoHangerLeft}
+                    />
+                  </div>
+
+                  {/* Baju Menyamping */}
+                  <div
+                    className={`relative w-full h-[280px] lg:h-[310px] flex items-start justify-center opacity-75 group-hover:opacity-100 transition-opacity ${
+                      hasPhotoHangerLeft ? '-mt-[30px]' : '-mt-1.5'
+                    }`}
+                  >
+                    <div className="h-full w-auto flex items-start justify-center">
+                      <GarmentSVG
+                        item={leftItem}
+                        categoryId={categoryData.id}
+                        viewAngle="side-left"
+                        custom={leftCustom}
+                        className="max-h-full drop-shadow-md"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Tooltip Nama Produk Kiri saat Hover */}
+                  <span className="mt-2 text-[11px] font-semibold text-ink/75 bg-surface border border-line px-2.5 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xs pointer-events-none">
+                    {leftCustom?.name || leftItem.name}
+                  </span>
+                </div>
+              )}
+
+              {/* 2. Tombol Navigasi Kiri (Previous) - Tepat di samping baju utama */}
+              {hasMultiple && (
+                <div className="self-center mt-[120px] lg:mt-[140px] z-30">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onPlaySound('slide');
+                      onSelectIndex(leftIndex);
+                    }}
+                    title={`Sebelumnya: ${leftCustom?.name || leftItem?.name}`}
+                    aria-label="Produk sebelumnya"
+                    className="w-10 h-10 rounded-full bg-surface/95 hover:bg-surface border border-line shadow-md hover:shadow-lg flex items-center justify-center text-ink hover:text-brand hover:scale-110 active:scale-95 transition-all cursor-pointer group"
+                  >
+                    <ChevronLeft className="w-5 h-5 text-ink/70 group-hover:text-brand transition-colors" />
+                  </button>
+                </div>
+              )}
+
+              {/* 3. Baju Gantungan Tengah (PRODUK DITENGAH - TAMPAK DEPAN BESAR) */}
+              <div
+                onClick={() => {
+                  onPlaySound('open');
+                  onOpenDetail(displayIndex);
+                }}
+                title={`Buka detail & ukuran ${activeName}`}
+                className="flex flex-col items-center cursor-pointer group z-30 transition-transform duration-300 hover:scale-[1.02] active:scale-[0.99] w-[310px] lg:w-[350px] xl:w-[390px] [perspective:1000px]"
+              >
+                {/* Hook + Label Harga */}
+                <div className="w-[120px] h-[64px] flex-shrink-0">
+                  <HangerHookSVG
+                    priceTagText={`Rp ${Math.round(activePrice / 1000)}rb`}
+                    showPriceTag={true}
+                    isSideView={false}
+                    hideHangerBody={hasPhotoHangerCenter}
+                  />
+                </div>
+
+                {/* Baju Tampak Depan Besar */}
+                <div
+                  className={`relative w-full h-[360px] lg:h-[400px] xl:h-[430px] flex items-start justify-center ${
+                    hasPhotoHangerCenter ? '-mt-[34px]' : '-mt-2'
+                  }`}
+                >
+                  <div
+                    key={activeItem?.id}
+                    className="h-full w-auto flex-shrink-0 flex items-start justify-center drop-shadow-xl transition-all duration-300"
+                  >
+                    <GarmentSVG
+                      item={activeItem}
+                      categoryId={categoryData.id}
+                      viewAngle="front"
+                      custom={activeCustom}
+                      className="max-h-full drop-shadow-xl"
+                    />
+                  </div>
+                </div>
+
+                {/* Label Buka Detail saat Hover */}
+                <span className="mt-2.5 inline-flex items-center gap-1.5 text-[12px] font-bold text-brand bg-brand-soft border border-brand/30 px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-xs pointer-events-none">
+                  <span>Klik untuk lihat detail</span>
+                  <ArrowRight className="w-3 h-3" />
+                </span>
+              </div>
+
+              {/* 4. Tombol Navigasi Kanan (Next) - Tepat di samping baju utama */}
+              {hasMultiple && (
+                <div className="self-center mt-[120px] lg:mt-[140px] z-30">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onPlaySound('slide');
+                      onSelectIndex(rightIndex);
+                    }}
+                    title={`Selanjutnya: ${rightCustom?.name || rightItem?.name}`}
+                    aria-label="Produk berikutnya"
+                    className="w-10 h-10 rounded-full bg-surface/95 hover:bg-surface border border-line shadow-md hover:shadow-lg flex items-center justify-center text-ink hover:text-brand hover:scale-110 active:scale-95 transition-all cursor-pointer group"
+                  >
+                    <ChevronRight className="w-5 h-5 text-ink/70 group-hover:text-brand transition-colors" />
+                  </button>
+                </div>
+              )}
+
+              {/* 5. Baju Gantungan Samping Kanan (Next Item) */}
+              {hasMultiple && rightItem && (
+                <div
+                  onClick={() => {
+                    onPlaySound('slide');
+                    onSelectIndex(rightIndex);
+                  }}
+                  title={`Pilih ${rightCustom?.name || rightItem.name}`}
+                  className="flex flex-col items-center cursor-pointer group transition-all duration-300 hover:scale-105 active:scale-95 w-[75px] lg:w-[85px] z-10"
+                >
+                  {/* Hook Menempel Pas ke Kawat Chrome */}
+                  <div className="w-[105px] h-[58px] -mt-[3.5px] flex-shrink-0">
+                    <HangerHookSVG
+                      isSideView={true}
+                      showPriceTag={false}
+                      hideHangerBody={hasPhotoHangerRight}
+                    />
+                  </div>
+
+                  {/* Baju Menyamping */}
+                  <div
+                    className={`relative w-full h-[280px] lg:h-[310px] flex items-start justify-center opacity-75 group-hover:opacity-100 transition-opacity ${
+                      hasPhotoHangerRight ? '-mt-[30px]' : '-mt-1.5'
+                    }`}
+                  >
+                    <div className="h-full w-auto flex items-start justify-center">
+                      <GarmentSVG
+                        item={rightItem}
+                        categoryId={categoryData.id}
+                        viewAngle="side-left"
+                        custom={rightCustom}
+                        className="max-h-full drop-shadow-md"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Tooltip Nama Produk Kanan saat Hover */}
+                  <span className="mt-2 text-[11px] font-semibold text-ink/75 bg-surface border border-line px-2.5 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xs pointer-events-none">
+                    {rightCustom?.name || rightItem.name}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -281,6 +492,30 @@ export function HangerRack({
         <div className="hidden sm:flex items-center gap-2 text-ink/75 font-medium text-[13px] bg-surface border border-line px-3.5 py-1.5 rounded-full">
           <span className="w-2 h-2 rounded-full bg-brand animate-pulse" />
           <span>{categoryData.kicker}</span>
+        </div>
+
+        {/* Indikator Titik Paginasi Desktop */}
+        <div className="hidden md:flex items-center gap-2 bg-surface/90 backdrop-blur-xs border border-line px-3.5 py-1.5 rounded-full shadow-xs">
+          {items.map((it, idx) => (
+            <button
+              key={it.id}
+              type="button"
+              onClick={() => {
+                onPlaySound('slide');
+                onSelectIndex(idx);
+              }}
+              title={customPhotos[it.id]?.name || it.name}
+              aria-label={`Pilih ${it.name}`}
+              className={`transition-all duration-200 rounded-full ${
+                idx === displayIndex
+                  ? 'w-6 h-2 bg-brand'
+                  : 'w-2 h-2 bg-ink/20 hover:bg-ink/50'
+              }`}
+            />
+          ))}
+          <span className="text-[11px] font-mono text-ink/50 ml-1">
+            {String(displayIndex + 1).padStart(2, '0')}/{String(items.length).padStart(2, '0')}
+          </span>
         </div>
 
         {/* Info Produk Aktif & Tombol Buka Detail */}
