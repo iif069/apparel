@@ -6,10 +6,16 @@ import { ViewAngle } from '@/types';
 interface AngleTabsProps {
   currentAngle: ViewAngle;
   onSelectAngle: (angle: ViewAngle) => void;
+  onPlaySound?: (type: 'slide' | 'open' | 'click' | 'flip') => void;
   className?: string;
 }
 
-export function AngleTabs({ currentAngle, onSelectAngle, className = '' }: AngleTabsProps) {
+export function AngleTabs({
+  currentAngle,
+  onSelectAngle,
+  onPlaySound,
+  className = '',
+}: AngleTabsProps) {
   const tabs: { angle: ViewAngle; label: string }[] = [
     { angle: 'side-left', label: 'Samping' },
     { angle: 'front', label: 'Depan' },
@@ -32,7 +38,10 @@ export function AngleTabs({ currentAngle, onSelectAngle, className = '' }: Angle
             type="button"
             role="tab"
             aria-selected={isActive}
-            onClick={() => onSelectAngle(tab.angle)}
+            onClick={() => {
+              onPlaySound?.('flip');
+              onSelectAngle(tab.angle);
+            }}
             className={`min-w-[74px] md:min-w-[96px] h-8 md:h-10 px-2.5 md:px-3 rounded-full text-[12px] md:text-[13px] font-semibold transition-all press-active ${
               isActive
                 ? 'bg-ink text-surface shadow-sm'

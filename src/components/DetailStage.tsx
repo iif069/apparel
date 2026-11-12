@@ -224,12 +224,12 @@ export function DetailStage({
 
             {/* Tab Sudut Tampilan [Samping] [Depan] [Belakang] */}
             <div className="w-full flex justify-center mt-2.5">
-              <AngleTabs currentAngle={viewAngle} onSelectAngle={setViewAngle} />
+              <AngleTabs currentAngle={viewAngle} onSelectAngle={setViewAngle} onPlaySound={onPlaySound} />
             </div>
           </div>
 
           {/* Kartu Utama Produk Mobile */}
-          <div className="bg-surface border border-line rounded-2xl p-4 sm:p-5 flex flex-col gap-4 shadow-soft">
+          <div className="bg-surface border border-line rounded-[28px] p-5 sm:p-6 flex flex-col gap-4 shadow-soft">
             {/* Badge Status */}
             <div className="flex items-center gap-2 flex-wrap">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
@@ -258,18 +258,21 @@ export function DetailStage({
             {/* Pilihan Warna di Gantungan */}
             <div className="flex flex-col gap-2 pt-2 border-t border-line">
               <span className="text-[13px] font-bold text-ink">Warna di gantungan</span>
-              <div className="flex items-center justify-between p-2.5 bg-page rounded-2xl border border-line">
-                <div className="flex items-center gap-2.5">
+              <div className="flex items-center justify-between py-2 px-4 bg-page rounded-full border border-line">
+                <div className="flex items-center gap-2.5 min-w-0">
                   <span
-                    className="w-5 h-5 rounded-full border border-line shadow-inner"
+                    className="w-5 h-5 rounded-full border border-line shadow-inner flex-shrink-0"
                     style={{ backgroundColor: currentItem.hex }}
                   />
-                  <span className="text-[13.5px] font-semibold text-ink">{colorName}</span>
+                  <span className="text-[13.5px] font-semibold text-ink truncate">{colorName}</span>
                 </div>
                 <button
                   type="button"
-                  onClick={() => setColorPickerOpen((prev) => !prev)}
-                  className="px-3 py-1 rounded-full bg-surface border border-line text-[12px] font-semibold hover:bg-page press-active"
+                  onClick={() => {
+                    setColorPickerOpen((prev) => !prev);
+                    onPlaySound('click');
+                  }}
+                  className="px-3.5 py-1 rounded-full bg-surface border border-line text-[12px] font-semibold hover:bg-page press-active flex-shrink-0"
                 >
                   {colorPickerOpen ? 'Tutup' : 'Ganti'}
                 </button>
@@ -277,7 +280,7 @@ export function DetailStage({
 
               {/* Swatches Pilihan Warna Lainnya */}
               {colorPickerOpen && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-3 bg-surface border border-line rounded-2xl mt-1">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-3 bg-surface border border-line rounded-[22px] mt-1">
                   {items.map((it, idx) => (
                     <button
                       key={it.id}
@@ -285,10 +288,10 @@ export function DetailStage({
                       onClick={() => {
                         onSelectIndex(idx);
                         setColorPickerOpen(false);
-                        onPlaySound('slide');
+                        onPlaySound('flip');
                       }}
-                      className={`flex items-center gap-2 p-2 rounded-xl text-left transition-all ${
-                        idx === itemIndex ? 'bg-brand-soft border border-brand/50' : 'hover:bg-page'
+                      className={`flex items-center gap-2 px-3 py-2 rounded-full text-left transition-all ${
+                        idx === itemIndex ? 'bg-brand-soft border border-brand/50' : 'hover:bg-page border border-transparent'
                       }`}
                     >
                       <span className="w-4 h-4 rounded-full border border-line flex-shrink-0" style={{ backgroundColor: it.hex }} />
@@ -390,14 +393,14 @@ export function DetailStage({
           </div>
 
           {/* Kartu Keterangan Produk Mobile */}
-          <div className="bg-surface border border-line rounded-2xl p-5 flex flex-col gap-4 shadow-soft">
+          <div className="bg-surface border border-line rounded-[28px] p-5 sm:p-6 flex flex-col gap-4 shadow-soft">
             <h3 className="text-[15px] font-bold text-ink">Keterangan produk</h3>
             <p className="text-[13.5px] text-ink/75 leading-relaxed">
               Produk apparel custom standar MIG Digital Printing dengan material pilihan yang nyaman dipakai, adem,
               serta menyerap keringat. Bebas cetak desain, logo komunitas, atau nomor punggung sesuai kebutuhan.
             </p>
 
-            <div className="p-3.5 bg-page rounded-2xl flex flex-col gap-1 border border-line">
+            <div className="px-5 py-3.5 bg-page rounded-[22px] flex flex-col gap-1 border border-line">
               <span className="text-[11.5px] font-semibold text-ink/50 uppercase tracking-wider">Bahan utama</span>
               <span className="text-[13px] font-bold text-ink">
                 {categoryData.id === 'jersey'
@@ -408,7 +411,7 @@ export function DetailStage({
               </span>
             </div>
 
-            <div className="p-3.5 bg-page rounded-2xl flex flex-col gap-1 border border-line">
+            <div className="px-5 py-3.5 bg-page rounded-[22px] flex flex-col gap-1 border border-line">
               <span className="text-[11.5px] font-semibold text-ink/50 uppercase tracking-wider">Kualitas cetak</span>
               <span className="text-[13px] font-bold text-ink">
                 {categoryData.id === 'jersey'
@@ -429,7 +432,7 @@ export function DetailStage({
           {/* 1. KOLOM KIRI (TEKS / INFO PRODUK, HARGA, WARNA & SPESIFIKASI) - SCROLL MANDIRI */}
           <div className="h-full overflow-y-auto pr-1.5 pb-6 flex flex-col gap-4 min-h-0">
             {/* Kartu Ringkasan & Harga */}
-            <div className="bg-surface border border-line rounded-3xl p-6 flex flex-col gap-4 shadow-soft">
+            <div className="bg-surface border border-line rounded-[28px] p-6 flex flex-col gap-4 shadow-soft">
               {/* Badge Status */}
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
@@ -458,18 +461,21 @@ export function DetailStage({
               {/* Pilihan Warna di Gantungan */}
               <div className="flex flex-col gap-2 pt-2 border-t border-line">
                 <span className="text-[13px] font-bold text-ink">Warna di gantungan</span>
-                <div className="flex items-center justify-between p-2.5 bg-page rounded-2xl border border-line">
-                  <div className="flex items-center gap-2.5">
+                <div className="flex items-center justify-between py-2 px-4 bg-page rounded-full border border-line">
+                  <div className="flex items-center gap-2.5 min-w-0">
                     <span
-                      className="w-5 h-5 rounded-full border border-line shadow-inner"
+                      className="w-5 h-5 rounded-full border border-line shadow-inner flex-shrink-0"
                       style={{ backgroundColor: currentItem.hex }}
                     />
-                    <span className="text-[13.5px] font-semibold text-ink">{colorName}</span>
+                    <span className="text-[13.5px] font-semibold text-ink truncate">{colorName}</span>
                   </div>
                   <button
                     type="button"
-                    onClick={() => setColorPickerOpen((prev) => !prev)}
-                    className="px-3 py-1 rounded-full bg-surface border border-line text-[12px] font-semibold hover:bg-page press-active"
+                    onClick={() => {
+                      setColorPickerOpen((prev) => !prev);
+                      onPlaySound('click');
+                    }}
+                    className="px-3.5 py-1 rounded-full bg-surface border border-line text-[12px] font-semibold hover:bg-page press-active flex-shrink-0"
                   >
                     {colorPickerOpen ? 'Tutup' : 'Ganti'}
                   </button>
@@ -477,7 +483,7 @@ export function DetailStage({
 
                 {/* Swatches Pilihan Warna Lainnya */}
                 {colorPickerOpen && (
-                  <div className="grid grid-cols-2 gap-2 p-3 bg-surface border border-line rounded-2xl mt-1">
+                  <div className="grid grid-cols-2 gap-2 p-3 bg-surface border border-line rounded-[22px] mt-1">
                     {items.map((it, idx) => (
                       <button
                         key={it.id}
@@ -485,10 +491,10 @@ export function DetailStage({
                         onClick={() => {
                           onSelectIndex(idx);
                           setColorPickerOpen(false);
-                          onPlaySound('slide');
+                          onPlaySound('flip');
                         }}
-                        className={`flex items-center gap-2 p-2 rounded-xl text-left transition-all ${
-                          idx === itemIndex ? 'bg-brand-soft border border-brand/50' : 'hover:bg-page'
+                        className={`flex items-center gap-2 px-3 py-2 rounded-full text-left transition-all ${
+                          idx === itemIndex ? 'bg-brand-soft border border-brand/50' : 'hover:bg-page border border-transparent'
                         }`}
                       >
                         <span className="w-4 h-4 rounded-full border border-line flex-shrink-0" style={{ backgroundColor: it.hex }} />
@@ -501,14 +507,14 @@ export function DetailStage({
             </div>
 
             {/* Kartu Keterangan Produk & Spesifikasi */}
-            <div className="bg-surface border border-line rounded-3xl p-6 flex flex-col gap-4 shadow-soft">
+            <div className="bg-surface border border-line rounded-[28px] p-6 flex flex-col gap-4 shadow-soft">
               <h3 className="text-[15px] font-bold text-ink">Keterangan produk</h3>
               <p className="text-[13px] text-ink/75 leading-relaxed">
                 Produk apparel custom standar MIG Digital Printing dengan material pilihan yang nyaman dipakai, adem,
                 serta menyerap keringat. Bebas cetak desain, logo komunitas, atau nomor punggung sesuai kebutuhan.
               </p>
 
-              <div className="p-3 bg-page rounded-2xl flex flex-col gap-1 border border-line">
+              <div className="px-5 py-3.5 bg-page rounded-[22px] flex flex-col gap-1 border border-line">
                 <span className="text-[11px] font-semibold text-ink/50 uppercase tracking-wider">Bahan utama</span>
                 <span className="text-[13px] font-bold text-ink">
                   {categoryData.id === 'jersey'
@@ -519,7 +525,7 @@ export function DetailStage({
                 </span>
               </div>
 
-              <div className="p-3 bg-page rounded-2xl flex flex-col gap-1 border border-line">
+              <div className="px-5 py-3.5 bg-page rounded-[22px] flex flex-col gap-1 border border-line">
                 <span className="text-[11px] font-semibold text-ink/50 uppercase tracking-wider">Kualitas cetak</span>
                 <span className="text-[13px] font-bold text-ink">
                   {categoryData.id === 'jersey'
@@ -547,7 +553,7 @@ export function DetailStage({
 
             {/* Tab Sudut Tampilan [Samping] [Depan] [Belakang] */}
             <div className="w-full flex justify-center mt-3">
-              <AngleTabs currentAngle={viewAngle} onSelectAngle={setViewAngle} />
+              <AngleTabs currentAngle={viewAngle} onSelectAngle={setViewAngle} onPlaySound={onPlaySound} />
             </div>
 
             {/* Keterangan Putar 3D */}
@@ -558,7 +564,7 @@ export function DetailStage({
 
           {/* 3. KOLOM KANAN: TEKS PILIHAN UKURAN, TAMBAHAN & ORDER (DIAM / SCROLL SENDIRI JIKA BANYAK) */}
           <div className="h-full overflow-y-auto pl-1 pr-0.5 pb-6 flex flex-col gap-4 min-h-0">
-            <div className="bg-surface border border-line rounded-3xl p-6 flex flex-col gap-4 shadow-soft">
+            <div className="bg-surface border border-line rounded-[28px] p-6 flex flex-col gap-4 shadow-soft">
               {/* Pilihan Ukuran & Kuantitas Multi-Ukuran */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
