@@ -86,27 +86,71 @@ export function GarmentSVG({
   const strokeColor = isLight ? '#d5d2de' : 'rgba(28, 27, 26, 0.14)';
 
   // -------------------------------------------------------------------------
-  // TAMPAK SAMPING — Kapsul vertikal dengan pencahayaan 3D kontras tinggi
+  // TAMPAK SAMPING — Siluet baju gantung proporsional (tinggi dan letak kerah pas dengan tampak depan)
   // -------------------------------------------------------------------------
   if (viewAngle.startsWith('side')) {
     const gradId = `sideGrad-${item.id}`;
     return (
       <svg
         className={`w-auto max-w-full h-full block filter drop-shadow-md ${className}`}
-        viewBox="0 0 110 350"
+        viewBox="0 0 120 350"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          <linearGradient id={gradId} x1="6" y1="6" x2="104" y2="6" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.25" />
-            <stop offset="28%" stopColor="#ffffff" stopOpacity="0.05" />
-            <stop offset="65%" stopColor="#000000" stopOpacity="0" />
-            <stop offset="100%" stopColor="#000000" stopOpacity="0.32" />
+          <linearGradient id={gradId} x1="20" y1="36" x2="105" y2="36" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.22" />
+            <stop offset="30%" stopColor="#ffffff" stopOpacity="0.04" />
+            <stop offset="70%" stopColor="#000000" stopOpacity="0" />
+            <stop offset="100%" stopColor="#000000" stopOpacity="0.30" />
           </linearGradient>
         </defs>
-        <rect x="6" y="6" width="98" height="314" rx="22" fill={hex} />
-        <rect x="6" y="6" width="98" height="314" rx="22" fill={`url(#${gradId})`} stroke={strokeColor} strokeWidth="2" />
+
+        {/* Badan Baju Tampak Samping (Menggantung dari bahu gantungan Y=36 sampai keliman bawah Y=322) */}
+        <path
+          d="M 45 36 
+             C 65 34, 85 40, 92 48 
+             C 98 56, 96 110, 94 180 
+             C 92 250, 95 316, 90 322 
+             C 85 326, 40 326, 35 322 
+             C 30 316, 32 240, 34 160 
+             C 36 100, 32 50, 36 42 
+             Z"
+          fill={hex}
+          stroke={strokeColor}
+          strokeWidth="2"
+          strokeLinejoin="round"
+        />
+
+        {/* Shading 3D Lekukan Lipatan Kain */}
+        <path
+          d="M 45 36 
+             C 65 34, 85 40, 92 48 
+             C 98 56, 96 110, 94 180 
+             C 92 250, 95 316, 90 322 
+             C 85 326, 40 326, 35 322 
+             C 30 316, 32 240, 34 160 
+             C 36 100, 32 50, 36 42 
+             Z"
+          fill={`url(#${gradId})`}
+        />
+
+        {/* Lipatan Lengan Jatuh ke Bawah */}
+        <path
+          d="M 52 48 
+             C 58 80, 56 140, 55 190 
+             C 54 210, 68 210, 70 190 
+             C 72 140, 74 80, 72 48"
+          stroke={strokeColor}
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          fill={item.shadow || '#000000'}
+          fillOpacity="0.12"
+        />
+
+        {/* Garis Lipatan Kain Vertikal Halus */}
+        <line x1="42" y1="80" x2="40" y2="280" stroke="rgba(255,255,255,0.18)" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="82" y1="90" x2="80" y2="290" stroke="rgba(0,0,0,0.18)" strokeWidth="1.2" strokeLinecap="round" />
       </svg>
     );
   }

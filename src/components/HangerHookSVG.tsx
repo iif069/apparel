@@ -60,30 +60,32 @@ export function HangerHookSVG({
         />
       </svg>
 
-      {/* 2. Tali & Label Harga (Hanya ditampilkan jika diaktifkan secara eksplisit, bukan pop-up saat hover) */}
-      {showPriceTag && priceTagText && (
-        <div className="absolute top-[20px] left-[52px] pointer-events-none z-10">
-          {/* Tali Benang Tag Miring */}
-          <svg className="w-[14px] h-[16px] block overflow-visible" viewBox="0 0 14 16" fill="none">
-            <path
-              d="M 1 1 Q 5 7 10 14"
-              stroke="#8a30d1"
-              strokeWidth="1.2"
-              strokeLinecap="round"
-              strokeDasharray="2 1.5"
-              opacity="0.85"
-            />
-          </svg>
+      {/* 2. Tali & Label Harga (Memudar halus saat baju aktif/di-hover) */}
+      <div
+        className={`absolute top-[20px] left-[52px] pointer-events-none z-10 transition-opacity duration-300 ${
+          showPriceTag && priceTagText ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
+        {/* Tali Benang Tag Miring */}
+        <svg className="w-[14px] h-[16px] block overflow-visible" viewBox="0 0 14 16" fill="none">
+          <path
+            d="M 1 1 Q 5 7 10 14"
+            stroke="#8a30d1"
+            strokeWidth="1.2"
+            strokeLinecap="round"
+            strokeDasharray="2 1.5"
+            opacity="0.85"
+          />
+        </svg>
 
-          {/* Label Harga Miring (-8°) Warna Ungu Brand Lembut */}
-          <span
-            className="absolute -top-[2px] left-[10px] inline-flex items-center gap-1 font-semibold text-[9.5px] leading-tight text-brand bg-brand-soft border border-brand/40 px-2 py-0.5 rounded-full shadow-sm whitespace-nowrap transform -rotate-[8deg] origin-top-left"
-          >
-            <span className="w-1.5 h-1.5 rounded-full border border-brand/50 bg-white" />
-            {priceTagText}
-          </span>
-        </div>
-      )}
+        {/* Label Harga Miring (-8°) Warna Ungu Brand Lembut */}
+        <span
+          className="absolute -top-[2px] left-[10px] inline-flex items-center gap-1 font-semibold text-[9.5px] leading-tight text-brand bg-brand-soft border border-brand/40 px-2 py-0.5 rounded-full shadow-sm whitespace-nowrap transform -rotate-[8deg] origin-top-left"
+        >
+          <span className="w-1.5 h-1.5 rounded-full border border-brand/50 bg-white" />
+          {priceTagText}
+        </span>
+      </div>
     </div>
   );
 }

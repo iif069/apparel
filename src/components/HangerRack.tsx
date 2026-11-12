@@ -177,23 +177,25 @@ export function HangerRack({
                         onSelectIndex(idx);
                       }
                     }}
-                    className={`hanger-slot flex flex-col items-center cursor-pointer transition-[width] duration-500 ease-out [perspective:900px] ${
-                      isActive ? 'w-[200px] md:w-[220px] z-30' : 'w-[84px] md:w-[94px] z-10'
+                    className={`hanger-slot flex flex-col items-center cursor-pointer transition-[width] duration-400 ease-out [perspective:1000px] ${
+                      isActive ? 'w-[190px] md:w-[210px] z-30' : 'w-[84px] md:w-[94px] z-10'
                     }`}
                   >
-                    {/* Gantungan Hook SVG + label harga (tampil pada baju yang sedang menghadap depan) */}
+                    {/* Gantungan Hook SVG + label harga (memudar halus saat aktif) */}
                     <div className="w-[100px] md:w-[114px] h-[52px] md:h-[58px] flex-shrink-0">
                       <HangerHookSVG priceTagText={priceText} showPriceTag={isActive} />
                     </div>
 
-                    {/* Siluet atau Foto Baju — berputar (rotateY) ke tampak depan saat aktif / di-hover, tanpa efek membesar */}
+                    {/* Siluet atau Foto Baju — Berputar halus secara 3D (rotateY), murni rotasi tanpa lonjakan membesar */}
                     <div
-                      key={isActive ? 'front' : 'side'}
-                      className={`h-[230px] md:h-[260px] flex-shrink-0 flex items-start justify-center -mt-1.5 ${
-                        isActive
-                          ? 'w-[200px] md:w-[220px] animate-garment-turn'
-                          : 'w-[84px] md:w-[94px] animate-garment-turn-back'
-                      }`}
+                      className="w-full h-[230px] md:h-[260px] flex items-start justify-center -mt-1.5 transition-transform duration-400 ease-out [transform-style:preserve-3d]"
+                      style={{
+                        transform: isActive
+                          ? 'rotateY(0deg) translateY(-2px)'
+                          : idx < activeIndex
+                          ? 'rotateY(28deg)'
+                          : 'rotateY(-28deg)',
+                      }}
                     >
                       <GarmentSVG
                         item={item}
@@ -212,23 +214,23 @@ export function HangerRack({
       </div>
 
       {/* 5. BAR AKSI BAWAH RAK */}
-      <footer className="relative w-full z-20 px-4 md:px-8 py-4 md:py-5 flex flex-col sm:flex-row items-center justify-between gap-3 md:gap-4 max-w-[1340px] mx-auto">
-        <div className="flex items-center gap-2 text-ink/75 font-medium text-[13px] bg-surface/80 backdrop-blur-sm border border-line px-3.5 py-1.5 rounded-full">
+      <footer className="relative w-full z-20 px-4 md:px-8 py-3 md:py-4 flex flex-col sm:flex-row items-center justify-between gap-3 max-w-[1340px] mx-auto">
+        <div className="flex items-center gap-2 text-ink/75 font-medium text-[13px] bg-surface border border-line px-3.5 py-1.5 rounded-full">
           <span className="w-2 h-2 rounded-full bg-brand animate-pulse" />
           <span>{categoryData.kicker}</span>
         </div>
 
-        {/* Floating Pill Info Produk Aktif & Tombol Lihat Detail */}
+        {/* Info Produk Aktif & Tombol Buka Detail */}
         <div
           onClick={() => {
             onPlaySound('open');
             onOpenDetail(activeIndex);
           }}
-          className="flex items-center justify-between gap-4 bg-surface border border-line px-4 py-2.5 rounded-full shadow-soft hover:shadow-card cursor-pointer transition-all press-active max-w-[360px] w-full sm:w-auto"
+          className="flex items-center justify-between gap-4 bg-surface border border-line px-4 py-2 rounded-full shadow-xs hover:border-brand/40 cursor-pointer transition-all press-active max-w-[360px] w-full sm:w-auto"
         >
           <div className="flex items-center gap-2.5 min-w-0">
             <span
-              className="w-5 h-5 rounded-full border border-line flex-shrink-0"
+              className="w-4 h-4 rounded-full border border-line flex-shrink-0"
               style={{ backgroundColor: activeItem?.hex || '#ffffff' }}
             />
             <div className="flex flex-col min-w-0">
@@ -241,7 +243,7 @@ export function HangerRack({
 
           <button
             type="button"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand text-surface text-[12px] font-bold shadow-sm whitespace-nowrap"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand text-surface text-[12px] font-bold shadow-xs whitespace-nowrap"
           >
             <span>Lihat detail</span>
             <ArrowRight className="w-3.5 h-3.5" />
