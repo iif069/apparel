@@ -40,3 +40,23 @@ Dokumen ini adalah aturan kerja baku untuk AI Assistant dalam mengembangkan proj
   * **Bahasa UI**: Bahasa Indonesia yang jelas, ramah, dan ringkas.
   * **Bahasa Kode**: Variabel, fungsi, dan nama file dalam bahasa Inggris yang deklaratif. Komentar kode dalam bahasa Indonesia.
   * Gunakan penjelasan awam dan analogi visual yang mudah dipahami karena pengguna berlatar belakang desain percetakan.
+
+---
+
+## 4. Dilarang Mengubah Desain Tanpa Instruksi
+* **Pertahankan Desain yang Sudah Ada**:
+  * Jika pengguna meminta perbaikan fungsi (contoh: "saat ukuran dipilih langsung nutup"), **JANGAN PERNAH merombak desain UI**, menambah tombol/elemen baru (seperti badge "+ Tambah"), atau mengubah tata letak.
+  * Kembalikan dan pertahankan 100% gaya visual sebelumnya, hanya ubah perilaku interaksinya agar langsung menutup saat dipilih.
+* **Minimalis & Presisi**:
+  * Ubah hanya baris kode yang benar-benar esensial untuk memenuhi instruksi pengguna. Jangan berinisiatif menambahkan ornamen visual sendiri.
+
+---
+
+## 5. Aturan Referensi Kasir MIG (Tanya Dulu Jika Tidak Yakin)
+* **Referensi Resmi**:
+  * Referensi Kasir MIG yang benar adalah **`iif069/Kasir-MIG-DIGITAL-PRINTING`** (repo private pengguna), **BUKAN** repo lama `pos-smk-user` (yang masih memakai font Sora dan desain lama).
+* **Jangan Menebak atau Berasumsi**:
+  * Jika kode atau komponen dari `Kasir-MIG-DIGITAL-PRINTING` belum tersedia di workspace atau repo belum terhubung, **JANGAN MENEBAK-NEBAK TAMPILANNYA**.
+  * **Tanyakan kepada pengguna** untuk melihat screenshot, menyalin komponen, atau memberikan izin/potongan kode referensi sebelum membuat komponen tiruan.
+  * *"Kalau tidak yakin, tanya dulu!"* — Utamakan bertanya dan berdialog daripada membuat perubahan yang salah arah.
+

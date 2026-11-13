@@ -401,14 +401,36 @@ export function DetailStage({
                 <button
                   type="button"
                   onClick={() => {
-                    setSizePickerOpen(true);
+                    setSizePickerOpen((prev) => !prev);
                     onPlaySound('click');
                   }}
                   className="w-full h-11 px-4 flex items-center justify-between bg-surface border border-line rounded-full text-[13.5px] font-semibold text-ink hover:border-brand transition-colors press-active text-left"
                 >
                   <span>+ Pilih ukuran untuk ditambahkan</span>
-                  <ChevronDown className="w-4 h-4 text-ink/50" />
+                  <ChevronDown className={`w-4 h-4 text-ink/50 transition-transform ${sizePickerOpen ? 'rotate-180' : ''}`} />
                 </button>
+
+                {sizePickerOpen && (
+                  <>
+                    <div className="fixed inset-0 z-30" onClick={() => setSizePickerOpen(false)} />
+                    <div className="absolute top-full left-0 right-0 mt-1.5 z-40 bg-surface border border-line rounded-2xl shadow-xl overflow-hidden py-1 divide-y divide-line/30 animate-in fade-in zoom-in-95 duration-100">
+                      {['S', 'M', 'L', 'XL', 'XXL'].map((sz) => (
+                        <button
+                          key={sz}
+                          type="button"
+                          onClick={() => {
+                            handleAddSize(sz);
+                            setSizePickerOpen(false);
+                            onPlaySound('click');
+                          }}
+                          className="w-full px-4 py-2.5 text-left text-[13.5px] font-semibold text-ink hover:bg-page hover:text-brand transition-colors flex items-center justify-between"
+                        >
+                          <span>Ukuran {sz}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
 
               <div className="flex flex-col gap-2 mt-1">
@@ -662,14 +684,36 @@ export function DetailStage({
                   <button
                     type="button"
                     onClick={() => {
-                      setSizePickerOpen(true);
+                      setSizePickerOpen((prev) => !prev);
                       onPlaySound('click');
                     }}
                     className="w-full h-11 px-4 flex items-center justify-between bg-surface border border-line rounded-full text-[13.5px] font-semibold text-ink hover:border-brand transition-colors press-active text-left"
                   >
                     <span>+ Pilih ukuran untuk ditambahkan</span>
-                    <ChevronDown className="w-4 h-4 text-ink/50" />
+                    <ChevronDown className={`w-4 h-4 text-ink/50 transition-transform ${sizePickerOpen ? 'rotate-180' : ''}`} />
                   </button>
+
+                  {sizePickerOpen && (
+                    <>
+                      <div className="fixed inset-0 z-30" onClick={() => setSizePickerOpen(false)} />
+                      <div className="absolute top-full left-0 right-0 mt-1.5 z-40 bg-surface border border-line rounded-2xl shadow-xl overflow-hidden py-1 divide-y divide-line/30 animate-in fade-in zoom-in-95 duration-100">
+                        {['S', 'M', 'L', 'XL', 'XXL'].map((sz) => (
+                          <button
+                            key={sz}
+                            type="button"
+                            onClick={() => {
+                              handleAddSize(sz);
+                              setSizePickerOpen(false);
+                              onPlaySound('click');
+                            }}
+                            className="w-full px-4 py-2.5 text-left text-[13.5px] font-semibold text-ink hover:bg-page hover:text-brand transition-colors flex items-center justify-between"
+                          >
+                            <span>Ukuran {sz}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* Deretan Baris Ukuran & Kontrol Qty (+ / -) */}
@@ -764,53 +808,7 @@ export function DetailStage({
         />
       </div>
 
-      {/* 4. MODAL PEMILIHAN UKURAN (Langsung Menutup Seketika Saat Ukuran Ditekan) */}
-      {sizePickerOpen && (
-        <div
-          className="fixed inset-0 z-[100] bg-black/45 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-150"
-          onClick={() => setSizePickerOpen(false)}
-        >
-          <div
-            role="dialog"
-            aria-label="Pilih Ukuran"
-            className="bg-surface w-full sm:max-w-[360px] rounded-t-[28px] sm:rounded-[28px] p-5 pb-[max(24px,calc(16px+env(safe-area-inset-bottom)))] sm:pb-5 shadow-2xl flex flex-col gap-3 border border-line animate-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between pb-2.5 border-b border-line">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-brand" />
-                <h3 className="text-[15px] font-bold text-ink tracking-tight">Pilih Ukuran</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSizePickerOpen(false)}
-                className="text-ink/60 hover:text-ink text-[13px] font-semibold px-2 py-1 rounded-full hover:bg-page transition-colors press-active"
-              >
-                Tutup
-              </button>
-            </div>
 
-            <div className="flex flex-col gap-2 pt-1">
-              {['S', 'M', 'L', 'XL', 'XXL'].map((sz) => (
-                <button
-                  key={sz}
-                  type="button"
-                  onClick={() => {
-                    handleAddSize(sz);
-                    setSizePickerOpen(false); // LANGSUNG TUTUP DI HP & DESKTOP
-                  }}
-                  className="w-full flex items-center justify-between py-3 px-4.5 rounded-full bg-page hover:bg-brand-soft border border-line hover:border-brand/40 text-[14px] font-bold text-ink transition-all press-active text-left shadow-2xs"
-                >
-                  <span>Ukuran {sz}</span>
-                  <span className="text-[12px] font-bold text-brand bg-brand-soft px-2.5 py-0.5 rounded-full">
-                    + Tambah
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* 5. TOAST NOTIFIKASI BERHASIL DITAMBAHKAN (Gaya Kasir MIG) */}
       <div
