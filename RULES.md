@@ -60,3 +60,46 @@ Dokumen ini adalah aturan kerja baku untuk AI Assistant dalam mengembangkan proj
   * **Tanyakan kepada pengguna** untuk melihat screenshot, menyalin komponen, atau memberikan izin/potongan kode referensi sebelum membuat komponen tiruan.
   * *"Kalau tidak yakin, tanya dulu!"* — Utamakan bertanya dan berdialog daripada membuat perubahan yang salah arah.
 
+---
+
+## 6. Aturan Ikon & Larangan Keras Emotikon (Satu Sumber Seragam)
+* **DILARANG MENGGUNAKAN EMOTIKON TEKS / UNICODE EMOJI**:
+  * Dilarang keras menyisipkan karakter emoji unicode (seperti `🔒`, `🔓`, `✓`, `✨`, `🔥`, dll.) di dalam teks tombol, notifikasi toast, badge, maupun alert.
+  * Semua ikon grafis **WAJIB berasal dari satu sumber seragam: paket `lucide-react`** (misal: `<Lock />`, `<Unlock />`, `<Check />`, `<Sparkles />`).
+* **Ikon WhatsApp Bebas Warna Hijau**:
+  * Ikon WhatsApp tidak boleh menggunakan warna hijau (`#25D366`), melainkan harus seragam monokrom/netral:
+    * Pada tombol outline/putih: `fill="currentColor"` mewarisi `text-ink`.
+    * Pada tombol utama ungu: `fill="currentColor"` dengan `text-white`.
+    * Pada badge/lencana kecil: `text-brand` di dalam lingkaran `bg-brand-soft`.
+  * Semua tombol atau banner yang mengarah ke WhatsApp wajib memakai komponen SVG vektor resmi WhatsApp yang seragam (jangan diganti balon bicara biasa atau ikon lain).
+
+---
+
+## 7. Aturan CTA, Tombol Pill, dan Kepatuhan Desain Sistem
+* **CTA Desktop Tunggal (Dilarang Ada 2 CTA Redundan)**:
+  * Di tampilan desktop, **hanya boleh ada 1 CTA tunggal** di sisi kiri bawah footer panggung rak (sebagai penyeimbang kartu produk di sisi kanan bawah).
+  * Banner CTA tengah atas rak hanya dikhususkan untuk tampilan mobile (`md:hidden`), tidak boleh muncul menduplikasi di desktop.
+* **Keseragaman Wording CTA**:
+  * Seragamkan teks CTA pesanan custom menjadi: **`Desain custom? Chat via WhatsApp`**. Jangan mencampuradukkan variasi kalimat (seperti "Punya desain sendiri" vs "Desain custom") di satu layar yang sama.
+* **Kepatuhan Bentuk Pill MIG UI**:
+  * Tombol pill dan kartu kapsul footer wajib mengikuti token MIG UI:
+    * Latar: Putih kaca semi-transparan (`bg-surface/95 backdrop-blur-md`).
+    * Border: Garis abu-abu tipis presisi (`border border-line hover:border-brand/40`), **BUKAN border ungu tipis (`border-brand/30`)**.
+    * Teks: Hitam tegas (`text-ink`), **BUKAN teks ungu (`text-brand`)**.
+    * Bayangan: `shadow-[0_6px_24px_rgba(0,0,0,0.08)]` atau `shadow-soft`.
+    * Tinggi: Seimbang dan selaras dengan kartu produk di sebelahnya (`px-5 py-3 rounded-full`).
+
+---
+
+## 8. Aturan Layout Responsif (Navbar & Toast Notifikasi)
+* **Navbar Mobile Rapi & Bebas Tumpukan Teks**:
+  * Tombol navigasi dan tombol aksi di navbar mobile wajib memakai `shrink-0 whitespace-nowrap` agar teksnya tidak tertekan menjadi 2 baris vertikal.
+  * Elemen sekunder (seperti badge admin di judul atau subtitle panjang) disembunyikan di HP agar navbar tetap lega dan bernapas.
+* **Toast Notifikasi Melayang di Atas**:
+  * Notifikasi toast wajib diposisikan di **bagian atas layar** (`top-18 md:top-6`) agar tidak menutupi footer rak atau bar aksi bawah.
+  * Bentuk toast wajib kartu kapsul proporsional (`rounded-2xl`), **DILARANG memakai `rounded-full`** yang bisa membengkak menjadi lingkaran/telur saat berisi teks panjang.
+  * Gunakan animasi transisi halus (`animate-in fade-in slide-in-from-top-2`), tanpa efek *bounce* berlebihan.
+* **Widget Musik Latar (BGM) Dilarang Menutupi Teks Produk**:
+  * Widget floating BGM diposisikan melayang di atas kartu produk (`bottom-[84px]`), bukan di `bottom-4` yang bertumpukan dengan teks *"Mulai dari"*.
+  * Widget BGM otomatis disembunyikan saat modal detail produk terbuka (`isDetailOpen = true`) agar tampilan formulir ukuran dan pemesanan tetap bersih tanpa halangan.
+

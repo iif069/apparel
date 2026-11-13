@@ -34,7 +34,7 @@ Sistem desain visual terpadu untuk ekosistem **MIG Digital Printing**, diadopsi 
 | `line` | `#E2E0EA` | Garis tepi (*border*) tipis 1px |
 | `ink` | `#1C1B1A` | Teks utama, judul, chip kategori aktif |
 | `muted` | `#6B675E` | Teks pendukung, keterangan sekunder |
-| `success` | `#DCFCE7` / `#15803D` | Badge "Stok tersedia" |
+| `brand-soft` | `#F4EBFA` / `#7B29BA` | Badge "Desain custom" |
 | `warning` | `#FDF0D5` / `#8A5A00` | Badge perhatian / catatan pesanan |
 | `danger` | `#FEE2E2` / `#B91C1C` | Tombol hapus item keranjang |
 

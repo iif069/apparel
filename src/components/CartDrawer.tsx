@@ -25,20 +25,21 @@ export function CartDrawer({
   onOpenItemDetail,
   onPlaySound,
 }: CartDrawerProps) {
-  // State untuk mengontrol animasi slide-in & fade-in / exit effect
   const [mounted, setMounted] = useState(isOpen);
   const [animatingIn, setAnimatingIn] = useState(false);
 
-  // State untuk modal konfirmasi hapus gaya Kasir MIG
+  // State modal konfirmasi hapus resmi gaya MIG UI
   const [confirmDelete, setConfirmDelete] = useState<{
     isOpen: boolean;
     type: 'single' | 'all';
     cartId?: string;
-    message: string;
+    title: string;
+    description: string;
   }>({
     isOpen: false,
     type: 'single',
-    message: '',
+    title: '',
+    description: '',
   });
 
   useEffect(() => {
@@ -50,17 +51,14 @@ export function CartDrawer({
           setAnimatingIn(true);
         });
       });
-      // Kunci scroll halaman belakang
       document.body.style.overflow = 'hidden';
-      return () => {
-        cancelAnimationFrame(frame);
-      };
+      return () => cancelAnimationFrame(frame);
     } else {
       setAnimatingIn(false);
       const timer = setTimeout(() => {
         setMounted(false);
         document.body.style.overflow = '';
-      }, 300);
+      }, 250);
       return () => {
         clearTimeout(timer);
         document.body.style.overflow = '';
@@ -68,7 +66,6 @@ export function CartDrawer({
     }
   }, [isOpen, onPlaySound]);
 
-  // Listener tombol keyboard Escape untuk menutup keranjang
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -109,36 +106,36 @@ export function CartDrawer({
 
     text += `*Total Pembayaran:* Rp ${totalAmount.toLocaleString('id-ID')} (${totalItems} pcs)\n\n`;
     text += `Catatan: Desain dan logo akan saya kirimkan lewat WhatsApp ini setelah pesanan dibuat.\n`;
-    text += `Mohon konfirmasi pesanan dan nomor rekening ya. Terima kasih!`;
+    text += `Mohon konfirmasi pesanan dan estimasi waktu jadi ya. Terima kasih!`;
 
     const encoded = encodeURIComponent(text);
-    window.open(`https://wa.me/6281222400922?text=${encoded}`, '_blank');
+    window.open(`https://wa.me/6285223842377?text=${encoded}`, '_blank');
   };
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden flex justify-end">
-      {/* 1. Backdrop Overlay Gelap dengan Efek Fade & Blur Halus */}
+      {/* 1. Backdrop Overlay Gelap Redup */}
       <div
         onClick={() => {
           onPlaySound?.('click');
           onClose();
         }}
-        className={`fixed inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity duration-300 ease-out ${
+        className={`fixed inset-0 bg-ink/40 backdrop-blur-xs transition-opacity duration-200 ease-out ${
           animatingIn ? 'opacity-100' : 'opacity-0'
         }`}
         aria-hidden="true"
       />
 
-      {/* 2. Side Bar Kanan (Desktop & Mobile) dengan Efek Animasi Geser (Slide-in dari Kanan) */}
+      {/* 2. Side Drawer Kanan (Sesuai Desain Sistem MIG UI) */}
       <aside
         role="dialog"
         aria-label="Keranjang Belanja"
-        className={`relative z-10 w-full sm:max-w-[460px] md:max-w-[480px] h-full bg-[#f8f7fb] flex flex-col shadow-[-16px_0_40px_rgba(0,0,0,0.18)] border-l border-slate-200/80 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] transform ${
+        className={`relative z-10 w-full sm:max-w-[460px] md:max-w-[480px] h-full bg-page flex flex-col shadow-float border-l border-line transition-transform duration-250 ease-out transform ${
           animatingIn ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        {/* HEADER KERANJANG (Tombol Kembali, Judul "Keranjang", Badge Total, dan Tombol Tutup) */}
-        <header className="sticky top-0 z-40 bg-[#f8f7fb]/95 backdrop-blur-md px-4 py-3.5 flex items-center justify-between flex-shrink-0 border-b border-slate-200/60">
+        {/* HEADER KERANJANG (Tombol Kembali 44px, Judul, dan Tombol Hapus Semua) */}
+        <header className="sticky top-0 z-40 glass px-4 py-3 flex items-center justify-between flex-shrink-0 border-b border-line">
           <div className="flex items-center gap-3 min-w-0">
             <button
               type="button"
@@ -146,25 +143,25 @@ export function CartDrawer({
                 onPlaySound?.('click');
                 onClose();
               }}
-              className="w-11 h-11 rounded-full bg-white border border-slate-200/80 shadow-xs flex items-center justify-center hover:bg-slate-50 text-slate-900 transition-colors press-active flex-shrink-0"
+              className="press w-11 h-11 rounded-full bg-surface border border-line shadow-xs flex items-center justify-center hover:bg-page text-ink transition-colors flex-shrink-0 cursor-pointer"
               aria-label="Kembali ke katalog"
               title="Tutup Keranjang"
             >
-              <ArrowLeft className="w-5 h-5 stroke-[2.2]" />
+              <ArrowLeft className="w-5 h-5 stroke-[2]" />
             </button>
             <div className="flex items-center gap-2 min-w-0">
-              <h1 className="text-[20px] md:text-[21px] font-bold text-slate-900 tracking-tight truncate">
+              <h1 className="text-xl font-bold text-ink tracking-tight truncate">
                 Keranjang
               </h1>
               {totalItems > 0 && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11.5px] font-bold bg-[#7B29BA]/10 text-[#7B29BA] flex-shrink-0">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-brand-soft text-brand flex-shrink-0 tabular-nums">
                   {totalItems} pcs
                 </span>
               )}
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 flex-shrink-0">
+          <div className="flex items-center gap-2 flex-shrink-0">
             {cart.length > 0 && (
               <button
                 type="button"
@@ -173,26 +170,27 @@ export function CartDrawer({
                   setConfirmDelete({
                     isOpen: true,
                     type: 'all',
-                    message: 'Apakah Anda yakin untuk menghapus semua barang dari keranjang?',
+                    title: 'Hapus semua barang?',
+                    description: 'Semua produk yang ada di dalam keranjang akan dikosongkan.',
                   });
                 }}
-                className="h-9 sm:h-10 px-3 sm:px-3.5 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200/80 flex items-center gap-1.5 text-[12px] sm:text-[13px] font-bold shadow-xs transition-all press-active"
+                className="press h-10 px-3.5 rounded-full bg-danger-bg text-danger-fg hover:opacity-90 flex items-center gap-1.5 text-xs font-bold transition-all cursor-pointer"
                 title="Hapus semua barang"
                 aria-label="Hapus semua barang dari keranjang"
               >
-                <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2]" />
+                <Trash2 className="w-3.5 h-3.5 stroke-[2]" />
                 <span>Hapus semua</span>
               </button>
             )}
 
-            {/* Tombol X Tutup khusus Desktop */}
+            {/* Tombol X Tutup Desktop */}
             <button
               type="button"
               onClick={() => {
                 onPlaySound?.('click');
                 onClose();
               }}
-              className="hidden md:flex w-9 h-9 rounded-full bg-white/80 border border-slate-200/80 items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-white transition-colors press-active"
+              className="press hidden md:flex w-10 h-10 rounded-full bg-surface border border-line items-center justify-center text-muted hover:text-ink hover:bg-page transition-colors cursor-pointer"
               aria-label="Tutup"
               title="Tutup (Esc)"
             >
@@ -201,16 +199,16 @@ export function CartDrawer({
           </div>
         </header>
 
-        {/* AREA KARTU PRODUK (Scrollable Area) */}
-        <div className="flex-1 overflow-y-auto px-4 py-4 pb-32 space-y-4 no-scrollbar">
+        {/* AREA DAFTAR KARTU PRODUK (Scrollable) */}
+        <div className="flex-1 overflow-y-auto px-4 py-4 pb-36 space-y-3.5">
           {cart.length === 0 ? (
-            /* Tampilan Keranjang Kosong */
+            /* Tampilan Keranjang Kosong Khas MIG UI */
             <div className="h-full min-h-[360px] flex flex-col items-center justify-center text-center py-16 px-6">
-              <div className="w-20 h-20 rounded-full bg-white border border-slate-200/80 flex items-center justify-center text-slate-400 mb-4 shadow-xs animate-bounce">
-                <ShoppingBag className="w-9 h-9 stroke-[1.5]" />
+              <div className="w-20 h-20 rounded-full bg-surface border border-line flex items-center justify-center text-muted mb-4 shadow-xs">
+                <ShoppingBag className="w-8 h-8 stroke-[1.8]" />
               </div>
-              <h3 className="text-[18px] font-bold text-slate-900">Keranjang masih kosong</h3>
-              <p className="text-[13.5px] text-slate-500 mt-1 max-w-[260px] leading-relaxed">
+              <h3 className="text-lg font-bold text-ink">Keranjang masih kosong</h3>
+              <p className="text-xs text-muted mt-1.5 max-w-[260px] leading-relaxed">
                 Pilih pakaian dari rak katalog dan tentukan ukuran yang ingin dipesan.
               </p>
               <button
@@ -219,14 +217,20 @@ export function CartDrawer({
                   onPlaySound?.('click');
                   onClose();
                 }}
-                className="mt-6 px-7 py-3 rounded-full bg-[#7B29BA] hover:bg-[#6A21A3] text-white text-[14.5px] font-bold shadow-md hover:shadow-lg transition-all press-active"
+                className="press mt-6 px-6 py-2.5 rounded-full bg-brand hover:bg-brand-hover text-white text-sm font-semibold shadow-xs transition-colors cursor-pointer"
               >
                 Mulai Belanja
               </button>
             </div>
           ) : (
             <>
-              {/* Kartu per Item Keranjang (Rounded 28px Putih Bersih) */}
+              {/* Badge Promo / Gratis Ongkir khas Web Pembeli MIG */}
+              <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-success-bg text-success-fg text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-success-fg animate-pulse shrink-0" />
+                <span className="truncate">Gratis antar & bonus stiker untuk pesanan 12 pcs ke atas</span>
+              </div>
+
+              {/* Kartu per Item Keranjang (Radius 32px Sesuai DESIGN-SYSTEM.md) */}
               {cart.map((item) => {
                 const sizeSummary = Object.entries(item.sizes)
                   .map(([sz, qty]) => `${sz}: ${qty} pcs`)
@@ -236,27 +240,27 @@ export function CartDrawer({
                 if (item.addons.giftbox) addonsList.push('Kemasan Kado');
                 const specText = addonsList.length > 0 
                   ? `${sizeSummary} · ${addonsList.join(' · ')}` 
-                  : `${sizeSummary} · 100% Standar MIG`;
+                  : `${sizeSummary} · Standar MIG`;
 
                 return (
                   <div
                     key={item.cartId}
-                    className="bg-white rounded-[24px] border border-slate-100 shadow-sm p-4 sm:p-5 flex flex-col gap-3.5 transition-all hover:shadow-md"
+                    className="bg-surface rounded-card border border-line p-4 sm:p-5 flex flex-col gap-3.5 shadow-xs transition-all"
                   >
-                    {/* Header Item: Foto Thumbnail + Nama + Badge + Tombol Trash */}
+                    {/* Header Item: Thumbnail + Nama + Badge + Tombol Hapus */}
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-start gap-3.5 min-w-0">
-                        {/* Thumbnail Squircle */}
-                        <div className="w-16 h-16 rounded-2xl bg-white border border-slate-200/80 flex items-center justify-center flex-shrink-0 relative overflow-hidden p-1 shadow-xs">
+                      <div className="flex items-start gap-3 min-w-0">
+                        {/* Thumbnail Kotak Ikon 16px radius */}
+                        <div className="w-14 h-14 rounded-2xl bg-page border border-line flex items-center justify-center shrink-0 relative overflow-hidden p-1 shadow-xs">
                           {item.frontPhoto ? (
                             <img
                               src={item.frontPhoto}
                               alt={item.name}
-                              className="w-full h-full object-contain filter drop-shadow-xs"
+                              className="w-full h-full object-contain"
                             />
                           ) : (
                             <span
-                              className="w-7 h-7 rounded-xl border-2 border-white shadow-xs"
+                              className="w-7 h-7 rounded-xl border-2 border-surface shadow-xs"
                               style={{ backgroundColor: item.hex }}
                             />
                           )}
@@ -264,22 +268,22 @@ export function CartDrawer({
 
                         {/* Nama Produk & Badge */}
                         <div className="flex flex-col min-w-0">
-                          <h4 className="text-[16px] sm:text-[17px] font-bold text-slate-900 leading-snug truncate">
+                          <h4 className="text-[15px] sm:text-[16px] font-bold text-ink leading-tight truncate">
                             {item.name}
                           </h4>
-                          <span className="text-[13px] text-slate-500 font-normal">
+                          <span className="text-xs text-muted mt-0.5">
                             {item.totalQty} pcs ({item.colorName})
                           </span>
 
-                          {/* Pill Badge Ungu */}
-                          <div className="mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-50 text-[#7B29BA] text-[11px] font-semibold w-fit">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#7B29BA]" />
-                            <span>Kualitas Sablon Distro & Jahitan Rapi</span>
+                          {/* Badge Ungu Pill 24px */}
+                          <div className="mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-brand-soft text-brand text-[11px] font-semibold w-fit">
+                            <span className="w-1.5 h-1.5 rounded-full bg-brand" />
+                            <span>Sablon DTF Presisi</span>
                           </div>
                         </div>
                       </div>
 
-                      {/* Tombol Hapus (Trash Icon Outline di Kanan Atas) */}
+                      {/* Tombol Hapus Item */}
                       <button
                         type="button"
                         onClick={() => {
@@ -288,38 +292,39 @@ export function CartDrawer({
                             isOpen: true,
                             type: 'single',
                             cartId: item.cartId,
-                            message: `Apakah Anda yakin untuk menghapus ${item.name} (${item.colorName}) dari keranjang?`,
+                            title: `Hapus ${item.name}?`,
+                            description: `Semua pilihan produk ${item.name} (${item.colorName}) akan dihapus dari keranjang.`,
                           });
                         }}
-                        className="text-slate-400 hover:text-red-600 transition-colors p-1.5 -mr-1 rounded-full hover:bg-rose-50 press-active"
+                        className="press text-muted hover:text-danger-fg transition-colors p-2 rounded-full hover:bg-danger-bg cursor-pointer"
                         aria-label="Hapus produk ini"
                         title="Hapus produk ini"
                       >
-                        <Trash2 className="w-5 h-5 stroke-[1.8]" />
+                        <Trash2 className="w-4 h-4 stroke-[1.8]" />
                       </button>
                     </div>
 
                     {/* Kotak Varian & Rincian Ukuran */}
-                    <div className="bg-[#f5f4f8] rounded-2xl p-3.5 sm:p-4 flex flex-col gap-2.5">
-                      <p className="text-[13.5px] font-bold text-slate-900 leading-snug">
+                    <div className="bg-page rounded-2xl p-3.5 flex flex-col gap-2.5 border border-line/60">
+                      <p className="text-xs font-semibold text-ink leading-relaxed">
                         {specText}
                       </p>
-                      <div className="flex items-center justify-between text-[13.5px] pt-1 border-t border-slate-200/40">
-                        {/* Kontrol Jumlah / Quantity (+ / -) */}
-                        <div className="flex items-center gap-2 bg-white px-2 py-1 rounded-full border border-slate-200/70 shadow-2xs">
+                      <div className="flex items-center justify-between text-xs pt-1 border-t border-line/50">
+                        {/* Stepper Jumlah 32px */}
+                        <div className="flex items-center gap-2 bg-surface px-2 py-1 rounded-full border border-line shadow-xs">
                           <button
                             type="button"
                             onClick={() => {
                               onPlaySound?.('click');
                               onUpdateQty?.(item.cartId, -1);
                             }}
-                            className="w-5 h-5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors active:scale-90"
+                            className="press w-6 h-6 rounded-full bg-page hover:bg-line text-ink flex items-center justify-center transition-colors cursor-pointer"
                             aria-label="Kurangi jumlah"
                             title="Kurangi 1 pcs"
                           >
-                            <Minus className="w-3 h-3 stroke-[2.5]" />
+                            <Minus className="w-3 h-3 stroke-[2]" />
                           </button>
-                          <span className="text-[12.5px] font-bold text-slate-900 min-w-[36px] text-center">
+                          <span className="text-xs font-bold text-ink min-w-[36px] text-center tabular-nums">
                             {item.totalQty} pcs
                           </span>
                           <button
@@ -328,21 +333,21 @@ export function CartDrawer({
                               onPlaySound?.('click');
                               onUpdateQty?.(item.cartId, 1);
                             }}
-                            className="w-5 h-5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors active:scale-90"
+                            className="press w-6 h-6 rounded-full bg-page hover:bg-line text-ink flex items-center justify-center transition-colors cursor-pointer"
                             aria-label="Tambah jumlah"
                             title="Tambah 1 pcs"
                           >
-                            <Plus className="w-3 h-3 stroke-[2.5]" />
+                            <Plus className="w-3 h-3 stroke-[2]" />
                           </button>
                         </div>
 
-                        <strong className="text-[15px] sm:text-[16px] font-bold text-slate-900 tabular-nums">
+                        <strong className="text-[15px] font-bold text-brand tabular-nums">
                           Rp {item.totalPrice.toLocaleString('id-ID')}
                         </strong>
                       </div>
                     </div>
 
-                    {/* Link + Tambah Ukuran Lain */}
+                    {/* Link Tambah Ukuran Lain */}
                     <button
                       type="button"
                       onClick={() => {
@@ -353,87 +358,87 @@ export function CartDrawer({
                           onClose();
                         }
                       }}
-                      className="text-[#7B29BA] hover:text-[#6A21A3] font-bold text-[13.5px] flex items-center gap-1.5 w-fit active:scale-95 transition-all pt-0.5"
+                      className="press text-brand hover:text-brand-hover font-semibold text-xs flex items-center gap-1.5 w-fit cursor-pointer"
                     >
-                      <span className="text-base leading-none">+</span>
-                      <span>Tambah ukuran lain</span>
+                      <span className="text-sm font-bold">+</span>
+                      <span>Ubah atau tambah ukuran lain</span>
                     </button>
-
-                    {/* Card Pemberitahuan Desain WhatsApp */}
-                    <div className="bg-[#f5f4f8] rounded-2xl p-3 flex items-center gap-3 mt-0.5">
-                      <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#25D366] shadow-xs flex-shrink-0">
-                        {WhatsAppIcon}
-                      </div>
-                      <p className="text-[12.5px] text-slate-700 font-medium leading-snug">
-                        Desain dikirim lewat WhatsApp setelah pesanan dibuat.
-                      </p>
-                    </div>
                   </div>
                 );
               })}
 
+              {/* Kotak Pemberitahuan Desain WhatsApp (Sesuai Web Pembeli) */}
+              <div className="bg-surface rounded-2xl p-3.5 flex items-start gap-3 border border-line shadow-xs">
+                <div className="w-8 h-8 rounded-full bg-page flex items-center justify-center text-ink shrink-0">
+                  {WhatsAppIcon}
+                </div>
+                <div className="flex flex-col text-xs">
+                  <span className="font-semibold text-ink">Kirim Desain & Konsultasi CS</span>
+                  <span className="text-muted leading-relaxed mt-0.5">
+                    File sablon, logo, dan revisi desain dikirimkan langsung via WhatsApp setelah pesanan dibuat.
+                  </span>
+                </div>
+              </div>
+
               {/* Perkiraan Waktu Pengerjaan */}
-              <div className="flex items-center gap-2 text-[12.5px] text-slate-500 font-normal px-2 pt-1 pb-4">
-                <Clock className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                <span>Perkiraan jadi 1-2 hari setelah desain disetujui</span>
+              <div className="flex items-center gap-2 text-xs text-muted px-2 pt-1 pb-2">
+                <Clock className="w-4 h-4 text-muted shrink-0" />
+                <span>Perkiraan jadi: 1-2 hari kerja setelah desain disetujui</span>
               </div>
             </>
           )}
         </div>
 
-        {/* FLOATING CHECKOUT BAR (Docked di bagian bawah Right Sidebar) */}
+        {/* FLOATING ACTION FOOTER (Total & Tombol Pesan via WhatsApp) */}
         {cart.length > 0 && (
-          <div className="absolute bottom-0 left-0 right-0 z-30 p-4 pb-[max(18px,calc(14px+env(safe-area-inset-bottom)))] pointer-events-none flex justify-center bg-gradient-to-t from-[#f8f7fb] via-[#f8f7fb]/80 to-transparent pt-6">
-            <div className="w-full bg-white rounded-full p-2.5 pl-6 pr-2.5 shadow-[0_10px_35px_rgba(0,0,0,0.14)] border border-slate-100 flex items-center justify-between pointer-events-auto transition-all hover:shadow-[0_14px_40px_rgba(0,0,0,0.18)]">
-              <div className="flex flex-col min-w-0">
-                <span className="text-[11.5px] text-slate-500 font-medium">
-                  Total · {totalItems} pcs
-                </span>
-                <strong className="text-[18px] sm:text-[20px] font-black text-slate-900 tracking-tight leading-none mt-0.5 tabular-nums">
-                  Rp {totalAmount.toLocaleString('id-ID')}
-                </strong>
-              </div>
-
-              {/* Tombol Ungu Solid "Checkout" */}
-              <button
-                type="button"
-                onClick={() => {
-                  onPlaySound?.('click');
-                  handleCheckoutWA();
-                }}
-                className="bg-[#7B29BA] hover:bg-[#6A21A3] active:scale-95 text-white font-bold text-[14.5px] sm:text-[15px] px-7 sm:px-8 py-3 rounded-full shadow-sm hover:shadow-md transition-all whitespace-nowrap flex items-center gap-2"
-              >
-                <span>Checkout</span>
-              </button>
+          <div className="sticky bottom-0 left-0 right-0 z-30 p-4 pb-[max(18px,calc(14px+env(safe-area-inset-bottom)))] glass border-t border-line flex flex-col gap-2">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-xs text-muted font-medium">
+                Total Perkiraan ({totalItems} pcs)
+              </span>
+              <strong className="text-xl sm:text-2xl font-bold text-ink tracking-tight tabular-nums">
+                Rp {totalAmount.toLocaleString('id-ID')}
+              </strong>
             </div>
+
+            {/* Tombol Utama WhatsApp 44px Pill Ungu Brand */}
+            <button
+              type="button"
+              onClick={() => {
+                onPlaySound?.('click');
+                handleCheckoutWA();
+              }}
+              className="press w-full h-11 px-6 rounded-full bg-brand hover:bg-brand-hover text-white text-sm font-bold shadow-xs flex items-center justify-center gap-2 cursor-pointer transition-colors"
+            >
+              {WhatsAppIcon}
+              <span>Pesan via WhatsApp</span>
+            </button>
           </div>
         )}
-        {/* MODAL KONFIRMASI HAPUS GAYA KASIR MIG */}
+
+        {/* MODAL KONFIRMASI HAPUS RESMI GAYA MIG UI (Tombol Ditumpuk) */}
         {confirmDelete.isOpen && (
           <div
-            className="fixed inset-0 z-[100] bg-black/45 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150"
+            className="fixed inset-0 z-[100] bg-ink/40 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn"
             onClick={() => setConfirmDelete((prev) => ({ ...prev, isOpen: false }))}
           >
             <div
               role="alertdialog"
               aria-modal="true"
-              className="bg-white rounded-2xl max-w-[320px] w-full overflow-hidden text-center shadow-2xl border border-slate-100 animate-in zoom-in-95 duration-150"
+              className="bg-surface rounded-card max-w-[340px] w-full p-6 shadow-float border border-line flex flex-col gap-4 text-center animate-scaleUp"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 text-[15px] font-semibold text-slate-800 leading-snug">
-                {confirmDelete.message || 'Apakah Anda yakin untuk menghapus?'}
+              <div className="flex flex-col gap-1.5">
+                <h3 className="text-base font-bold text-ink">
+                  {confirmDelete.title}
+                </h3>
+                <p className="text-xs text-muted leading-relaxed">
+                  {confirmDelete.description}
+                </p>
               </div>
-              <div className="flex border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => {
-                    onPlaySound?.('click');
-                    setConfirmDelete((prev) => ({ ...prev, isOpen: false }));
-                  }}
-                  className="flex-1 py-3.5 text-[15px] font-semibold text-slate-700 hover:bg-slate-50 border-r border-slate-100 transition-colors press-active"
-                >
-                  Tidak
-                </button>
+
+              {/* Footer Tombol Ditumpuk Sesuai Aturan MIG UI */}
+              <div className="flex flex-col gap-2 pt-2">
                 <button
                   type="button"
                   onClick={() => {
@@ -445,9 +450,19 @@ export function CartDrawer({
                     }
                     setConfirmDelete((prev) => ({ ...prev, isOpen: false }));
                   }}
-                  className="flex-1 py-3.5 text-[15px] font-bold text-red-600 hover:bg-red-50 transition-colors press-active"
+                  className="press w-full h-11 rounded-full bg-danger-fg text-white text-sm font-bold hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center"
                 >
-                  Ya
+                  Hapus
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onPlaySound?.('click');
+                    setConfirmDelete((prev) => ({ ...prev, isOpen: false }));
+                  }}
+                  className="press w-full h-11 rounded-full bg-surface border border-line text-ink text-sm font-semibold hover:bg-page transition-colors cursor-pointer flex items-center justify-center"
+                >
+                  Batal
                 </button>
               </div>
             </div>

@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { Lock, Unlock } from 'lucide-react';
 import { INITIAL_CATEGORIES } from '@/data/catalog';
-import { CategoryId, CategoryData, CartItem, CustomPhotoData, CustomCategoryData } from '@/types';
+import { CategoryId, CategoryData, CustomPhotoData, CustomCategoryData } from '@/types';
 import { useSound } from '@/hooks/useSound';
 import { Topbar } from '@/components/Topbar';
 import { HangerRack } from '@/components/HangerRack';
 import { DetailStage } from '@/components/DetailStage';
-import { CartDrawer } from '@/components/CartDrawer';
 import { CustomCatalogModal } from '@/components/CustomCatalogModal';
 import { BackgroundMusic } from '@/components/BackgroundMusic';
 
@@ -15,31 +15,26 @@ export default function HomePage() {
   const [currentCategory, setCurrentCategory] = useState<CategoryId>('kaos');
   const [activeSlotIndex, setActiveSlotIndex] = useState(3); // Kaos Putih Netral (04 / 07)
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
 
   const [soundEnabled, setSoundEnabled] = useState(true);
   const { playSound } = useSound(soundEnabled);
 
-  const [cart, setCart] = useState<CartItem[]>([]);
   const [customPhotos, setCustomPhotos] = useState<Record<string, CustomPhotoData>>({});
   const [customCategories, setCustomCategories] = useState<Record<string, CustomCategoryData>>({});
 
   // Mode Rahasia Admin (disembunyikan secara default untuk pengunjung umum)
   const [isAdmin, setIsAdmin] = useState(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ icon: 'unlock' | 'lock'; text: string } | null>(null);
 
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
+  const showToast = (icon: 'unlock' | 'lock', text: string) => {
+    setToast({ icon, text });
+    setTimeout(() => setToast(null), 2500);
   };
 
   // 1. Muat data dari localStorage & cek URL secret admin saat mount
   useEffect(() => {
     try {
-      const savedCart = localStorage.getItem('mig-apparel-cart');
-      if (savedCart) setCart(JSON.parse(savedCart));
-
       const savedPhotos = localStorage.getItem('mig-apparel-custom-photos');
       if (savedPhotos) setCustomPhotos(JSON.parse(savedPhotos));
 
@@ -69,23 +64,14 @@ export default function HomePage() {
       const next = !prev;
       if (next) {
         localStorage.setItem('mig-apparel-admin-mode', 'true');
-        showToast('🔓 Mode Admin Aktif: Tombol Atur Katalog Sekarang Terlihat');
+        showToast('unlock', 'Mode Admin Aktif');
       } else {
         localStorage.removeItem('mig-apparel-admin-mode');
-        showToast('🔒 Mode Admin Dinonaktifkan: Tampilan Toko Bersih untuk Pembeli');
+        showToast('lock', 'Mode Admin Dinonaktifkan');
       }
       return next;
     });
   };
-
-  // 2. Simpan cart ke localStorage saat berubah
-  useEffect(() => {
-    try {
-      localStorage.setItem('mig-apparel-cart', JSON.stringify(cart));
-    } catch {
-      // Abaikan
-    }
-  }, [cart]);
 
   // Siapkan data kategori aktif yang sudah digabung dengan kustomisasi
   const baseCategory = INITIAL_CATEGORIES[currentCategory] || INITIAL_CATEGORIES.kaos;
@@ -112,72 +98,10 @@ export default function HomePage() {
     playSound('slide');
   };
 
-  const handleAddToCart = (order: {
-    item: CategoryData['rack'][0];
-    categoryId: CategoryId;
-    sizes: Record<string, number>;
-    addons: { sablon: boolean; giftbox: boolean };
-    totalPrice: number;
-  }) => {
-    const totalQty = Object.values(order.sizes).reduce((acc, q) => acc + q, 0);
-    const cartId = `${order.item.id}-${Date.now()}`;
-    const custom = customPhotos[order.item.id];
-
-    // Ambil foto produk dari custom upload atau katalog asli
-    const cat = INITIAL_CATEGORIES[order.categoryId];
-    const catalogItem = cat?.rack.find((r) => r.id === order.item.id);
-    const frontPhoto = custom?.frontDataUrl || order.item.front || catalogItem?.front || null;
-
-    const newItem: CartItem = {
-      cartId,
-      itemId: order.item.id,
-      categoryId: order.categoryId,
-      name: custom?.name || order.item.name,
-      colorName: custom?.colorName || order.item.colorName,
-      hex: order.item.hex,
-      sizes: order.sizes,
-      totalQty,
-      basePrice: custom?.price || order.item.price,
-      addons: order.addons,
-      totalPrice: order.totalPrice,
-      frontPhoto,
-    };
-
-    setCart((prev) => [newItem, ...prev]);
-    // Jangan buka keranjang otomatis agar efek produk terbang ke keranjang berjalan lancar
-  };
-
-  const handleUpdateCartQty = (cartId: string, delta: number) => {
-    setCart((prev) => {
-      return prev
-        .map((item) => {
-          if (item.cartId !== cartId) return item;
-          const currentTotal = item.totalQty;
-          const newTotal = currentTotal + delta;
-          if (newTotal <= 0) return null;
-          const unitPrice = Math.round(item.totalPrice / Math.max(1, currentTotal));
-          const firstKey = Object.keys(item.sizes)[0] || 'M';
-          const newSizes = {
-            ...item.sizes,
-            [firstKey]: Math.max(1, (item.sizes[firstKey] || 1) + delta),
-          };
-          const recalculatedQty = Object.values(newSizes).reduce((acc, q) => acc + q, 0);
-          return {
-            ...item,
-            sizes: newSizes,
-            totalQty: recalculatedQty,
-            totalPrice: unitPrice * recalculatedQty,
-          };
-        })
-        .filter(Boolean) as CartItem[];
-    });
-  };
-
   const handleOrderViaWhatsApp = (order: {
     item: CategoryData['rack'][0];
     categoryId: CategoryId;
     sizes: Record<string, number>;
-    addons: { sablon: boolean; giftbox: boolean };
     totalPrice: number;
   }) => {
     const custom = customPhotos[order.item.id];
@@ -191,8 +115,6 @@ export default function HomePage() {
       .map(([sz, q]) => `${sz}: ${q} pcs`)
       .join(', ');
     text += `*Ukuran:* ${sizeStr} (Total ${totalQty} pcs)\n`;
-    if (order.addons.sablon) text += `*Tambahan:* Cetak logo / nama dada (+15rb)\n`;
-    if (order.addons.giftbox) text += `*Tambahan:* Kemasan kotak kado (+10rb)\n`;
     text += `*Total Harga:* Rp ${order.totalPrice.toLocaleString('id-ID')}\n\n`;
     text += `Mohon konfirmasi ketersediaan dan nomor rekening untuk transfer ya. Terima kasih!`;
 
@@ -231,8 +153,6 @@ export default function HomePage() {
     setIsCustomModalOpen(false);
   };
 
-  const cartTotalCount = cart.reduce((acc, it) => acc + it.totalQty, 0);
-
   return (
     <main className="h-[100dvh] max-h-[100dvh] w-full bg-page flex flex-col relative overflow-hidden select-none md:select-auto">
       {/* 1. Bar Atas (Header Toko & Kategori) */}
@@ -240,8 +160,6 @@ export default function HomePage() {
         currentCategory={currentCategory}
         categories={categoryTabList}
         onSelectCategory={handleSelectCategory}
-        cartCount={cartTotalCount}
-        onOpenCart={() => setIsCartOpen(true)}
         onOpenCustomModal={() => setIsCustomModalOpen(true)}
         soundEnabled={soundEnabled}
         onToggleSound={() => setSoundEnabled((prev) => !prev)}
@@ -273,33 +191,11 @@ export default function HomePage() {
         itemIndex={activeSlotIndex}
         onSelectIndex={setActiveSlotIndex}
         customPhotos={customPhotos}
-        cartCount={cartTotalCount}
-        onOpenCart={() => setIsCartOpen(true)}
-        onAddToCart={handleAddToCart}
         onOrderViaWhatsApp={handleOrderViaWhatsApp}
         onPlaySound={playSound}
       />
 
-      {/* 4. Halaman Keranjang Belanja (Right Sidebar Drawer di Desktop & Mobile) */}
-      <CartDrawer
-        isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
-        cart={cart}
-        onRemoveItem={(id) => setCart((prev) => prev.filter((it) => it.cartId !== id))}
-        onUpdateQty={handleUpdateCartQty}
-        onClearCart={() => setCart([])}
-        onOpenItemDetail={(itemId) => {
-          setIsCartOpen(false);
-          const idx = activeCategoryData.rack.findIndex((it) => it.id === itemId);
-          if (idx !== -1) {
-            setActiveSlotIndex(idx);
-            setIsDetailOpen(true);
-          }
-        }}
-        onPlaySound={playSound}
-      />
-
-      {/* 5. Modal Atur Katalog */}
+      {/* 4. Modal Atur Katalog (Khusus Mode Admin) */}
       <CustomCatalogModal
         isOpen={isCustomModalOpen}
         onClose={() => setIsCustomModalOpen(false)}
@@ -310,13 +206,18 @@ export default function HomePage() {
         onResetCustom={handleResetCustom}
       />
 
-      {/* 6. Pemutar Musik Latar Bebas Lisensi (Lofi Chill) */}
-      <BackgroundMusic soundEnabled={soundEnabled} />
+      {/* 5. Pemutar Musik Latar Bebas Lisensi (Lofi Chill) */}
+      <BackgroundMusic soundEnabled={soundEnabled} isDetailOpen={isDetailOpen} />
 
       {/* Toast Notifikasi Mode Rahasia */}
-      {toastMessage && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] px-5 py-3 rounded-full bg-ink text-surface text-[13px] font-semibold shadow-float flex items-center gap-2 animate-bounce">
-          <span>{toastMessage}</span>
+      {toast && (
+        <div className="fixed top-18 md:top-6 left-1/2 -translate-x-1/2 z-[100] px-4 py-2 rounded-2xl bg-ink/95 text-surface border border-line/20 shadow-float flex items-center gap-2 text-xs sm:text-[13px] font-semibold whitespace-nowrap backdrop-blur-md transition-all">
+          {toast.icon === 'unlock' ? (
+            <Unlock className="w-3.5 h-3.5 text-brand-soft shrink-0" />
+          ) : (
+            <Lock className="w-3.5 h-3.5 text-surface/60 shrink-0" />
+          )}
+          <span>{toast.text}</span>
         </div>
       )}
     </main>

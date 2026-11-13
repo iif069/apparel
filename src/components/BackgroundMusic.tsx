@@ -5,9 +5,10 @@ import { Volume2, VolumeX, Music } from 'lucide-react';
 
 interface BackgroundMusicProps {
   soundEnabled: boolean;
+  isDetailOpen?: boolean;
 }
 
-export function BackgroundMusic({ soundEnabled }: BackgroundMusicProps) {
+export function BackgroundMusic({ soundEnabled, isDetailOpen = false }: BackgroundMusicProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -71,37 +72,40 @@ export function BackgroundMusic({ soundEnabled }: BackgroundMusicProps) {
     }
   };
 
+  if (isDetailOpen) {
+    // Sembunyikan widget musik saat membuka modal detail agar tampilan bersih
+    return null;
+  }
+
   return (
-    <div className="fixed bottom-4 left-4 z-40 select-none">
+    <div className="fixed bottom-[84px] left-4 md:bottom-[84px] md:left-8 z-30 select-none">
       <button
         type="button"
         onClick={toggleMusic}
         title={isPlaying ? 'Jeda Musik Latar' : 'Putar Musik Latar'}
-        className={`group flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-md border shadow-sm transition-all duration-300 press-active ${
-          isPlaying
-            ? 'bg-white/90 border-[#7B29BA]/30 text-ink shadow-[0_4px_16px_rgba(123,41,186,0.15)] hover:bg-white'
-            : 'bg-white/70 border-slate-200/80 text-ink/60 hover:text-ink hover:bg-white'
+        className={`press flex items-center gap-2 h-9 px-3 rounded-full bg-surface/95 backdrop-blur-md border border-line hover:border-brand/40 shadow-xs text-ink transition-all cursor-pointer ${
+          isPlaying ? 'border-brand/40 shadow-soft' : ''
         }`}
         aria-label={isPlaying ? 'Jeda musik' : 'Putar musik'}
       >
         {/* Visualizer Bar Equalizer berdenyut saat musik aktif */}
         {isPlaying ? (
           <div className="flex items-end gap-0.5 h-3.5 w-3.5">
-            <span className="w-1 bg-[#7B29BA] rounded-full animate-music-bar-1" />
-            <span className="w-1 bg-[#7B29BA] rounded-full animate-music-bar-2" />
-            <span className="w-1 bg-[#7B29BA] rounded-full animate-music-bar-3" />
+            <span className="w-0.5 h-3 bg-brand rounded-full animate-music-bar-1" />
+            <span className="w-0.5 h-2 bg-brand rounded-full animate-music-bar-2" />
+            <span className="w-0.5 h-3 bg-brand rounded-full animate-music-bar-3" />
           </div>
         ) : (
-          <Music className="w-3.5 h-3.5 text-ink/50 group-hover:text-ink transition-colors" />
+          <Music className="w-3.5 h-3.5 text-muted group-hover:text-brand transition-colors" />
         )}
 
-        <span className="text-[11.5px] font-semibold tracking-tight">
+        <span className="text-[12px] font-bold text-ink">
           {isPlaying ? 'Music' : 'BGM'}
         </span>
 
         {/* Ikon Speaker Mute/Unmute */}
-        <span className="text-ink/40 group-hover:text-ink/80 transition-colors ml-0.5">
-          {isPlaying ? <Volume2 className="w-3 h-3 text-[#7B29BA]" /> : <VolumeX className="w-3 h-3" />}
+        <span className="text-muted transition-colors ml-0.5">
+          {isPlaying ? <Volume2 className="w-3 h-3 text-brand" /> : <VolumeX className="w-3 h-3 text-muted" />}
         </span>
       </button>
     </div>

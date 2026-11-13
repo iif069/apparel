@@ -1,11 +1,18 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, ShoppingCart, Plus, Minus, ChevronDown, Check } from 'lucide-react';
+import { ArrowLeft, Plus, Minus, ChevronDown, Check, Sparkles } from 'lucide-react';
 import { GarmentItem, CategoryData, ViewAngle, CustomPhotoData } from '@/types';
 import { GarmentRotator } from './GarmentRotator';
 import { AngleTabs } from './AngleTabs';
 import { OrderBottomBar } from './OrderBottomBar';
+
+// SVG Resmi WhatsApp seragam
+const WhatsAppIcon = ({ className = 'w-4 h-4 flex-shrink-0' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2ZM12.04 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.16 12.04 20.16C10.66 20.16 9.3 19.81 8.1 19.14L7.54 18.82L4.43 19.64L5.26 16.6L4.91 16.03C4.18 14.77 3.8 13.35 3.8 11.91C3.8 7.37 7.5 3.67 12.04 3.67ZM8.73 7.34C8.54 7.34 8.35 7.35 8.17 7.73C7.99 8.12 7.45 8.63 7.45 9.69C7.45 10.74 8.22 11.75 8.33 11.9C8.44 12.05 9.8 14.23 11.94 15.07C13.72 15.77 14.08 15.63 14.47 15.59C14.85 15.55 15.71 15.08 15.89 14.57C16.07 14.06 16.07 13.63 16.01 13.54C15.96 13.45 15.81 13.4 15.58 13.28C15.35 13.17 14.23 12.62 14.02 12.54C13.81 12.47 13.66 12.43 13.51 12.66C13.36 12.89 12.93 13.4 12.8 13.55C12.67 13.71 12.54 13.73 12.31 13.61C12.08 13.5 11.35 13.26 10.47 12.48C9.79 11.87 9.33 11.12 9.2 10.89C9.07 10.66 9.18 10.54 9.3 10.42C9.4 10.32 9.53 10.15 9.65 10.01C9.76 9.87 9.8 9.77 9.88 9.62C9.96 9.46 9.92 9.33 9.86 9.22C9.8 9.11 9.35 7.99 9.16 7.54C8.98 7.1 8.79 7.16 8.73 7.34Z" />
+  </svg>
+);
 
 interface DetailStageProps {
   isOpen: boolean;
@@ -14,20 +21,10 @@ interface DetailStageProps {
   itemIndex: number;
   onSelectIndex: (index: number) => void;
   customPhotos: Record<string, CustomPhotoData>;
-  cartCount: number;
-  onOpenCart: () => void;
-  onAddToCart: (order: {
-    item: GarmentItem;
-    categoryId: CategoryData['id'];
-    sizes: Record<string, number>;
-    addons: { sablon: boolean; giftbox: boolean };
-    totalPrice: number;
-  }) => void;
   onOrderViaWhatsApp: (order: {
     item: GarmentItem;
     categoryId: CategoryData['id'];
     sizes: Record<string, number>;
-    addons: { sablon: boolean; giftbox: boolean };
     totalPrice: number;
   }) => void;
   onPlaySound: (type: 'slide' | 'open' | 'click' | 'flip') => void;
@@ -40,22 +37,13 @@ export function DetailStage({
   itemIndex,
   onSelectIndex,
   customPhotos,
-  cartCount,
-  onOpenCart,
-  onAddToCart,
   onOrderViaWhatsApp,
   onPlaySound,
 }: DetailStageProps) {
   const [viewAngle, setViewAngle] = useState<ViewAngle>('front');
   const [sizeQtys, setSizeQtys] = useState<Record<string, number>>({ M: 1 });
-  const [addons, setAddons] = useState<{ sablon: boolean; giftbox: boolean }>({
-    sablon: false,
-    giftbox: false,
-  });
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
   const [sizePickerOpen, setSizePickerOpen] = useState(false);
-  const [toastVisible, setToastVisible] = useState(false);
-  const toastTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -87,8 +75,7 @@ export function DetailStage({
 
   // Hitung total kuantitas & harga
   const totalQty = Object.values(sizeQtys).reduce((acc, q) => acc + q, 0);
-  const addonCost = (addons.sablon ? 15000 : 0) + (addons.giftbox ? 10000 : 0);
-  const calculatedTotal = (price + addonCost) * Math.max(1, totalQty);
+  const calculatedTotal = price * Math.max(1, totalQty);
 
   const handleAddSize = (size: string) => {
     if (!size) return;
@@ -113,106 +100,12 @@ export function DetailStage({
     onPlaySound('click');
   };
 
-  // Efek Produk Terbang ke Keranjang (Gaya Kasir MIG Digital Printing / Shopee Curve)
-  const triggerFlyToCart = (photoUrl?: string | null, fallbackColor?: string) => {
-    if (typeof window === 'undefined') return;
-    const target =
-      document.querySelector<HTMLElement>('#detail-cart-btn') ||
-      document.querySelector<HTMLElement>('[data-cart-btn]');
-    if (!target) return;
-
-    const denyut = () => {
-      target.classList.add('cart-pop-anim');
-      setTimeout(() => target.classList.remove('cart-pop-anim'), 400);
-    };
-
-    if (
-      !window.matchMedia ||
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
-      typeof Element.prototype.animate !== 'function'
-    ) {
-      denyut();
-      return;
-    }
-
-    const tujuan = target.getBoundingClientRect();
-    const x1 = tujuan.left + tujuan.width / 2;
-    const y1 = tujuan.top + tujuan.height / 2;
-
-    const sisi = 64;
-    const x0 = x1;
-    const y0 = y1 + 75;
-
-    const foto = document.createElement('div');
-    foto.className = 'foto-terbang';
-    foto.style.width = `${sisi}px`;
-    foto.style.height = `${sisi}px`;
-    foto.style.left = `${x0 - sisi / 2}px`;
-    foto.style.top = `${y0 - sisi / 2}px`;
-
-    if (photoUrl) {
-      foto.style.backgroundImage = `url('${photoUrl}')`;
-    } else if (fallbackColor) {
-      foto.style.backgroundColor = fallbackColor;
-    }
-    document.body.appendChild(foto);
-
-    const xc = x0 + 16;
-    const yc = y1 - 20;
-    const langkah = 20;
-    const frames: Keyframe[] = [];
-    for (let i = 0; i <= langkah; i++) {
-      const t = i / langkah,
-        u = 1 - t;
-      const x = u * u * x0 + 2 * u * t * xc + t * t * x1;
-      const y = u * u * y0 + 2 * u * t * yc + t * t * y1;
-      frames.push({
-        offset: t,
-        transform: `translate(${(x - x0).toFixed(1)}px, ${(y - y0).toFixed(1)}px) scale(${(1 - 0.85 * t).toFixed(2)})`,
-        opacity: t < 0.8 ? 1 : 1 - (t - 0.8) / 0.2,
-      });
-    }
-
-    const anim = foto.animate(frames, {
-      duration: 620,
-      easing: 'cubic-bezier(.45,0,.55,1)',
-      fill: 'forwards',
-    });
-    anim.onfinish = () => {
-      foto.remove();
-      denyut();
-    };
-  };
-
-  const handleAddCartClick = () => {
-    onPlaySound('click');
-    onAddToCart({
-      item: currentItem,
-      categoryId: categoryData.id,
-      sizes: sizeQtys,
-      addons,
-      totalPrice: calculatedTotal,
-    });
-
-    // Jalankan efek produk melayang ke keranjang (tanpa membuka keranjang langsung)
-    const photoUrl = custom?.frontDataUrl || currentItem.front || null;
-    triggerFlyToCart(photoUrl, currentItem.hex);
-
-    // Tampilkan notifikasi toast sukses ditambahkan
-    setToastVisible(true);
-    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    toastTimerRef.current = setTimeout(() => {
-      setToastVisible(false);
-    }, 1300);
-  };
-
   const handleWhatsAppClick = () => {
     onPlaySound('click');
     onOrderViaWhatsApp({
       item: currentItem,
       categoryId: categoryData.id,
       sizes: sizeQtys,
-      addons,
       totalPrice: calculatedTotal,
     });
   };
@@ -227,23 +120,23 @@ export function DetailStage({
       className="fixed inset-0 z-50 bg-page flex flex-col w-full h-[100dvh] overflow-hidden"
     >
       {/* 1. HEADER DETAIL TETAP DI ATAS (z-index 50) */}
-      <header className="flex-shrink-0 w-full h-[72px] md:h-[76px] bg-surface border-b border-line flex items-center z-50 px-4 md:px-7">
+      <header className="flex-shrink-0 w-full h-[68px] md:h-[72px] glass border-b border-line/60 flex items-center z-50 px-4 md:px-7 transition-colors">
         <div className="w-full max-w-[1340px] mx-auto flex items-center justify-between gap-3">
           {/* Tombol Kembali ke Rak (Sama persis dengan tombol Back di Keranjang) */}
           <div className="flex items-center gap-2.5">
             <button
               type="button"
               onClick={onClose}
-              className="w-11 h-11 rounded-full bg-surface border border-line shadow-xs flex items-center justify-center hover:bg-page text-ink transition-colors press-active"
+              className="press w-11 h-11 rounded-full bg-surface border border-line shadow-xs flex items-center justify-center hover:bg-page text-ink transition-colors cursor-pointer"
               aria-label="Kembali ke rak"
               title="Kembali ke rak"
             >
-              <ArrowLeft className="w-5 h-5 stroke-[2.2]" />
+              <ArrowLeft className="w-5 h-5 stroke-[2]" />
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="hidden md:inline-block text-[14px] font-bold text-ink/80 hover:text-ink transition-colors cursor-pointer"
+              className="press hidden md:inline-block text-[14px] font-bold text-ink hover:text-brand transition-colors cursor-pointer"
             >
               Kembali ke rak
             </button>
@@ -256,34 +149,23 @@ export function DetailStage({
                 {productName}
               </span>
             ) : (
-              <span className="px-3.5 py-1.5 rounded-full text-[13px] font-bold bg-[#eceaf2] text-ink/80 tabular-nums">
+              <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-page text-ink/80 border border-line tabular-nums">
                 {counterText}
               </span>
             )}
           </div>
 
-          {/* Tombol Keranjang */}
-          <button
-            type="button"
-            id="detail-cart-btn"
-            data-cart-btn
-            onClick={onOpenCart}
-            className="relative flex items-center justify-center w-11 h-11 md:w-auto md:h-11 md:px-4 md:gap-2.5 rounded-full bg-surface text-ink border border-line shadow-xs hover:bg-page transition-colors press-active"
-            aria-label={`Keranjang belanja (${cartCount} barang)`}
+          {/* Tombol Chat WhatsApp CS */}
+          <a
+            href="https://wa.me/6281222400922?text=Halo%20MIG%20Digital%20Printing%2C%20saya%20mau%20tanya%20dan%20pesan%20apparel%20dari%20katalog"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="press flex items-center justify-center gap-2 h-11 px-4 rounded-full bg-surface text-ink border border-line hover:border-brand/40 shadow-xs transition-colors cursor-pointer"
+            aria-label="Hubungi WhatsApp CS"
           >
-            <ShoppingCart className="w-5 h-5 text-ink" />
-            <span className="hidden md:inline text-[13.5px] font-bold">Keranjang</span>
-            {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 md:static md:top-auto md:right-auto inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold rounded-full bg-brand text-surface shadow-xs">
-                {cartCount}
-              </span>
-            )}
-            {cartCount === 0 && (
-              <span className="hidden md:inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold rounded-full bg-line text-ink/60">
-                0
-              </span>
-            )}
-          </button>
+            <WhatsAppIcon className="w-4 h-4 flex-shrink-0" />
+            <span className="text-[13px] font-bold text-ink">Chat WA</span>
+          </a>
         </div>
       </header>
 
@@ -320,11 +202,11 @@ export function DetailStage({
           <div className="bg-surface border border-line rounded-[28px] p-5 sm:p-6 flex flex-col gap-4 shadow-soft">
             {/* Badge Status */}
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
-                Stok tersedia
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold bg-brand-soft text-brand border border-brand/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
+                Desain custom
               </span>
-              <span className="px-3 py-1 rounded-full text-[12px] font-semibold bg-brand-soft text-brand border border-brand/30">
+              <span className="px-3 py-1 rounded-full text-[12px] font-semibold bg-page text-ink/75 border border-line">
                 Bisa satuan &amp; lusinan
               </span>
             </div>
@@ -463,41 +345,28 @@ export function DetailStage({
                 ))}
               </div>
             </div>
+          </div>
 
-            {/* Tambahan Opsional */}
-            <div className="flex flex-col gap-2 pt-2 border-t border-line">
-              <span className="text-[13px] font-bold text-ink">Tambahan (opsional)</span>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAddons((prev) => ({ ...prev, sablon: !prev.sablon }));
-                    onPlaySound('click');
-                  }}
-                  className={`flex-1 min-h-[44px] px-4 py-2.5 rounded-full border text-[13px] font-semibold text-center sm:text-left transition-all press-active ${
-                    addons.sablon
-                      ? 'bg-brand text-surface border-brand shadow-sm'
-                      : 'bg-surface text-ink border-line hover:border-ink/30'
-                  }`}
-                >
-                  + Cetak logo / nama dada (+15rb)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAddons((prev) => ({ ...prev, giftbox: !prev.giftbox }));
-                    onPlaySound('click');
-                  }}
-                  className={`flex-1 min-h-[44px] px-4 py-2.5 rounded-full border text-[13px] font-semibold text-center sm:text-left transition-all press-active ${
-                    addons.giftbox
-                      ? 'bg-brand text-surface border-brand shadow-sm'
-                      : 'bg-surface text-ink border-line hover:border-ink/30'
-                  }`}
-                >
-                  + Kemasan kotak kado (+10rb)
-                </button>
-              </div>
+          {/* Kartu CTA Desain Custom Mobile */}
+          <div className="bg-brand-soft border border-brand/25 rounded-card p-5 flex flex-col gap-2.5 shadow-xs">
+            <div className="flex items-center gap-2 text-brand font-bold text-[14px]">
+              <Sparkles className="w-4 h-4 text-brand shrink-0 animate-pulse" />
+              <span>Mau Buat Desain Custom Sendiri?</span>
             </div>
+            <p className="text-xs text-ink/75 leading-relaxed">
+              Punya ide motif, logo tim esport/futsal, seragam kantor, atau konsep sablon bebas? Tim desainer MIG siap bantu wujudkan mockup & preview gratis!
+            </p>
+            <a
+              href={`https://wa.me/6281222400922?text=${encodeURIComponent(
+                `Halo MIG Digital Printing, saya mau konsultasi bikin desain custom untuk ${categoryData.heroTitle || 'Apparel'} (${productName}). Punya motif/konsep sendiri nih!`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="press mt-0.5 w-full min-h-[44px] px-5 rounded-full bg-brand hover:bg-brand-hover text-white text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
+            >
+              <WhatsAppIcon className="w-4 h-4 shrink-0" />
+              <span>Desain Custom? Chat via WhatsApp</span>
+            </a>
           </div>
 
           {/* Kartu Keterangan Produk Mobile */}
@@ -543,11 +412,11 @@ export function DetailStage({
             <div className="bg-surface border border-line rounded-[28px] p-6 flex flex-col gap-4 shadow-soft">
               {/* Badge Status */}
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
-                  Stok tersedia
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold bg-brand-soft text-brand border border-brand/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
+                  Desain custom
                 </span>
-                <span className="px-3 py-1 rounded-full text-[12px] font-semibold bg-brand-soft text-brand border border-brand/30">
+                <span className="px-3 py-1 rounded-full text-[12px] font-semibold bg-page text-ink/75 border border-line">
                   Bisa satuan &amp; lusinan
                 </span>
               </div>
@@ -612,6 +481,28 @@ export function DetailStage({
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* Kartu CTA Desain Custom Desktop (Kolom Kiri) */}
+            <div className="bg-brand-soft border border-brand/25 rounded-card p-5 flex flex-col gap-2.5 shadow-xs">
+              <div className="flex items-center gap-2 text-brand font-bold text-sm">
+                <Sparkles className="w-4 h-4 text-brand shrink-0 animate-pulse" />
+                <span>Mau Buat Desain Custom Sendiri?</span>
+              </div>
+              <p className="text-xs text-ink/75 leading-relaxed">
+                Punya konsep motif, logo tim esport/futsal, seragam komunitas, atau desain sablon bebas? Tim desainer MIG siap buatkan preview gratis!
+              </p>
+              <a
+                href={`https://wa.me/6281222400922?text=${encodeURIComponent(
+                  `Halo MIG Digital Printing, saya mau konsultasi bikin desain custom untuk ${categoryData.heroTitle || 'Apparel'} (${productName}). Punya motif/konsep sendiri nih!`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="press mt-0.5 w-full min-h-[44px] px-5 rounded-full bg-brand hover:bg-brand-hover text-white text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
+              >
+                <WhatsAppIcon className="w-4 h-4 shrink-0" />
+                <span>Desain Custom? Chat via WhatsApp</span>
+              </a>
             </div>
 
             {/* Kartu Keterangan Produk & Spesifikasi */}
@@ -748,47 +639,26 @@ export function DetailStage({
                 </div>
               </div>
 
-              {/* Tambahan Opsional */}
-              <div className="flex flex-col gap-2 pt-2 border-t border-line">
-                <span className="text-[13px] font-bold text-ink">Tambahan (opsional)</span>
-                <div className="flex flex-col gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAddons((prev) => ({ ...prev, sablon: !prev.sablon }));
-                      onPlaySound('click');
-                    }}
-                    className={`w-full min-h-[44px] px-4 py-2.5 rounded-full border text-[13px] font-semibold text-left transition-all press-active ${
-                      addons.sablon
-                        ? 'bg-brand text-surface border-brand shadow-sm'
-                        : 'bg-surface text-ink border-line hover:border-ink/30'
-                    }`}
-                  >
-                    + Cetak logo / nama dada (+15rb)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAddons((prev) => ({ ...prev, giftbox: !prev.giftbox }));
-                      onPlaySound('click');
-                    }}
-                    className={`w-full min-h-[44px] px-4 py-2.5 rounded-full border text-[13px] font-semibold text-left transition-all press-active ${
-                      addons.giftbox
-                        ? 'bg-brand text-surface border-brand shadow-sm'
-                        : 'bg-surface text-ink border-line hover:border-ink/30'
-                    }`}
-                  >
-                    + Kemasan kotak kado (+10rb)
-                  </button>
+              {/* CTA Ringkas Desain Custom di Kolom Pemesanan */}
+              <a
+                href={`https://wa.me/6281222400922?text=${encodeURIComponent(
+                  `Halo MIG Digital Printing, saya mau konsultasi bikin desain custom untuk ${categoryData.heroTitle || 'Apparel'} (${productName}). Punya motif/konsep sendiri nih!`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="press w-full min-h-[44px] px-4 py-2.5 rounded-full bg-surface hover:bg-page border border-line hover:border-brand/40 text-ink text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
+              >
+                <div className="w-6 h-6 rounded-full bg-brand-soft text-brand flex items-center justify-center shrink-0">
+                  <WhatsAppIcon className="w-3.5 h-3.5 text-brand" />
                 </div>
-              </div>
+                <span>Desain Custom? Chat via WhatsApp</span>
+              </a>
 
               {/* Bagian Order Card Desktop */}
               <div className="pt-3 border-t border-line">
                 <OrderBottomBar
                   totalQty={totalQty}
                   totalPrice={calculatedTotal}
-                  onAddToCart={handleAddCartClick}
                   onOrderViaWhatsApp={handleWhatsAppClick}
                 />
               </div>
@@ -802,31 +672,9 @@ export function DetailStage({
         <OrderBottomBar
           totalQty={totalQty}
           totalPrice={calculatedTotal}
-          onAddToCart={handleAddCartClick}
           onOrderViaWhatsApp={handleWhatsAppClick}
           isMobileFloating={true}
         />
-      </div>
-
-
-
-      {/* 5. TOAST NOTIFIKASI BERHASIL DITAMBAHKAN (Gaya Kasir MIG) */}
-      <div
-        className={`toast-keranjang flex flex-col items-center gap-1.5 ${
-          toastVisible ? 'tampil' : ''
-        }`}
-        role="status"
-        aria-live="polite"
-      >
-        <div className="w-8 h-8 rounded-full border-2 border-white/90 flex items-center justify-center text-white mb-0.5">
-          <Check className="w-4 h-4 stroke-[2.5]" />
-        </div>
-        <div className="text-[13.5px] font-bold text-white tracking-tight">
-          Berhasil ditambahkan ke keranjang
-        </div>
-        <div className="text-[11.5px] text-white/75 truncate max-w-[260px]">
-          {productName} ({colorName}) · {totalQty} pcs
-        </div>
       </div>
     </section>
   );

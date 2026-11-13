@@ -212,7 +212,16 @@ export function CustomCatalogModal({
             <label className="flex flex-col items-center justify-center p-3 bg-page border border-dashed border-line hover:border-brand rounded-2xl cursor-pointer text-center group">
               <Upload className="w-5 h-5 text-ink/40 group-hover:text-brand mb-1" />
               <span className="text-[11px] font-semibold text-ink">Depan</span>
-              <span className="text-[9.5px] text-ink/50 mt-0.5">{frontDataUrl ? '✓ Terpilih' : 'Upload'}</span>
+              <span className="text-[9.5px] text-ink/50 mt-0.5 inline-flex items-center gap-0.5">
+                {frontDataUrl ? (
+                  <>
+                    <Check className="w-2.5 h-2.5 text-brand shrink-0" />
+                    <span>Terpilih</span>
+                  </>
+                ) : (
+                  <span>Upload</span>
+                )}
+              </span>
               <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setFrontDataUrl)} className="hidden" />
             </label>
 
@@ -220,7 +229,16 @@ export function CustomCatalogModal({
             <label className="flex flex-col items-center justify-center p-3 bg-page border border-dashed border-line hover:border-brand rounded-2xl cursor-pointer text-center group">
               <Upload className="w-5 h-5 text-ink/40 group-hover:text-brand mb-1" />
               <span className="text-[11px] font-semibold text-ink">Samping</span>
-              <span className="text-[9.5px] text-ink/50 mt-0.5">{sideDataUrl ? '✓ Terpilih' : 'Auto'}</span>
+              <span className="text-[9.5px] text-ink/50 mt-0.5 inline-flex items-center gap-0.5">
+                {sideDataUrl ? (
+                  <>
+                    <Check className="w-2.5 h-2.5 text-brand shrink-0" />
+                    <span>Terpilih</span>
+                  </>
+                ) : (
+                  <span>Auto</span>
+                )}
+              </span>
               <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setSideDataUrl)} className="hidden" />
             </label>
 
@@ -228,7 +246,16 @@ export function CustomCatalogModal({
             <label className="flex flex-col items-center justify-center p-3 bg-page border border-dashed border-line hover:border-brand rounded-2xl cursor-pointer text-center group">
               <Upload className="w-5 h-5 text-ink/40 group-hover:text-brand mb-1" />
               <span className="text-[11px] font-semibold text-ink">Belakang</span>
-              <span className="text-[9.5px] text-ink/50 mt-0.5">{backDataUrl ? '✓ Terpilih' : 'Upload'}</span>
+              <span className="text-[9.5px] text-ink/50 mt-0.5 inline-flex items-center gap-0.5">
+                {backDataUrl ? (
+                  <>
+                    <Check className="w-2.5 h-2.5 text-brand shrink-0" />
+                    <span>Terpilih</span>
+                  </>
+                ) : (
+                  <span>Upload</span>
+                )}
+              </span>
               <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setBackDataUrl)} className="hidden" />
             </label>
           </div>
