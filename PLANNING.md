@@ -100,4 +100,5 @@ Client Browser (Next.js 15 + Tailwind CSS + TypeScript)
 - [x] Notifikasi Mode Admin Elegan: Toast melayang di atas, bentuk kartu `rounded-2xl`, tidak menutupi footer atau berbentuk bulat telur.
 - [x] Penghapusan bagian opsional tambahan: Sederhana & fokus ke katalog showcase WhatsApp.
 - [x] Penyeragaman 100% Ikon WhatsApp Resmi di seluruh tombol aksi & CTA (bebas warna hijau, monokrom netral / putih).
+- [x] Konfigurasi terpusat nomor WhatsApp resmi toko (`+62 895-1040-5562`) di `src/config/store.ts`.
 - [x] Verifikasi build TypeScript & Linting (`npx tsc --noEmit` & `npm run lint`) **0 error**.

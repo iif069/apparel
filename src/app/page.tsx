@@ -10,6 +10,7 @@ import { HangerRack } from '@/components/HangerRack';
 import { DetailStage } from '@/components/DetailStage';
 import { CustomCatalogModal } from '@/components/CustomCatalogModal';
 import { BackgroundMusic } from '@/components/BackgroundMusic';
+import { getWhatsAppUrl } from '@/config/store';
 
 export default function HomePage() {
   const [currentCategory, setCurrentCategory] = useState<CategoryId>('kaos');
@@ -118,8 +119,7 @@ export default function HomePage() {
     text += `*Total Harga:* Rp ${order.totalPrice.toLocaleString('id-ID')}\n\n`;
     text += `Mohon konfirmasi ketersediaan dan nomor rekening untuk transfer ya. Terima kasih!`;
 
-    const encoded = encodeURIComponent(text);
-    window.open(`https://wa.me/6281222400922?text=${encoded}`, '_blank');
+    window.open(getWhatsAppUrl(text), '_blank');
   };
 
   const handleSaveCustom = (

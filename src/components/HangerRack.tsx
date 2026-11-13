@@ -3,6 +3,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { GarmentItem, CategoryData, CustomPhotoData, CategoryId } from '@/types';
+import { getWhatsAppUrl } from '@/config/store';
 import { HangerHookSVG } from './HangerHookSVG';
 import { GarmentSVG } from './GarmentSVG';
 
@@ -236,7 +237,7 @@ export function HangerRack({
       {/* Banner CTA Desain Custom di Atas Rak (Hanya Tampil di Mobile) */}
       <div className="w-full px-4 pt-1 z-20 flex justify-center flex-shrink-0 md:hidden">
         <a
-          href="https://wa.me/6281222400922?text=Halo%20MIG%20Digital%20Printing%2C%20saya%20mau%20konsultasi%20bikin%20desain%20custom%20apparel%2Fjersey"
+          href={getWhatsAppUrl('Halo MIG Digital Printing, saya mau konsultasi bikin desain custom apparel/jersey')}
           target="_blank"
           rel="noopener noreferrer"
           className="press inline-flex items-center gap-2 h-10 px-4 rounded-full bg-surface/95 backdrop-blur-md border border-line hover:border-brand/40 shadow-xs text-xs font-semibold text-ink transition-all cursor-pointer group"
@@ -490,7 +491,7 @@ export function HangerRack({
       <footer className="relative w-full z-20 px-4 md:px-8 pt-1 pb-[max(20px,calc(16px+env(safe-area-inset-bottom)))] md:py-4 flex flex-col sm:flex-row items-center justify-between gap-2.5 md:gap-3 max-w-[1340px] mx-auto flex-shrink-0">
         {/* Tombol CTA Desain Custom di Kiri Bawah (Satu-satunya CTA di Desktop, Selaras Desain Sistem) */}
         <a
-          href="https://wa.me/6281222400922?text=Halo%20MIG%20Digital%20Printing%2C%20saya%20mau%20konsultasi%20bikin%20desain%20custom%20apparel%2Fjersey"
+          href={getWhatsAppUrl('Halo MIG Digital Printing, saya mau konsultasi bikin desain custom apparel/jersey')}
           target="_blank"
           rel="noopener noreferrer"
           className="press hidden sm:flex items-center gap-3 bg-surface/95 backdrop-blur-md border border-line hover:border-brand/40 px-4 py-2.5 sm:px-5 sm:py-3 rounded-full shadow-[0_6px_24px_rgba(0,0,0,0.08)] transition-all cursor-pointer group"

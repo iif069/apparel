@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Volume2, VolumeX, Edit3, MoreVertical, Lock, Unlock } from 'lucide-react';
 import { CategoryId } from '@/types';
+import { getWhatsAppUrl } from '@/config/store';
 
 interface TopbarProps {
   currentCategory: CategoryId;
@@ -135,7 +136,7 @@ export function Topbar({
 
             {/* Tombol Chat WhatsApp CS */}
             <a
-              href="https://wa.me/6281222400922?text=Halo%20MIG%20Digital%20Printing%2C%20saya%20mau%20tanya%20dan%20pesan%20apparel%20dari%20katalog"
+              href={getWhatsAppUrl('Halo MIG Digital Printing, saya mau tanya dan pesan apparel dari katalog')}
               target="_blank"
               rel="noopener noreferrer"
               className="press shrink-0 whitespace-nowrap flex items-center justify-center gap-1.5 sm:gap-2 h-10 md:h-11 px-3 sm:px-4 rounded-full bg-surface text-ink border border-line hover:border-brand/40 shadow-xs transition-colors cursor-pointer"

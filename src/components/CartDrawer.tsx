@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Trash2, ShoppingBag, Clock, X, Plus, Minus } from 'lucide-react';
 import { CartItem } from '@/types';
+import { getWhatsAppUrl } from '@/config/store';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -108,8 +109,7 @@ export function CartDrawer({
     text += `Catatan: Desain dan logo akan saya kirimkan lewat WhatsApp ini setelah pesanan dibuat.\n`;
     text += `Mohon konfirmasi pesanan dan estimasi waktu jadi ya. Terima kasih!`;
 
-    const encoded = encodeURIComponent(text);
-    window.open(`https://wa.me/6285223842377?text=${encoded}`, '_blank');
+    window.open(getWhatsAppUrl(text), '_blank');
   };
 
   return (

@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, Plus, Minus, ChevronDown, Check, Sparkles } from 'lucide-react';
 import { GarmentItem, CategoryData, ViewAngle, CustomPhotoData } from '@/types';
+import { getWhatsAppUrl } from '@/config/store';
 import { GarmentRotator } from './GarmentRotator';
 import { AngleTabs } from './AngleTabs';
 import { OrderBottomBar } from './OrderBottomBar';
@@ -157,7 +158,7 @@ export function DetailStage({
 
           {/* Tombol Chat WhatsApp CS */}
           <a
-            href="https://wa.me/6281222400922?text=Halo%20MIG%20Digital%20Printing%2C%20saya%20mau%20tanya%20dan%20pesan%20apparel%20dari%20katalog"
+            href={getWhatsAppUrl('Halo MIG Digital Printing, saya mau tanya dan pesan apparel dari katalog')}
             target="_blank"
             rel="noopener noreferrer"
             className="press flex items-center justify-center gap-2 h-11 px-4 rounded-full bg-surface text-ink border border-line hover:border-brand/40 shadow-xs transition-colors cursor-pointer"
@@ -357,9 +358,9 @@ export function DetailStage({
               Punya ide motif, logo tim esport/futsal, seragam kantor, atau konsep sablon bebas? Tim desainer MIG siap bantu wujudkan mockup & preview gratis!
             </p>
             <a
-              href={`https://wa.me/6281222400922?text=${encodeURIComponent(
+              href={getWhatsAppUrl(
                 `Halo MIG Digital Printing, saya mau konsultasi bikin desain custom untuk ${categoryData.heroTitle || 'Apparel'} (${productName}). Punya motif/konsep sendiri nih!`
-              )}`}
+              )}
               target="_blank"
               rel="noopener noreferrer"
               className="press mt-0.5 w-full min-h-[44px] px-5 rounded-full bg-brand hover:bg-brand-hover text-white text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
@@ -493,9 +494,9 @@ export function DetailStage({
                 Punya konsep motif, logo tim esport/futsal, seragam komunitas, atau desain sablon bebas? Tim desainer MIG siap buatkan preview gratis!
               </p>
               <a
-                href={`https://wa.me/6281222400922?text=${encodeURIComponent(
+                href={getWhatsAppUrl(
                   `Halo MIG Digital Printing, saya mau konsultasi bikin desain custom untuk ${categoryData.heroTitle || 'Apparel'} (${productName}). Punya motif/konsep sendiri nih!`
-                )}`}
+                )}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="press mt-0.5 w-full min-h-[44px] px-5 rounded-full bg-brand hover:bg-brand-hover text-white text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
@@ -641,9 +642,9 @@ export function DetailStage({
 
               {/* CTA Ringkas Desain Custom di Kolom Pemesanan */}
               <a
-                href={`https://wa.me/6281222400922?text=${encodeURIComponent(
+                href={getWhatsAppUrl(
                   `Halo MIG Digital Printing, saya mau konsultasi bikin desain custom untuk ${categoryData.heroTitle || 'Apparel'} (${productName}). Punya motif/konsep sendiri nih!`
-                )}`}
+                )}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="press w-full min-h-[44px] px-4 py-2.5 rounded-full bg-surface hover:bg-page border border-line hover:border-brand/40 text-ink text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"

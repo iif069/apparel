@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { X, MapPin, Clock, MessageCircle, Sparkles, CheckCircle2 } from 'lucide-react';
+import { X, MapPin, Clock, MessageCircle, Sparkles, CheckCircle2, Phone } from 'lucide-react';
+import { STORE_CONFIG, getWhatsAppUrl } from '@/config/store';
 
 interface StoreInfoModalProps {
   isOpen: boolean;
@@ -109,15 +110,26 @@ export function StoreInfoModal({ isOpen, onClose }: StoreInfoModalProps) {
           <div className="flex flex-col gap-0.5">
             <span className="font-bold text-ink">Workshop MIG Digital Printing</span>
             <span className="text-muted leading-relaxed">
-              Jl. Raya Rajadesa (Dekat Alun-alun Rajadesa), Kec. Rajadesa, Kabupaten Ciamis, Jawa Barat.
+              {STORE_CONFIG.location}
+            </span>
+          </div>
+        </div>
+
+        {/* WhatsApp & Kontak Toko */}
+        <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-page border border-line text-xs">
+          <Phone className="w-4 h-4 text-brand shrink-0" />
+          <div className="flex flex-col gap-0.5">
+            <span className="font-bold text-ink">WhatsApp CS Toko</span>
+            <span className="text-brand font-semibold tracking-wide">
+              {STORE_CONFIG.phoneDisplay}
             </span>
           </div>
         </div>
 
         {/* Aksi Kontak CS */}
-        <div className="flex flex-col gap-2 pt-2">
+        <div className="flex flex-col gap-2 pt-1">
           <a
-            href="https://wa.me/6281222400922?text=Halo%20MIG%20Digital%20Printing%2C%20saya%20mau%20konsultasi%20bikin%20desain%20custom%20apparel%2Fjersey"
+            href={getWhatsAppUrl('Halo MIG Digital Printing, saya mau konsultasi bikin desain custom apparel/jersey')}
             target="_blank"
             rel="noopener noreferrer"
             className="press flex items-center justify-center gap-2 w-full h-11 px-5 rounded-full bg-brand hover:bg-brand-hover text-white text-sm font-bold shadow-xs transition-colors"

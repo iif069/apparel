@@ -98,6 +98,17 @@ Dokumen ini adalah aturan kerja baku untuk AI Assistant dalam mengembangkan proj
 * **Toast Notifikasi Melayang di Atas**:
   * Notifikasi toast wajib diposisikan di **bagian atas layar** (`top-18 md:top-6`) agar tidak menutupi footer rak atau bar aksi bawah.
   * Bentuk toast wajib kartu kapsul proporsional (`rounded-2xl`), **DILARANG memakai `rounded-full`** yang bisa membengkak menjadi lingkaran/telur saat berisi teks panjang.
+
+---
+
+## 9. Nomor WhatsApp Resmi Toko & Konfigurasi Terpusat
+* **Nomor WhatsApp Resmi MIG Apparel**:
+  * Nomor resmi CS Toko adalah **`+62 895-1040-5562`** (format link wa.me: `6289510405562`).
+* **Wajib Menggunakan Konfigurasi Terpusat (`@/config/store`)**:
+  * Seluruh tautan atau pemanggilan `window.open` ke WhatsApp **DILARANG KERAS di-hardcode** di masing-masing file komponen.
+  * Wajib mengimpor helper `getWhatsAppUrl(pesan)` atau konstanta `STORE_CONFIG` dari `@/config/store`.
+  * Dengan demikian, jika suatu saat nomor WhatsApp berganti, cukup ubah satu baris di `src/config/store.ts`.
+
   * Gunakan animasi transisi halus (`animate-in fade-in slide-in-from-top-2`), tanpa efek *bounce* berlebihan.
 * **Widget Musik Latar (BGM) Dilarang Menutupi Teks Produk**:
   * Widget floating BGM diposisikan melayang di atas kartu produk (`bottom-[84px]`), bukan di `bottom-4` yang bertumpukan dengan teks *"Mulai dari"*.
