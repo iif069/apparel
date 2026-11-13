@@ -263,7 +263,7 @@ export function DetailStage({
             {/* Harga Mulai Dari */}
             <div className="flex items-baseline gap-2">
               <span className="text-[13px] text-ink/60">Mulai dari</span>
-              <strong className="text-2xl font-black text-ink tracking-tight">
+              <strong className="text-2xl font-bold text-ink tracking-tight tabular-nums">
                 Rp {price.toLocaleString('id-ID')}
               </strong>
             </div>
