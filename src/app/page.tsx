@@ -9,7 +9,6 @@ import { Topbar } from '@/components/Topbar';
 import { HangerRack } from '@/components/HangerRack';
 import { DetailStage } from '@/components/DetailStage';
 import { CustomCatalogModal } from '@/components/CustomCatalogModal';
-import { BackgroundMusic } from '@/components/BackgroundMusic';
 import { getWhatsAppUrl } from '@/config/store';
 
 export default function HomePage() {
@@ -205,9 +204,6 @@ export default function HomePage() {
         onSaveCustom={handleSaveCustom}
         onResetCustom={handleResetCustom}
       />
-
-      {/* 5. Pemutar Musik Latar Bebas Lisensi (Lofi Chill) */}
-      <BackgroundMusic soundEnabled={soundEnabled} isDetailOpen={isDetailOpen} />
 
       {/* Toast Notifikasi Mode Rahasia */}
       {toast && (

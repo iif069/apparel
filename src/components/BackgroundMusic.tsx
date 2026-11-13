@@ -5,10 +5,9 @@ import { Volume2, VolumeX, Music } from 'lucide-react';
 
 interface BackgroundMusicProps {
   soundEnabled: boolean;
-  isDetailOpen?: boolean;
 }
 
-export function BackgroundMusic({ soundEnabled, isDetailOpen = false }: BackgroundMusicProps) {
+export function BackgroundMusic({ soundEnabled }: BackgroundMusicProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -72,42 +71,37 @@ export function BackgroundMusic({ soundEnabled, isDetailOpen = false }: Backgrou
     }
   };
 
-  if (isDetailOpen) {
-    // Sembunyikan widget musik saat membuka modal detail agar tampilan bersih
-    return null;
-  }
-
   return (
-    <div className="fixed bottom-[calc(94px+env(safe-area-inset-bottom))] left-4 md:bottom-[84px] md:left-8 z-30 select-none">
-      <button
-        type="button"
-        onClick={toggleMusic}
-        title={isPlaying ? 'Jeda Musik Latar' : 'Putar Musik Latar'}
-        className={`press flex items-center gap-2 h-9 px-3 rounded-full bg-surface/95 backdrop-blur-md border border-line hover:border-brand/40 shadow-xs text-ink transition-all cursor-pointer ${
-          isPlaying ? 'border-brand/40 shadow-soft' : ''
-        }`}
-        aria-label={isPlaying ? 'Jeda musik' : 'Putar musik'}
-      >
-        {/* Visualizer Bar Equalizer berdenyut saat musik aktif */}
-        {isPlaying ? (
-          <div className="flex items-end gap-0.5 h-3.5 w-3.5">
-            <span className="w-0.5 h-3 bg-brand rounded-full animate-music-bar-1" />
-            <span className="w-0.5 h-2 bg-brand rounded-full animate-music-bar-2" />
-            <span className="w-0.5 h-3 bg-brand rounded-full animate-music-bar-3" />
-          </div>
-        ) : (
-          <Music className="w-3.5 h-3.5 text-muted group-hover:text-brand transition-colors" />
-        )}
+    <button
+      type="button"
+      onClick={toggleMusic}
+      title={isPlaying ? 'Jeda Musik Latar' : 'Putar Musik Latar'}
+      className={`press shrink-0 whitespace-nowrap select-none flex items-center justify-center gap-1.5 sm:gap-2 h-10 md:h-11 px-3 sm:px-4 rounded-full bg-surface text-ink border transition-colors cursor-pointer shadow-xs ${
+        isPlaying
+          ? 'border-brand/40 shadow-soft'
+          : 'border-line hover:border-brand/40'
+      }`}
+      aria-label={isPlaying ? 'Jeda musik latar' : 'Putar musik latar'}
+    >
+      {/* Visualizer Bar Equalizer berdenyut saat musik aktif */}
+      {isPlaying ? (
+        <div className="flex items-end gap-0.5 h-3.5 w-3.5 shrink-0">
+          <span className="w-0.5 h-3 bg-brand rounded-full animate-music-bar-1" />
+          <span className="w-0.5 h-2 bg-brand rounded-full animate-music-bar-2" />
+          <span className="w-0.5 h-3 bg-brand rounded-full animate-music-bar-3" />
+        </div>
+      ) : (
+        <Music className="w-4 h-4 text-muted shrink-0" />
+      )}
 
-        <span className="text-[12px] font-bold text-ink">
-          {isPlaying ? 'Music' : 'BGM'}
-        </span>
+      <span className="text-xs sm:text-[13px] font-bold text-ink">
+        {isPlaying ? 'Music' : 'BGM'}
+      </span>
 
-        {/* Ikon Speaker Mute/Unmute */}
-        <span className="text-muted transition-colors ml-0.5">
-          {isPlaying ? <Volume2 className="w-3 h-3 text-brand" /> : <VolumeX className="w-3 h-3 text-muted" />}
-        </span>
-      </button>
-    </div>
+      {/* Ikon Speaker Mute/Unmute */}
+      <span className="text-muted transition-colors shrink-0">
+        {isPlaying ? <Volume2 className="w-3.5 h-3.5 text-brand" /> : <VolumeX className="w-3.5 h-3.5 text-muted" />}
+      </span>
+    </button>
   );
 }
