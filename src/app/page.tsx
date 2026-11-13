@@ -123,6 +123,11 @@ export default function HomePage() {
     const cartId = `${order.item.id}-${Date.now()}`;
     const custom = customPhotos[order.item.id];
 
+    // Ambil foto produk dari custom upload atau katalog asli
+    const cat = INITIAL_CATEGORIES[order.categoryId];
+    const catalogItem = cat?.rack.find((r) => r.id === order.item.id);
+    const frontPhoto = custom?.frontDataUrl || order.item.front || catalogItem?.front || null;
+
     const newItem: CartItem = {
       cartId,
       itemId: order.item.id,
@@ -135,11 +140,11 @@ export default function HomePage() {
       basePrice: custom?.price || order.item.price,
       addons: order.addons,
       totalPrice: order.totalPrice,
-      frontPhoto: custom?.frontDataUrl,
+      frontPhoto,
     };
 
     setCart((prev) => [newItem, ...prev]);
-    setIsCartOpen(true);
+    // Jangan buka keranjang otomatis agar efek produk terbang ke keranjang berjalan lancar
   };
 
   const handleUpdateCartQty = (cartId: string, delta: number) => {

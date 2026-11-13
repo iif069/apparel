@@ -29,6 +29,18 @@ export function CartDrawer({
   const [mounted, setMounted] = useState(isOpen);
   const [animatingIn, setAnimatingIn] = useState(false);
 
+  // State untuk modal konfirmasi hapus gaya Kasir MIG
+  const [confirmDelete, setConfirmDelete] = useState<{
+    isOpen: boolean;
+    type: 'single' | 'all';
+    cartId?: string;
+    message: string;
+  }>({
+    isOpen: false,
+    type: 'single',
+    message: '',
+  });
+
   useEffect(() => {
     if (isOpen) {
       setMounted(true);
@@ -157,16 +169,19 @@ export function CartDrawer({
               <button
                 type="button"
                 onClick={() => {
-                  if (window.confirm('Hapus semua barang dari keranjang?')) {
-                    onPlaySound?.('click');
-                    onClearCart();
-                  }
+                  onPlaySound?.('click');
+                  setConfirmDelete({
+                    isOpen: true,
+                    type: 'all',
+                    message: 'Apakah Anda yakin untuk menghapus semua barang dari keranjang?',
+                  });
                 }}
-                className="flex items-center gap-1.5 text-red-600 hover:text-red-700 text-[13px] font-semibold transition-colors press-active px-2.5 py-1.5 rounded-lg hover:bg-red-50"
+                className="h-9 sm:h-10 px-3 sm:px-3.5 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200/80 flex items-center gap-1.5 text-[12px] sm:text-[13px] font-bold shadow-xs transition-all press-active"
                 title="Hapus semua barang"
+                aria-label="Hapus semua barang dari keranjang"
               >
-                <Trash2 className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Hapus semua</span>
+                <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2]" />
+                <span>Hapus semua</span>
               </button>
             )}
 
@@ -232,12 +247,12 @@ export function CartDrawer({
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3.5 min-w-0">
                         {/* Thumbnail Squircle */}
-                        <div className="w-14 h-14 rounded-2xl bg-[#f5f4f8] border border-slate-200/70 flex items-center justify-center flex-shrink-0 relative overflow-hidden">
+                        <div className="w-16 h-16 rounded-2xl bg-white border border-slate-200/80 flex items-center justify-center flex-shrink-0 relative overflow-hidden p-1 shadow-xs">
                           {item.frontPhoto ? (
                             <img
                               src={item.frontPhoto}
                               alt={item.name}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-contain filter drop-shadow-xs"
                             />
                           ) : (
                             <span
@@ -269,9 +284,14 @@ export function CartDrawer({
                         type="button"
                         onClick={() => {
                           onPlaySound?.('click');
-                          onRemoveItem(item.cartId);
+                          setConfirmDelete({
+                            isOpen: true,
+                            type: 'single',
+                            cartId: item.cartId,
+                            message: `Apakah Anda yakin untuk menghapus ${item.name} (${item.colorName}) dari keranjang?`,
+                          });
                         }}
-                        className="text-slate-400 hover:text-red-600 transition-colors p-1 -mr-1"
+                        className="text-slate-400 hover:text-red-600 transition-colors p-1.5 -mr-1 rounded-full hover:bg-rose-50 press-active"
                         aria-label="Hapus produk ini"
                         title="Hapus produk ini"
                       >
@@ -385,6 +405,51 @@ export function CartDrawer({
               >
                 <span>Checkout</span>
               </button>
+            </div>
+          </div>
+        )}
+        {/* MODAL KONFIRMASI HAPUS GAYA KASIR MIG */}
+        {confirmDelete.isOpen && (
+          <div
+            className="fixed inset-0 z-[100] bg-black/45 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150"
+            onClick={() => setConfirmDelete((prev) => ({ ...prev, isOpen: false }))}
+          >
+            <div
+              role="alertdialog"
+              aria-modal="true"
+              className="bg-white rounded-2xl max-w-[320px] w-full overflow-hidden text-center shadow-2xl border border-slate-100 animate-in zoom-in-95 duration-150"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6 text-[15px] font-semibold text-slate-800 leading-snug">
+                {confirmDelete.message || 'Apakah Anda yakin untuk menghapus?'}
+              </div>
+              <div className="flex border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onPlaySound?.('click');
+                    setConfirmDelete((prev) => ({ ...prev, isOpen: false }));
+                  }}
+                  className="flex-1 py-3.5 text-[15px] font-semibold text-slate-700 hover:bg-slate-50 border-r border-slate-100 transition-colors press-active"
+                >
+                  Tidak
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onPlaySound?.('click');
+                    if (confirmDelete.type === 'all') {
+                      onClearCart();
+                    } else if (confirmDelete.cartId) {
+                      onRemoveItem(confirmDelete.cartId);
+                    }
+                    setConfirmDelete((prev) => ({ ...prev, isOpen: false }));
+                  }}
+                  className="flex-1 py-3.5 text-[15px] font-bold text-red-600 hover:bg-red-50 transition-colors press-active"
+                >
+                  Ya
+                </button>
+              </div>
             </div>
           </div>
         )}

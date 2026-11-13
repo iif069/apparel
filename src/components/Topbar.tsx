@@ -140,6 +140,8 @@ export function Topbar({
             {/* Tombol Keranjang Belanja */}
             <button
               type="button"
+              id="topbar-cart-btn"
+              data-cart-btn
               onClick={onOpenCart}
               className="relative flex items-center justify-center w-11 h-11 md:w-auto md:h-11 md:px-4 md:gap-2.5 rounded-full bg-surface text-ink border border-line shadow-xs hover:bg-page transition-colors press-active"
               aria-label={`Keranjang belanja (${cartCount} barang)`}

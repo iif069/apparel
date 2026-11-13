@@ -53,6 +53,9 @@ export function DetailStage({
     giftbox: false,
   });
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
+  const [sizePickerOpen, setSizePickerOpen] = useState(false);
+  const [toastVisible, setToastVisible] = useState(false);
+  const toastTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -71,6 +74,7 @@ export function DetailStage({
     }
     setViewAngle('front');
     setColorPickerOpen(false);
+    setSizePickerOpen(false);
   }, [itemIndex, isOpen]);
 
   // Pantau scroll di HP untuk mengganti badge nomor jadi judul
@@ -109,6 +113,77 @@ export function DetailStage({
     onPlaySound('click');
   };
 
+  // Efek Produk Terbang ke Keranjang (Gaya Kasir MIG Digital Printing / Shopee Curve)
+  const triggerFlyToCart = (photoUrl?: string | null, fallbackColor?: string) => {
+    if (typeof window === 'undefined') return;
+    const target =
+      document.querySelector<HTMLElement>('#detail-cart-btn') ||
+      document.querySelector<HTMLElement>('[data-cart-btn]');
+    if (!target) return;
+
+    const denyut = () => {
+      target.classList.add('cart-pop-anim');
+      setTimeout(() => target.classList.remove('cart-pop-anim'), 400);
+    };
+
+    if (
+      !window.matchMedia ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+      typeof Element.prototype.animate !== 'function'
+    ) {
+      denyut();
+      return;
+    }
+
+    const tujuan = target.getBoundingClientRect();
+    const x1 = tujuan.left + tujuan.width / 2;
+    const y1 = tujuan.top + tujuan.height / 2;
+
+    const sisi = 64;
+    const x0 = x1;
+    const y0 = y1 + 75;
+
+    const foto = document.createElement('div');
+    foto.className = 'foto-terbang';
+    foto.style.width = `${sisi}px`;
+    foto.style.height = `${sisi}px`;
+    foto.style.left = `${x0 - sisi / 2}px`;
+    foto.style.top = `${y0 - sisi / 2}px`;
+
+    if (photoUrl) {
+      foto.style.backgroundImage = `url('${photoUrl}')`;
+    } else if (fallbackColor) {
+      foto.style.backgroundColor = fallbackColor;
+    }
+    document.body.appendChild(foto);
+
+    const xc = x0 + 16;
+    const yc = y1 - 20;
+    const langkah = 20;
+    const frames: Keyframe[] = [];
+    for (let i = 0; i <= langkah; i++) {
+      const t = i / langkah,
+        u = 1 - t;
+      const x = u * u * x0 + 2 * u * t * xc + t * t * x1;
+      const y = u * u * y0 + 2 * u * t * yc + t * t * y1;
+      frames.push({
+        offset: t,
+        transform: `translate(${(x - x0).toFixed(1)}px, ${(y - y0).toFixed(1)}px) scale(${(1 - 0.85 * t).toFixed(2)})`,
+        opacity: t < 0.8 ? 1 : 1 - (t - 0.8) / 0.2,
+      });
+    }
+
+    const anim = foto.animate(frames, {
+      duration: 620,
+      easing: 'cubic-bezier(.45,0,.55,1)',
+      fill: 'forwards',
+    });
+    anim.onfinish = () => {
+      foto.remove();
+      denyut();
+    };
+  };
+
   const handleAddCartClick = () => {
     onPlaySound('click');
     onAddToCart({
@@ -118,6 +193,17 @@ export function DetailStage({
       addons,
       totalPrice: calculatedTotal,
     });
+
+    // Jalankan efek produk melayang ke keranjang (tanpa membuka keranjang langsung)
+    const photoUrl = custom?.frontDataUrl || currentItem.front || null;
+    triggerFlyToCart(photoUrl, currentItem.hex);
+
+    // Tampilkan notifikasi toast sukses ditambahkan
+    setToastVisible(true);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => {
+      setToastVisible(false);
+    }, 1300);
   };
 
   const handleWhatsAppClick = () => {
@@ -179,6 +265,8 @@ export function DetailStage({
           {/* Tombol Keranjang */}
           <button
             type="button"
+            id="detail-cart-btn"
+            data-cart-btn
             onClick={onOpenCart}
             className="relative flex items-center justify-center w-11 h-11 md:w-auto md:h-11 md:px-4 md:gap-2.5 rounded-full bg-surface text-ink border border-line shadow-xs hover:bg-page transition-colors press-active"
             aria-label={`Keranjang belanja (${cartCount} barang)`}
@@ -310,19 +398,17 @@ export function DetailStage({
               </div>
 
               <div className="relative">
-                <select
-                  value=""
-                  onChange={(e) => handleAddSize(e.target.value)}
-                  className="w-full h-11 px-4 pr-9 bg-surface border border-line rounded-full text-[13.5px] font-semibold text-ink appearance-none focus:outline-none focus:border-brand cursor-pointer"
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSizePickerOpen(true);
+                    onPlaySound('click');
+                  }}
+                  className="w-full h-11 px-4 flex items-center justify-between bg-surface border border-line rounded-full text-[13.5px] font-semibold text-ink hover:border-brand transition-colors press-active text-left"
                 >
-                  <option value="">+ Pilih ukuran untuk ditambahkan</option>
-                  {['S', 'M', 'L', 'XL', 'XXL'].map((sz) => (
-                    <option key={sz} value={sz}>
-                      Ukuran {sz}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="w-4 h-4 text-ink/50 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <span>+ Pilih ukuran untuk ditambahkan</span>
+                  <ChevronDown className="w-4 h-4 text-ink/50" />
+                </button>
               </div>
 
               <div className="flex flex-col gap-2 mt-1">
@@ -573,19 +659,17 @@ export function DetailStage({
                 </div>
 
                 <div className="relative">
-                  <select
-                    value=""
-                    onChange={(e) => handleAddSize(e.target.value)}
-                    className="w-full h-11 px-4 pr-9 bg-surface border border-line rounded-full text-[13.5px] font-semibold text-ink appearance-none focus:outline-none focus:border-brand cursor-pointer"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSizePickerOpen(true);
+                      onPlaySound('click');
+                    }}
+                    className="w-full h-11 px-4 flex items-center justify-between bg-surface border border-line rounded-full text-[13.5px] font-semibold text-ink hover:border-brand transition-colors press-active text-left"
                   >
-                    <option value="">+ Pilih ukuran untuk ditambahkan</option>
-                    {['S', 'M', 'L', 'XL', 'XXL'].map((sz) => (
-                      <option key={sz} value={sz}>
-                        Ukuran {sz}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-ink/50 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <span>+ Pilih ukuran untuk ditambahkan</span>
+                    <ChevronDown className="w-4 h-4 text-ink/50" />
+                  </button>
                 </div>
 
                 {/* Deretan Baris Ukuran & Kontrol Qty (+ / -) */}
@@ -678,6 +762,73 @@ export function DetailStage({
           onOrderViaWhatsApp={handleWhatsAppClick}
           isMobileFloating={true}
         />
+      </div>
+
+      {/* 4. MODAL PEMILIHAN UKURAN (Langsung Menutup Seketika Saat Ukuran Ditekan) */}
+      {sizePickerOpen && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/45 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-150"
+          onClick={() => setSizePickerOpen(false)}
+        >
+          <div
+            role="dialog"
+            aria-label="Pilih Ukuran"
+            className="bg-surface w-full sm:max-w-[360px] rounded-t-[28px] sm:rounded-[28px] p-5 pb-[max(24px,calc(16px+env(safe-area-inset-bottom)))] sm:pb-5 shadow-2xl flex flex-col gap-3 border border-line animate-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-2.5 border-b border-line">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-brand" />
+                <h3 className="text-[15px] font-bold text-ink tracking-tight">Pilih Ukuran</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSizePickerOpen(false)}
+                className="text-ink/60 hover:text-ink text-[13px] font-semibold px-2 py-1 rounded-full hover:bg-page transition-colors press-active"
+              >
+                Tutup
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-2 pt-1">
+              {['S', 'M', 'L', 'XL', 'XXL'].map((sz) => (
+                <button
+                  key={sz}
+                  type="button"
+                  onClick={() => {
+                    handleAddSize(sz);
+                    setSizePickerOpen(false); // LANGSUNG TUTUP DI HP & DESKTOP
+                  }}
+                  className="w-full flex items-center justify-between py-3 px-4.5 rounded-full bg-page hover:bg-brand-soft border border-line hover:border-brand/40 text-[14px] font-bold text-ink transition-all press-active text-left shadow-2xs"
+                >
+                  <span>Ukuran {sz}</span>
+                  <span className="text-[12px] font-bold text-brand bg-brand-soft px-2.5 py-0.5 rounded-full">
+                    + Tambah
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 5. TOAST NOTIFIKASI BERHASIL DITAMBAHKAN (Gaya Kasir MIG) */}
+      <div
+        className={`toast-keranjang flex flex-col items-center gap-1.5 ${
+          toastVisible ? 'tampil' : ''
+        }`}
+        role="status"
+        aria-live="polite"
+      >
+        <div className="w-8 h-8 rounded-full border-2 border-white/90 flex items-center justify-center text-white mb-0.5">
+          <Check className="w-4 h-4 stroke-[2.5]" />
+        </div>
+        <div className="text-[13.5px] font-bold text-white tracking-tight">
+          Berhasil ditambahkan ke keranjang
+        </div>
+        <div className="text-[11.5px] text-white/75 truncate max-w-[260px]">
+          {productName} ({colorName}) · {totalQty} pcs
+        </div>
       </div>
     </section>
   );

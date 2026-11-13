@@ -309,3 +309,57 @@ body {
 .animate-music-bar-3 {
   animation: music-bar-3 0.85s ease-in-out infinite;
 }
+
+/* ============================================================
+   EFEK FOTO TERBANG KE KERANJANG & TOAST (KASIR MIG STYLE)
+   ============================================================ */
+
+.foto-terbang {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  background-color: #ffffff;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  border: 1.5px solid var(--color-line);
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  will-change: transform, opacity;
+}
+
+@keyframes cart-pop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.28); }
+  65% { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+.cart-pop-anim {
+  animation: cart-pop 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.toast-keranjang {
+  position: fixed;
+  left: 50%;
+  top: 45%;
+  z-index: 9999;
+  width: max-content;
+  max-width: min(320px, 86vw);
+  padding: 16px 22px;
+  border-radius: 18px;
+  background: rgba(28, 27, 26, 0.94);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.9);
+  transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+.toast-keranjang.tampil {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
