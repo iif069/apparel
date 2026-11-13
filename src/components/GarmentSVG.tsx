@@ -25,7 +25,7 @@ export function GarmentSVG({
         <img
           src={custom.sideDataUrl}
           alt={`${item.name} tampak samping`}
-          className={`h-full w-auto max-w-none object-contain object-top filter drop-shadow-md contrast-[1.03] ${className}`}
+          className={`h-full w-auto max-w-none object-contain object-top ${className}`}
         />
       );
     }
@@ -93,7 +93,7 @@ export function GarmentSVG({
     const sleeveFill = item.shadow || '#000000';
     return (
       <svg
-        className={`h-full w-auto max-w-none block filter drop-shadow-md ${className}`}
+        className={`h-full w-auto max-w-none block ${className}`}
         viewBox="0 0 100 350"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

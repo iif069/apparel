@@ -118,7 +118,7 @@ export function GarmentRotator({
               categoryId={categoryId}
               viewAngle={viewAngle === 'side-left' ? 'side-left' : 'front'}
               custom={custom}
-              className="drop-shadow-sm max-h-full"
+              className="max-h-full"
             />
           </div>
         </div>
@@ -131,7 +131,7 @@ export function GarmentRotator({
               categoryId={categoryId}
               viewAngle="back"
               custom={custom}
-              className="drop-shadow-sm max-h-full"
+              className="max-h-full"
             />
           </div>
         </div>

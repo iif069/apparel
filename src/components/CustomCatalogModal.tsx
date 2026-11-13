@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Upload, RotateCcw, Check, Copy } from 'lucide-react';
+import { X, Upload, RotateCcw, Check, Copy, CloudUpload, Loader2, Eye, EyeOff, KeyRound } from 'lucide-react';
 import { GarmentItem, CategoryData, CustomPhotoData, CustomCategoryData } from '@/types';
+import { INITIAL_CATEGORIES } from '@/data/catalog';
+import { publishCatalogToGitHub } from '@/lib/githubPublish';
 
 interface CustomCatalogModalProps {
   isOpen: boolean;
@@ -36,6 +38,20 @@ export function CustomCatalogModal({
 
   const [catTabLabel, setCatTabLabel] = useState(categoryData.tabLabel);
   const [catHeroTitle, setCatHeroTitle] = useState(categoryData.heroTitle);
+
+  const [githubToken, setGithubToken] = useState('');
+  const [showToken, setShowToken] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishStatus, setPublishStatus] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  useEffect(() => {
+    try {
+      const savedToken = localStorage.getItem('mig-apparel-github-token');
+      if (savedToken) setGithubToken(savedToken);
+    } catch {
+      // Abaikan jika localStorage tidak tersedia
+    }
+  }, []);
 
   // Sinkronkan input saat produk dipilih
   useEffect(() => {
@@ -107,7 +123,7 @@ export function CustomCatalogModal({
     });
   };
 
-  const handleSave = async () => {
+  const buildCurrentDraft = async () => {
     let finalSide = sideDataUrl;
     if (!finalSide && frontDataUrl) {
       finalSide = await autoGenerateSide(frontDataUrl);
@@ -129,8 +145,53 @@ export function CustomCatalogModal({
       watermark: catHeroTitle.trim() || undefined,
     };
 
+    return { nextCustom, nextCatCustom };
+  };
+
+  const handleSave = async () => {
+    const { nextCustom, nextCatCustom } = await buildCurrentDraft();
     onSaveCustom(selectedItemId, nextCustom, nextCatCustom);
     onClose();
+  };
+
+  const handlePublishToGitHub = async () => {
+    setPublishStatus(null);
+    setIsPublishing(true);
+    try {
+      const { nextCustom, nextCatCustom } = await buildCurrentDraft();
+      onSaveCustom(selectedItemId, nextCustom, nextCatCustom);
+
+      try {
+        if (githubToken.trim()) {
+          localStorage.setItem('mig-apparel-github-token', githubToken.trim());
+        }
+      } catch {
+        // Abaikan jika localStorage penuh
+      }
+
+      const mergedPhotos = { ...customPhotos, [selectedItemId]: nextCustom };
+      const mergedCategories = { ...customCategories, [categoryData.id]: nextCatCustom };
+
+      const res = await publishCatalogToGitHub({
+        token: githubToken,
+        baseCategories: INITIAL_CATEGORIES,
+        customPhotos: mergedPhotos,
+        customCategories: mergedCategories,
+      });
+
+      const imgNote = res.uploadedImages > 0 ? ` & ${res.uploadedImages} foto` : '';
+      setPublishStatus({
+        type: 'success',
+        text: `Berhasil push data${imgNote} ke GitHub! Web live akan terupdate otomatis dalam ±1 menit.`,
+      });
+    } catch (err) {
+      setPublishStatus({
+        type: 'error',
+        text: err instanceof Error ? err.message : 'Gagal mengirim perubahan ke GitHub.',
+      });
+    } finally {
+      setIsPublishing(false);
+    }
   };
 
   return (
@@ -293,6 +354,49 @@ export function CustomCatalogModal({
           </div>
         </div>
 
+        {/* 5. Auto-Push Permanen ke GitHub */}
+        <div className="flex flex-col gap-2 pt-2 border-t border-line">
+          <div className="flex items-center justify-between gap-2">
+            <label className="text-[12.5px] font-bold text-ink flex items-center gap-1.5">
+              <KeyRound className="w-3.5 h-3.5 text-brand" />
+              <span>Publish Permanen ke GitHub (Tanpa Coding)</span>
+            </label>
+            <span className="text-[11px] font-medium text-muted">iif069/apparel</span>
+          </div>
+          <div className="relative flex items-center">
+            <input
+              type={showToken ? 'text' : 'password'}
+              placeholder="Tempel GitHub Token (ghp_... atau github_pat_...)"
+              value={githubToken}
+              onChange={(e) => setGithubToken(e.target.value)}
+              className="w-full h-9 pl-3 pr-9 bg-page border border-line rounded-xl text-[12px] text-ink focus:outline-none focus:border-brand"
+            />
+            <button
+              type="button"
+              onClick={() => setShowToken((prev) => !prev)}
+              className="absolute right-2.5 text-muted hover:text-ink"
+              aria-label={showToken ? 'Sembunyikan token' : 'Tampilkan token'}
+            >
+              {showToken ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
+          <p className="text-[11px] text-muted leading-snug">
+            Token disimpan lokal di browser ini saja. Klik <strong>Publish ke GitHub</strong> untuk langsung memperbarui web semua pengunjung.
+          </p>
+
+          {publishStatus && (
+            <div
+              className={`px-3 py-2 rounded-xl text-[11.5px] font-medium border ${
+                publishStatus.type === 'success'
+                  ? 'bg-success-bg text-success-fg border-success-fg/20'
+                  : 'bg-danger-bg text-danger-fg border-danger-fg/20'
+              }`}
+            >
+              {publishStatus.text}
+            </div>
+          )}
+        </div>
+
         {/* Tombol Aksi (Pill rounded-full sesuai Desain Sistem) */}
         <div className="flex items-center justify-between pt-3 border-t border-line gap-2 flex-wrap">
           <div className="flex items-center gap-1.5">
@@ -312,7 +416,7 @@ export function CustomCatalogModal({
                   categories: customCategories,
                 };
                 navigator.clipboard.writeText(JSON.stringify(config, null, 2));
-                alert('Konfigurasi berhasil disalin ke clipboard! Anda bisa kirimkan teks ini ke asisten AI untuk dijadikan permanen di website.');
+                alert('Konfigurasi berhasil disalin ke clipboard!');
               }}
               className="flex items-center gap-1.5 px-3 py-2 rounded-full text-[12px] font-semibold text-muted hover:text-ink hover:bg-page press-active"
               title="Salin data JSON untuk dijadikan permanen ke kode"
@@ -322,21 +426,35 @@ export function CustomCatalogModal({
             </button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap justify-end">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2 rounded-full text-[12.5px] font-semibold bg-page text-ink hover:bg-line press-active"
+              className="px-4 py-2 rounded-full text-[12.5px] font-semibold bg-page text-ink hover:bg-line press-active"
             >
               Batal
             </button>
             <button
               type="button"
               onClick={handleSave}
-              className="flex items-center gap-1.5 px-5 py-2 rounded-full text-[12.5px] font-bold bg-brand text-surface hover:bg-brand-hover shadow-sm press-active"
+              disabled={isPublishing}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-[12.5px] font-semibold bg-surface border border-line text-ink hover:border-brand/40 press-active disabled:opacity-50"
             >
-              <Check className="w-4 h-4" />
-              <span>Simpan</span>
+              <Check className="w-3.5 h-3.5" />
+              <span>Simpan Lokal</span>
+            </button>
+            <button
+              type="button"
+              onClick={handlePublishToGitHub}
+              disabled={isPublishing}
+              className="flex items-center gap-1.5 px-5 py-2 rounded-full text-[12.5px] font-bold bg-brand text-surface hover:bg-brand-hover shadow-sm press-active disabled:opacity-60"
+            >
+              {isPublishing ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <CloudUpload className="w-4 h-4" />
+              )}
+              <span>{isPublishing ? 'Mem-push...' : 'Publish ke GitHub'}</span>
             </button>
           </div>
         </div>

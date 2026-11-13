@@ -251,31 +251,12 @@ export function HangerRack({
         </a>
       </div>
 
-      {/* 2. Latar Polos & Tipografi Raksasa "APPAREL" dengan Refleksi Lantai Perspektif 3D */}
+      {/* 2. Latar Polos & Tipografi Raksasa "APPAREL" Bersih Tanpa Bayangan Lantai */}
       <div className="absolute inset-0 pointer-events-none flex flex-col justify-center items-center overflow-hidden z-0">
-        <div className="flex flex-col items-center select-none transform -translate-y-8 md:-translate-y-12">
-          {/* Teks Atas Tegak */}
+        <div className="flex flex-col items-center select-none transform -translate-y-4 md:-translate-y-6">
           <h1 className="font-display text-[32vw] md:text-[18vw] leading-none text-[#ebe8f2] tracking-wider select-none">
             {categoryData.heroTitle || 'APPAREL'}
           </h1>
-
-          {/* Bayangan Lantai Perspektif 3D Mirrored Vertikal */}
-          <div className="w-full flex justify-center [perspective:500px] mt-2 md:mt-3">
-            <div
-              className="origin-top [transform:rotateX(68deg)] filter blur-[0.5px]"
-              style={{
-                maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.35) 40%, rgba(0,0,0,0) 85%)',
-                WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.35) 40%, rgba(0,0,0,0) 85%)',
-              }}
-            >
-              <div
-                className="font-display text-[32vw] md:text-[18vw] leading-none text-[#ded9e8] tracking-wider select-none [transform:scaleY(-1)]"
-                aria-hidden="true"
-              >
-                {categoryData.watermark || 'APPAREL'}
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -451,7 +432,7 @@ export function HangerRack({
                               categoryId={categoryData.id}
                               viewAngle="side-left"
                               custom={custom}
-                              className="max-h-full drop-shadow-md"
+                              className="max-h-full"
                             />
                           </div>
                         </div>
@@ -473,7 +454,7 @@ export function HangerRack({
                               categoryId={categoryData.id}
                               viewAngle="front"
                               custom={custom}
-                              className="max-h-full drop-shadow-md"
+                              className="max-h-full"
                             />
                           </div>
                         </div>
