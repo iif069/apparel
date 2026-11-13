@@ -223,9 +223,7 @@ export function HangerRack({
         >
           <span aria-hidden="true" className="cta-loop-ring pointer-events-none" />
           <span className="relative z-10 inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-surface/95 backdrop-blur-md text-[13.5px] font-bold text-ink group-hover:text-brand transition-colors">
-            <span className="w-6 h-6 rounded-full bg-brand-soft text-brand flex items-center justify-center shrink-0">
-              <WhatsAppIcon className="w-3.5 h-3.5 text-brand" />
-            </span>
+            <WhatsAppIcon className="w-5 h-5 text-brand shrink-0" />
             <span>Desain custom? Chat via WhatsApp</span>
           </span>
         </a>
@@ -486,10 +484,8 @@ export function HangerRack({
           title="Konsultasi Desain Custom via WhatsApp"
         >
           <span aria-hidden="true" className="cta-loop-ring pointer-events-none" />
-          <span className="relative z-10 flex items-center gap-3 bg-surface/95 backdrop-blur-md px-4 py-2.5 sm:px-5 sm:py-3 rounded-full">
-            <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-brand-soft text-brand flex items-center justify-center shrink-0">
-              <WhatsAppIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand" />
-            </span>
+          <span className="relative z-10 flex items-center gap-2.5 sm:gap-3 bg-surface/95 backdrop-blur-md px-4 py-2.5 sm:px-5 sm:py-3 rounded-full">
+            <WhatsAppIcon className="w-5 h-5 sm:w-6 sm:h-6 text-brand shrink-0" />
             <span className="text-[13.5px] sm:text-[14.5px] font-bold text-ink group-hover:text-brand transition-colors">
               Desain custom? Chat via WhatsApp
             </span>
