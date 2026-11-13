@@ -212,42 +212,22 @@ export function HangerRack({
 
   return (
     <section className="relative w-full flex-1 flex flex-col justify-between overflow-hidden bg-page select-none min-h-0">
-      {/* 1. Bar Kategori Khusus HP (3 Kolom Seimbang Sesuai Desain Sistem) */}
-      {categories && categories.length > 0 && (
-        <div className="md:hidden w-full px-3.5 pt-2.5 pb-1.5 z-20 flex-shrink-0">
-          <nav className="grid grid-cols-3 gap-2 w-full" aria-label="Kategori pakaian">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => onSelectCategory && onSelectCategory(cat.id)}
-                className={`h-[42px] min-h-[42px] px-2 rounded-full text-[13px] font-semibold flex items-center justify-center transition-all press-active ${
-                  currentCategory === cat.id
-                    ? 'bg-ink text-surface shadow-sm'
-                    : 'bg-surface text-ink border border-line hover:border-ink/30'
-                }`}
-              >
-                {cat.tabLabel}
-              </button>
-            ))}
-          </nav>
-        </div>
-      )}
-
-      {/* Banner CTA Desain Custom di Atas Rak (Hanya Tampil di Mobile) */}
-      <div className="w-full px-4 pt-1 z-20 flex justify-center flex-shrink-0 md:hidden">
+      {/* 1. Banner CTA Desain Custom di Atas Rak (Hanya Tampil di Mobile, Fokus Utama Ajakan ke WA) */}
+      <div className="w-full px-4 pt-2.5 pb-1 z-20 flex justify-center flex-shrink-0 md:hidden">
         <a
           href={getWhatsAppUrl('Halo MIG Digital Printing, saya mau konsultasi bikin desain custom apparel/jersey')}
           target="_blank"
           rel="noopener noreferrer"
-          className="press inline-flex items-center gap-2 h-10 px-4 rounded-full bg-surface/95 backdrop-blur-md border border-line hover:border-brand/40 shadow-xs text-xs font-semibold text-ink transition-all cursor-pointer group"
+          className="press relative inline-flex rounded-full p-[2px] overflow-hidden shadow-[0_6px_22px_rgba(123,41,186,0.18)] cursor-pointer group"
           title="Konsultasi Desain Custom via WhatsApp"
         >
-          <div className="w-5 h-5 rounded-full bg-brand-soft text-brand flex items-center justify-center shrink-0">
-            <WhatsAppIcon className="w-3 h-3 text-brand" />
-          </div>
-          <span className="font-bold text-ink group-hover:text-brand transition-colors">Desain custom? Chat via WhatsApp</span>
-          <ArrowRight className="w-3.5 h-3.5 text-muted group-hover:text-brand group-hover:translate-x-0.5 transition-all" />
+          <span aria-hidden="true" className="cta-loop-ring pointer-events-none" />
+          <span className="relative z-10 inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-surface/95 backdrop-blur-md text-[13.5px] font-bold text-ink group-hover:text-brand transition-colors">
+            <span className="w-6 h-6 rounded-full bg-brand-soft text-brand flex items-center justify-center shrink-0">
+              <WhatsAppIcon className="w-3.5 h-3.5 text-brand" />
+            </span>
+            <span>Desain custom? Chat via WhatsApp</span>
+          </span>
         </a>
       </div>
 
@@ -274,8 +254,8 @@ export function HangerRack({
       {/* 4. PIPA GANTUNGAN CHROME HORIZONTAL & DERETAN BAJU BERGOYANG ALAMI */}
       <div className="relative w-full z-10 flex-1 flex flex-col justify-center my-auto min-h-0">
         <div className="relative w-full">
-          {/* Batang Kawat Chrome Horizontal (Tepat menembus lengkung kait hanger di y=6px) */}
-          <div className="absolute top-[5px] md:top-[6px] left-0 right-0 h-[7px] md:h-[8px] bg-gradient-to-b from-[#d6d4de] via-white via-28% to-[#1c1b1a] z-0 shadow-sm pointer-events-none">
+          {/* Batang Kawat Chrome Horizontal (Tepat menembus lengkung kait hanger di y=6px + pt-3) */}
+          <div className="absolute top-[17px] md:top-[18px] left-0 right-0 h-[7px] md:h-[8px] bg-gradient-to-b from-[#d6d4de] via-white via-28% to-[#1c1b1a] z-0 shadow-sm pointer-events-none">
             <div className="w-full h-[2px] bg-white/85" />
           </div>
 
@@ -287,7 +267,7 @@ export function HangerRack({
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
             onScroll={handleScroll}
-            className="w-full flex items-start justify-start md:justify-center overflow-x-auto no-scrollbar px-6 md:px-12 pt-0 pb-6 cursor-grab active:cursor-grabbing z-10"
+            className="w-full flex items-start justify-start md:justify-center overflow-x-auto overflow-y-hidden no-scrollbar px-6 md:px-12 pt-3 pb-3 md:pb-6 cursor-grab active:cursor-grabbing z-10"
           >
             <div className="flex items-start gap-1 md:gap-2.5 mx-auto">
               {items.map((item, idx) => {
@@ -381,8 +361,8 @@ export function HangerRack({
                     }}
                     className={`hanger-slot flex flex-col items-center cursor-pointer transition-[width] duration-300 ease-out [perspective:1000px] ${
                       isDisplayFront
-                        ? 'w-[210px] md:w-[240px] z-30'
-                        : 'w-[58px] md:w-[68px] z-10'
+                        ? 'w-[224px] md:w-[240px] z-30'
+                        : 'w-[62px] md:w-[68px] z-10'
                     }`}
                   >
                     {/* PEMBUNGKUS FISIKA AYUNAN GANTUNGAN (Hanger Assembly)
@@ -411,7 +391,7 @@ export function HangerRack({
 
                       {/* Panggung Baju 3D (Dua Sisi: Samping & Depan berputar mulus tanpa lonjakan ukuran) */}
                       <div
-                        className={`relative w-full h-[230px] md:h-[260px] flex items-start justify-center [perspective:1000px] ${
+                        className={`relative w-full h-[260px] md:h-[268px] flex items-start justify-center [perspective:1000px] ${
                           hasPhotoHanger ? '-mt-[26px] md:-mt-[30px]' : '-mt-1.5'
                         }`}
                       >
@@ -466,6 +446,33 @@ export function HangerRack({
             </div>
           </div>
         </div>
+
+        {/* Petunjuk interaksi halus khusus mobile */}
+        <p className="md:hidden text-center text-[11.5px] font-medium text-muted/80 mt-1 px-4 select-none">
+          Geser untuk lihat model lain · Ketuk baju untuk detail
+        </p>
+
+        {/* Bar Kategori Khusus HP di Bawah Rak Baju (Mudah Dijangkau Ibu Jari) */}
+        {categories && categories.length > 0 && (
+          <div className="md:hidden w-full px-3.5 mt-4 z-20 flex-shrink-0">
+            <nav className="grid grid-cols-3 gap-2 w-full" aria-label="Kategori pakaian">
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => onSelectCategory && onSelectCategory(cat.id)}
+                  className={`h-[42px] min-h-[42px] px-2 rounded-full text-[13px] font-semibold flex items-center justify-center transition-all press-active ${
+                    currentCategory === cat.id
+                      ? 'bg-ink text-surface shadow-sm'
+                      : 'bg-surface text-ink border border-line hover:border-ink/30'
+                  }`}
+                >
+                  {cat.tabLabel}
+                </button>
+              ))}
+            </nav>
+          </div>
+        )}
       </div>
 
       {/* 5. BAR AKSI BAWAH RAK */}
@@ -475,16 +482,18 @@ export function HangerRack({
           href={getWhatsAppUrl('Halo MIG Digital Printing, saya mau konsultasi bikin desain custom apparel/jersey')}
           target="_blank"
           rel="noopener noreferrer"
-          className="press hidden sm:flex items-center gap-3 bg-surface/95 backdrop-blur-md border border-line hover:border-brand/40 px-4 py-2.5 sm:px-5 sm:py-3 rounded-full shadow-[0_6px_24px_rgba(0,0,0,0.08)] transition-all cursor-pointer group"
+          className="press hidden sm:inline-flex relative rounded-full p-[2px] overflow-hidden shadow-[0_6px_24px_rgba(123,41,186,0.18)] cursor-pointer group"
           title="Konsultasi Desain Custom via WhatsApp"
         >
-          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-brand-soft text-brand flex items-center justify-center shrink-0">
-            <WhatsAppIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand" />
-          </div>
-          <span className="text-[13.5px] sm:text-[14.5px] font-bold text-ink group-hover:text-brand transition-colors">
-            Desain custom? Chat via WhatsApp
+          <span aria-hidden="true" className="cta-loop-ring pointer-events-none" />
+          <span className="relative z-10 flex items-center gap-3 bg-surface/95 backdrop-blur-md px-4 py-2.5 sm:px-5 sm:py-3 rounded-full">
+            <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-brand-soft text-brand flex items-center justify-center shrink-0">
+              <WhatsAppIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand" />
+            </span>
+            <span className="text-[13.5px] sm:text-[14.5px] font-bold text-ink group-hover:text-brand transition-colors">
+              Desain custom? Chat via WhatsApp
+            </span>
           </span>
-          <ArrowRight className="w-4 h-4 text-muted group-hover:text-brand group-hover:translate-x-0.5 transition-all" />
         </a>
 
         {/* Info Produk Aktif & Tombol Buka Detail (Ukuran Font & Tombol Proporsional Sesuai UI/UX MIG) */}

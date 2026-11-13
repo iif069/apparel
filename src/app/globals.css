@@ -75,6 +75,15 @@ body {
   background: var(--color-muted);
 }
 
+/* Sembunyikan scrollbar horizontal pada rak gantungan */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* 3D utilities */
 .preserve-3d {
   transform-style: preserve-3d;
@@ -356,4 +365,39 @@ body {
   --motion-fly-reach: 140px;
   --ease-out-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-in-soft: cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* Efek border ungu berputar halus untuk CTA utama WhatsApp */
+@keyframes cta-border-spin {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.cta-loop-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 240%;
+  aspect-ratio: 1 / 1;
+  background: conic-gradient(
+    from 0deg,
+    rgba(123, 41, 186, 0.14) 0deg,
+    rgba(123, 41, 186, 0.14) 195deg,
+    #a855f7 255deg,
+    #7b29ba 305deg,
+    #d8b4fe 340deg,
+    rgba(123, 41, 186, 0.14) 360deg
+  );
+  animation: cta-border-spin 3.2s linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-loop-ring {
+    animation: none;
+  }
 }

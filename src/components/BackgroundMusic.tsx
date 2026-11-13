@@ -78,7 +78,7 @@ export function BackgroundMusic({ soundEnabled, isDetailOpen = false }: Backgrou
   }
 
   return (
-    <div className="fixed bottom-[84px] left-4 md:bottom-[84px] md:left-8 z-30 select-none">
+    <div className="fixed bottom-[calc(94px+env(safe-area-inset-bottom))] left-4 md:bottom-[84px] md:left-8 z-30 select-none">
       <button
         type="button"
         onClick={toggleMusic}

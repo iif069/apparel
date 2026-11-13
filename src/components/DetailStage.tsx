@@ -179,7 +179,7 @@ export function DetailStage({
         {/* ========================================================================= */}
         {/* A. TAMPILAN KHUSUS HP / TABLET (lg:hidden) - TETAP SAMA SEPERTI SEBELUMNYA */}
         {/* ========================================================================= */}
-        <div className="lg:hidden w-full max-w-[1380px] mx-auto px-4 md:px-7 pt-0 md:pt-6 pb-[260px] flex flex-col gap-4">
+        <div className="lg:hidden w-full max-w-[1380px] mx-auto px-4 md:px-7 pt-0 md:pt-6 pb-[136px] md:pb-8 flex flex-col gap-4">
           {/* Panggung Baju 3D Mobile */}
           <div className="relative z-10 bg-page w-full px-0 pt-2 pb-2 flex flex-col items-center">
             <div className="relative w-full flex justify-center">
@@ -350,11 +350,11 @@ export function DetailStage({
 
           {/* Kartu CTA Desain Custom Mobile */}
           <div className="bg-brand-soft border border-brand/25 rounded-card p-5 flex flex-col gap-2.5 shadow-xs">
-            <div className="flex items-center gap-2 text-brand font-bold text-[14px]">
+            <div className="flex items-center gap-2 text-brand font-bold text-[15px]">
               <Sparkles className="w-4 h-4 text-brand shrink-0 animate-pulse" />
               <span>Mau Buat Desain Custom Sendiri?</span>
             </div>
-            <p className="text-xs text-ink/75 leading-relaxed">
+            <p className="text-[13.5px] sm:text-sm text-ink/80 leading-relaxed">
               Punya ide motif, logo tim esport/futsal, seragam kantor, atau konsep sablon bebas? Tim desainer MIG siap bantu wujudkan mockup & preview gratis!
             </p>
             <a
@@ -486,11 +486,11 @@ export function DetailStage({
 
             {/* Kartu CTA Desain Custom Desktop (Kolom Kiri) */}
             <div className="bg-brand-soft border border-brand/25 rounded-card p-5 flex flex-col gap-2.5 shadow-xs">
-              <div className="flex items-center gap-2 text-brand font-bold text-sm">
+              <div className="flex items-center gap-2 text-brand font-bold text-[15px]">
                 <Sparkles className="w-4 h-4 text-brand shrink-0 animate-pulse" />
                 <span>Mau Buat Desain Custom Sendiri?</span>
               </div>
-              <p className="text-xs text-ink/75 leading-relaxed">
+              <p className="text-[13.5px] text-ink/80 leading-relaxed">
                 Punya konsep motif, logo tim esport/futsal, seragam komunitas, atau desain sablon bebas? Tim desainer MIG siap buatkan preview gratis!
               </p>
               <a
