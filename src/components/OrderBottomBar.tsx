@@ -28,7 +28,7 @@ export function OrderBottomBar({
     <div
       className={`flex flex-col gap-3 bg-surface ${
         isMobileFloating
-          ? 'fixed left-0 right-0 bottom-0 z-40 p-4 pt-3.5 pb-[max(16px,calc(12px+env(safe-area-inset-bottom)))] border-t border-line glass shadow-glass'
+          ? 'fixed left-0 right-0 bottom-0 z-40 p-4 pt-3.5 pb-[max(16px,calc(12px+env(safe-area-inset-bottom)))] border-t border-line/80 bg-surface/88 backdrop-blur-xl [-webkit-backdrop-filter:blur(24px)] shadow-glass'
           : 'p-4 md:p-5 border border-line rounded-card shadow-soft'
       } ${className}`}
     >
@@ -40,7 +40,7 @@ export function OrderBottomBar({
             {totalQty} pcs pilihan
           </span>
         </div>
-        <strong className="text-2xl font-black text-ink tracking-tight tabular-nums">
+        <strong className="text-2xl font-bold text-ink tracking-tight tabular-nums">
           Rp {totalPrice.toLocaleString('id-ID')}
         </strong>
       </div>

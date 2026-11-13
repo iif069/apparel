@@ -46,6 +46,8 @@ export function DetailStage({
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
   const [sizePickerOpen, setSizePickerOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [shouldRender, setShouldRender] = useState(isOpen);
+  const [isVisible, setIsVisible] = useState(isOpen);
 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
@@ -55,6 +57,29 @@ export function DetailStage({
   const price = custom?.price || currentItem?.price || 60000;
   const productName = custom?.name || currentItem?.name;
   const colorName = custom?.colorName || currentItem?.colorName;
+
+  // Transisi halus saat membuka & menutup halaman detail
+  useEffect(() => {
+    if (isOpen) {
+      setShouldRender(true);
+      let raf2 = 0;
+      const raf1 = requestAnimationFrame(() => {
+        raf2 = requestAnimationFrame(() => {
+          setIsVisible(true);
+        });
+      });
+      return () => {
+        cancelAnimationFrame(raf1);
+        cancelAnimationFrame(raf2);
+      };
+    } else {
+      setIsVisible(false);
+      const timer = setTimeout(() => {
+        setShouldRender(false);
+      }, 260);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   // Reset scroll saat item berganti
   useEffect(() => {
@@ -72,7 +97,7 @@ export function DetailStage({
     setIsScrolled(top > 45);
   };
 
-  if (!isOpen || !currentItem) return null;
+  if (!shouldRender || !currentItem) return null;
 
   // Hitung total kuantitas & harga
   const totalQty = Object.values(sizeQtys).reduce((acc, q) => acc + q, 0);
@@ -117,8 +142,13 @@ export function DetailStage({
     <section
       role="dialog"
       aria-modal="true"
+      aria-hidden={!isVisible}
       aria-label="Detail pakaian"
-      className="fixed inset-0 z-50 bg-page flex flex-col w-full h-[100dvh] overflow-hidden"
+      className={`fixed inset-0 z-50 bg-page flex flex-col w-full h-[100dvh] overflow-hidden transition-opacity duration-250 ease-out motion-reduce:transition-none ${
+        isVisible
+          ? 'opacity-100 pointer-events-auto'
+          : 'opacity-0 pointer-events-none'
+      }`}
     >
       {/* 1. HEADER DETAIL TETAP DI ATAS (z-index 50) */}
       <header className="flex-shrink-0 w-full h-[68px] md:h-[72px] glass border-b border-line/60 flex items-center z-50 px-4 md:px-7 transition-colors">
@@ -182,7 +212,11 @@ export function DetailStage({
         <div className="lg:hidden w-full max-w-[1380px] mx-auto px-4 md:px-7 pt-0 md:pt-6 pb-[136px] md:pb-8 flex flex-col gap-4">
           {/* Panggung Baju 3D Mobile */}
           <div className="relative z-10 bg-page w-full px-0 pt-2 pb-2 flex flex-col items-center">
-            <div className="relative w-full flex justify-center">
+            <div
+              className={`relative w-full flex justify-center transition-all duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-[0.86] translate-y-3'
+              }`}
+            >
               <GarmentRotator
                 item={currentItem}
                 categoryId={categoryData.id}
@@ -194,13 +228,21 @@ export function DetailStage({
             </div>
 
             {/* Tab Sudut Tampilan [Samping] [Depan] [Belakang] */}
-            <div className="w-full flex justify-center mt-2.5">
+            <div
+              className={`w-full flex justify-center mt-2.5 transition-all duration-300 ease-out motion-reduce:transition-none ${
+                isVisible ? 'opacity-100 translate-y-0 delay-[140ms]' : 'opacity-0 translate-y-3 delay-0'
+              }`}
+            >
               <AngleTabs currentAngle={viewAngle} onSelectAngle={setViewAngle} onPlaySound={onPlaySound} />
             </div>
           </div>
 
           {/* Kartu Utama Produk Mobile */}
-          <div className="bg-surface border border-line rounded-[28px] p-5 sm:p-6 flex flex-col gap-4 shadow-soft">
+          <div
+            className={`bg-surface border border-line rounded-[28px] p-5 sm:p-6 flex flex-col gap-4 shadow-soft transition-all duration-350 ease-out motion-reduce:transition-none ${
+              isVisible ? 'opacity-100 translate-y-0 delay-[220ms]' : 'opacity-0 translate-y-5 delay-0'
+            }`}
+          >
             {/* Badge Status */}
             <div className="flex items-center gap-2 flex-wrap">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold bg-brand-soft text-brand border border-brand/30">
@@ -349,7 +391,11 @@ export function DetailStage({
           </div>
 
           {/* Kartu CTA Desain Custom Mobile */}
-          <div className="bg-brand-soft border border-brand/25 rounded-card p-5 flex flex-col gap-2.5 shadow-xs">
+          <div
+            className={`bg-brand-soft border border-brand/25 rounded-card p-5 flex flex-col gap-2.5 shadow-xs transition-all duration-350 ease-out motion-reduce:transition-none ${
+              isVisible ? 'opacity-100 translate-y-0 delay-[260ms]' : 'opacity-0 translate-y-5 delay-0'
+            }`}
+          >
             <div className="flex items-center gap-2 text-brand font-bold text-[15px]">
               <Sparkles className="w-4 h-4 text-brand shrink-0 animate-pulse" />
               <span>Mau Buat Desain Custom Sendiri?</span>
@@ -371,7 +417,11 @@ export function DetailStage({
           </div>
 
           {/* Kartu Keterangan Produk Mobile */}
-          <div className="bg-surface border border-line rounded-[28px] p-5 sm:p-6 flex flex-col gap-4 shadow-soft">
+          <div
+            className={`bg-surface border border-line rounded-[28px] p-5 sm:p-6 flex flex-col gap-4 shadow-soft transition-all duration-350 ease-out motion-reduce:transition-none ${
+              isVisible ? 'opacity-100 translate-y-0 delay-[300ms]' : 'opacity-0 translate-y-5 delay-0'
+            }`}
+          >
             <h3 className="text-[15px] font-bold text-ink">Keterangan produk</h3>
             <p className="text-[13.5px] text-ink/75 leading-relaxed">
               Produk apparel custom standar MIG Digital Printing dengan material pilihan yang nyaman dipakai, adem,
@@ -408,7 +458,11 @@ export function DetailStage({
         <div className="hidden lg:grid grid-cols-[330px_1fr_360px] xl:grid-cols-[360px_1fr_390px] gap-6 xl:gap-8 items-start w-full max-w-[1400px] mx-auto flex-1 h-full min-h-0 px-7 py-3 overflow-hidden">
           
           {/* 1. KOLOM KIRI (TEKS / INFO PRODUK, HARGA, WARNA & SPESIFIKASI) - SCROLL MANDIRI */}
-          <div className="h-full overflow-y-auto pr-1.5 pb-6 flex flex-col gap-4 min-h-0">
+          <div
+            className={`h-full overflow-y-auto pr-1.5 pb-6 flex flex-col gap-4 min-h-0 transition-all duration-300 ease-out motion-reduce:transition-none ${
+              isVisible ? 'opacity-100 translate-y-0 delay-[120ms]' : 'opacity-0 translate-y-4 delay-0'
+            }`}
+          >
             {/* Kartu Ringkasan & Harga */}
             <div className="bg-surface border border-line rounded-[28px] p-6 flex flex-col gap-4 shadow-soft">
               {/* Badge Status */}
@@ -431,7 +485,7 @@ export function DetailStage({
               {/* Harga Mulai Dari */}
               <div className="flex items-baseline gap-2 pt-1 border-t border-line">
                 <span className="text-[13px] text-ink/60">Mulai dari</span>
-                <strong className="text-3xl font-black text-ink tracking-tight">
+                <strong className="text-2xl font-bold text-ink tracking-tight tabular-nums">
                   Rp {price.toLocaleString('id-ID')}
                 </strong>
               </div>
@@ -540,7 +594,11 @@ export function DetailStage({
 
           {/* 2. KOLOM TENGAH: PRODUK DITENGAH (TETAP DIAM DI TENGAH, TIDAK IKUT TER-SCROLL) */}
           <div className="h-full flex flex-col items-center justify-center select-none py-1 min-h-0">
-            <div className="relative w-full flex justify-center">
+            <div
+              className={`relative w-full flex justify-center transition-all duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-90 translate-y-3'
+              }`}
+            >
               <GarmentRotator
                 item={currentItem}
                 categoryId={categoryData.id}
@@ -552,18 +610,30 @@ export function DetailStage({
             </div>
 
             {/* Tab Sudut Tampilan [Samping] [Depan] [Belakang] */}
-            <div className="w-full flex justify-center mt-3">
+            <div
+              className={`w-full flex justify-center mt-3 transition-all duration-300 ease-out motion-reduce:transition-none ${
+                isVisible ? 'opacity-100 translate-y-0 delay-[110ms]' : 'opacity-0 translate-y-3 delay-0'
+              }`}
+            >
               <AngleTabs currentAngle={viewAngle} onSelectAngle={setViewAngle} onPlaySound={onPlaySound} />
             </div>
 
             {/* Keterangan Putar 3D */}
-            <span className="text-[11.5px] text-ink/45 mt-2.5 font-medium">
+            <span
+              className={`text-[11.5px] text-ink/45 mt-2.5 font-medium transition-opacity duration-300 motion-reduce:transition-none ${
+                isVisible ? 'opacity-100 delay-[180ms]' : 'opacity-0 delay-0'
+              }`}
+            >
               Geser ke kiri/kanan atau ketuk untuk memutar baju (360°)
             </span>
           </div>
 
           {/* 3. KOLOM KANAN: TEKS PILIHAN UKURAN, TAMBAHAN & ORDER (DIAM / SCROLL SENDIRI JIKA BANYAK) */}
-          <div className="h-full overflow-y-auto pl-1 pr-0.5 pb-6 flex flex-col gap-4 min-h-0">
+          <div
+            className={`h-full overflow-y-auto pl-1 pr-0.5 pb-6 flex flex-col gap-4 min-h-0 transition-all duration-300 ease-out motion-reduce:transition-none ${
+              isVisible ? 'opacity-100 translate-y-0 delay-[200ms]' : 'opacity-0 translate-y-4 delay-0'
+            }`}
+          >
             <div className="bg-surface border border-line rounded-[28px] p-6 flex flex-col gap-4 shadow-soft">
               {/* Pilihan Ukuran & Kuantitas Multi-Ukuran */}
               <div className="flex flex-col gap-2">
@@ -675,6 +745,9 @@ export function DetailStage({
           totalPrice={calculatedTotal}
           onOrderViaWhatsApp={handleWhatsAppClick}
           isMobileFloating={true}
+          className={`transition-all duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+            isVisible ? 'opacity-100 delay-[280ms]' : 'opacity-0 translate-y-6 delay-0'
+          }`}
         />
       </div>
     </section>
