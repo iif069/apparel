@@ -101,22 +101,16 @@ export default function HomePage() {
   const handleOrderViaWhatsApp = (order: {
     item: CategoryData['rack'][0];
     categoryId: CategoryId;
-    sizes: Record<string, number>;
-    totalPrice: number;
   }) => {
     const custom = customPhotos[order.item.id];
     const name = custom?.name || order.item.name;
     const color = custom?.colorName || order.item.colorName;
-    const totalQty = Object.values(order.sizes).reduce((acc, q) => acc + q, 0);
+    const catLabel = activeCategoryData.tabLabel || order.categoryId;
 
-    let text = `Halo MIG Digital Printing, saya mau pesan langsung:\n\n`;
-    text += `*Produk:* ${name} (${color})\n`;
-    const sizeStr = Object.entries(order.sizes)
-      .map(([sz, q]) => `${sz}: ${q} pcs`)
-      .join(', ');
-    text += `*Ukuran:* ${sizeStr} (Total ${totalQty} pcs)\n`;
-    text += `*Total Harga:* Rp ${order.totalPrice.toLocaleString('id-ID')}\n\n`;
-    text += `Mohon konfirmasi ketersediaan dan nomor rekening untuk transfer ya. Terima kasih!`;
+    let text = `Halo MIG Digital Printing, saya mau order custom atau konsultasi desain:\n\n`;
+    text += `*Kategori:* ${catLabel}\n`;
+    text += `*Model Referensi:* ${name} (${color})\n\n`;
+    text += `Boleh dibantu info detail dan konsultasi desainnya? Terima kasih!`;
 
     window.open(getWhatsAppUrl(text), '_blank');
   };

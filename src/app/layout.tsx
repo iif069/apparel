@@ -1,5 +1,28 @@
 import type { Metadata, Viewport } from 'next';
+import { Inter, Anton, Cormorant_Garamond } from 'next/font/google';
 import './globals.css';
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+const anton = Anton({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-anton',
+  display: 'swap',
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-cormorant',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'MIG Apparel — Katalog Gantungan Interaktif',
@@ -26,7 +49,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id">
+    <html lang="id" className={`${inter.variable} ${anton.variable} ${cormorant.variable}`}>
       <body className="min-h-screen bg-page text-ink antialiased select-none md:select-auto font-sans">
         {children}
       </body>
