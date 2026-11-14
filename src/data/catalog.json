@@ -5,20 +5,20 @@
     "heroTitle": "APPAREL",
     "watermark": "APPAREL",
     "kicker": "Katalog pakaian interaktif",
-    "subtitle": "Sablon DTF & Plastisol presisi tinggi, bahan 100% Cotton Combed 24s & 30s adem standar distro.",
+    "subtitle": "Sablon tajam & awet tidak mudah pudar, bahan 100% katun halus yang adem dan nyaman dipakai seharian.",
     "rack": [
       {
         "id": "kaos-hitam",
-        "name": "Kaos Hitam Reaktif",
+        "name": "Kaos Hitam Streetwear",
         "colorName": "Hitam",
         "hex": "#1c1b1a",
         "highlight": "#3c3c3c",
         "shadow": "#111111",
         "accent": "#ffffff",
         "price": 65000,
-        "side": null,
-        "front": null,
-        "back": null
+        "side": "/products/kaos-04-side.png",
+        "front": "/products/kaos-04-front.png",
+        "back": "/products/kaos-04-back.png"
       },
       {
         "id": "kaos-dongker",
@@ -45,9 +45,9 @@
         "shadow": "#3b4a45",
         "accent": "#ffffff",
         "price": 65000,
-        "side": null,
-        "front": null,
-        "back": null
+        "side": "/products/kaos-05-side.png",
+        "front": "/products/kaos-05-front.png",
+        "back": "/products/kaos-05-back.png"
       },
       {
         "id": "kaos-biru-muda",
@@ -67,16 +67,16 @@
       },
       {
         "id": "kaos-putih",
-        "name": "Kaos Putih Netral",
+        "name": "Kaos Putih Ilustrasi",
         "colorName": "Putih",
         "hex": "#f8f7f3",
         "highlight": "#ffffff",
         "shadow": "#cac6bc",
         "accent": "#7b29ba",
         "price": 60000,
-        "side": null,
-        "front": null,
-        "back": null
+        "side": "/products/kaos-06-side.png",
+        "front": "/products/kaos-06-front.png",
+        "back": "/products/kaos-06-back.png"
       },
       {
         "id": "kaos-coral",
@@ -103,9 +103,9 @@
         "shadow": "#362242",
         "accent": "#ffffff",
         "price": 65000,
-        "side": null,
-        "front": null,
-        "back": null
+        "side": "/products/kaos-07-side.png",
+        "front": "/products/kaos-07-front.png",
+        "back": "/products/kaos-07-back.png"
       }
     ]
   },
@@ -115,7 +115,7 @@
     "heroTitle": "JERSEY",
     "watermark": "JERSEY",
     "kicker": "Custom Jersey Olahraga & Esport",
-    "subtitle": "Sublimasi full printing warna tajam anti-luntur dengan material dryfit Milano/Brazil berpori adem.",
+    "subtitle": "Warna cetak menyatu ke kain dan anti-luntur, dengan bahan olahraga berpori yang ringan dan adem.",
     "rack": [
       {
         "id": "jersey-01",
@@ -216,7 +216,7 @@
     "heroTitle": "KEMEJA",
     "watermark": "KEMEJA",
     "kicker": "Kemeja Korsa & Seragam Komunitas",
-    "subtitle": "Kemeja kerja lapangan/kantor bahan American & Japan Drill premium, potongan rapi & jahitan kokoh.",
+    "subtitle": "Kemeja kerja lapangan/kantor bahan kain drill tebal & rapi, nyaman dipakai seharian dengan jahitan kuat.",
     "rack": [
       {
         "id": "kemeja-01",

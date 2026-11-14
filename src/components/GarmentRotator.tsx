@@ -93,7 +93,7 @@ export function GarmentRotator({
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
       title="Geser ke kiri/kanan atau ketuk untuk memutar baju"
-      className="relative z-10 w-full max-w-[380px] sm:max-w-[420px] md:max-w-[440px] lg:max-w-[500px] xl:max-w-[540px] h-[360px] sm:h-[390px] md:h-[440px] lg:h-[520px] xl:h-[560px] flex flex-col items-center justify-center cursor-grab active:cursor-grabbing [perspective:1200px] select-none touch-pan-y"
+      className="relative z-10 w-full max-w-[380px] sm:max-w-[420px] md:max-w-[460px] lg:max-w-[540px] xl:max-w-[580px] h-[365px] sm:h-[400px] md:h-[440px] lg:h-[clamp(385px,61dvh,540px)] lg:max-h-[calc(100dvh-176px)] xl:h-[clamp(420px,64dvh,580px)] flex flex-col items-center justify-center cursor-grab active:cursor-grabbing [perspective:1200px] select-none touch-pan-y"
     >
       {/* 1. Kait Gantungan Atas (Disembunyikan jika foto custom punya gantungan sendiri - tanpa pop-up tooltip) */}
       {!hasOwnHanger && (
@@ -114,7 +114,7 @@ export function GarmentRotator({
       >
         {/* TAMPAK DEPAN / SAMPING */}
         <div className="absolute inset-0 flex flex-col items-center justify-center backface-hidden">
-          <div className="h-full max-h-[345px] sm:max-h-[375px] md:max-h-[400px] lg:max-h-[480px] xl:max-h-[520px] w-auto max-w-full flex items-center justify-center">
+          <div className="h-full max-h-[calc(100%-10px)] w-auto max-w-full flex items-center justify-center">
             <GarmentSVG
               item={item}
               categoryId={categoryId}
@@ -128,7 +128,7 @@ export function GarmentRotator({
 
         {/* TAMPAK BELAKANG (180°) */}
         <div className="absolute inset-0 flex flex-col items-center justify-center backface-hidden [transform:rotateY(180deg)]">
-          <div className="h-full max-h-[345px] sm:max-h-[375px] md:max-h-[400px] lg:max-h-[480px] xl:max-h-[520px] w-auto max-w-full flex items-center justify-center">
+          <div className="h-full max-h-[calc(100%-10px)] w-auto max-w-full flex items-center justify-center">
             <GarmentSVG
               item={item}
               categoryId={categoryId}

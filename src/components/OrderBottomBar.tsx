@@ -22,16 +22,37 @@ export function OrderBottomBar({
     </svg>
   );
 
+  if (isMobileFloating) {
+    return (
+      <div
+        className={`pointer-events-none fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(12px,env(safe-area-inset-bottom))] lg:px-7 lg:pb-5 ${className}`}
+      >
+        <div className="w-full max-w-[1400px] mx-auto flex justify-center lg:justify-end">
+          <div className="pointer-events-auto w-full lg:w-[360px] xl:w-[390px] flex flex-col gap-2 px-3.5 pt-2.5 pb-3 lg:px-4 lg:py-3 rounded-[28px] bg-surface/85 backdrop-blur-2xl backdrop-saturate-150 border border-white/80 lg:border-line/80 shadow-[0_10px_30px_rgba(28,27,26,0.12)]">
+            {helperText && (
+              <p className="text-[12px] font-semibold text-center leading-snug text-ink/90">
+                {helperText}
+              </p>
+            )}
+
+            <button
+              type="button"
+              onClick={onOrderViaWhatsApp}
+              className="press w-full flex items-center justify-center gap-2.5 h-12 px-5 rounded-full bg-brand hover:bg-brand-hover text-white text-[14px] font-bold shadow-xs transition-colors cursor-pointer whitespace-nowrap"
+            >
+              {WhatsAppIcon}
+              <span>Order &amp; Konsultasi via WA</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div
-      className={`flex flex-col gap-2 ${
-        isMobileFloating
-          ? 'fixed left-3 right-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-40 px-3.5 pt-2.5 pb-3 rounded-[28px] liquid-glass'
-          : 'pt-3 border-t border-line'
-      } ${className}`}
-    >
+    <div className={`flex flex-col gap-2 pt-3 border-t border-line ${className}`}>
       {helperText && (
-        <p className={`text-[12px] font-semibold text-center leading-snug ${isMobileFloating ? 'text-ink/85' : 'text-muted'}`}>
+        <p className="text-[12px] font-semibold text-center leading-snug text-muted">
           {helperText}
         </p>
       )}

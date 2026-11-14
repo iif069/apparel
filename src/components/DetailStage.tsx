@@ -283,7 +283,7 @@ export function DetailStage({
           <div className="flex flex-col gap-0.5">
             <span className="text-[14px] font-semibold text-ink">Jaminan Kualitas Vendor Terbaik</span>
             <p className="text-[13px] text-muted leading-relaxed">
-              Kami bekerja sama dengan vendor bahan dan konveksi terbaik untuk memastikan kualitas tetap terjaga sampai di tangan pelanggan.
+              Kami bekerja sama dengan beberapa vendor apparel terbaik untuk memastikan kualitas tetap terjaga sampai di tangan pelanggan.
             </p>
           </div>
         </div>
@@ -382,7 +382,7 @@ export function DetailStage({
         </div>
       </header>
 
-      {/* 2. AREA TENGAH BERGULIR */}
+      {/* 2. AREA TENGAH BERGULIR (Mobile scroll penuh; Desktop panel kiri & kanan scroll mandiri, tengah fixed) */}
       <div
         ref={scrollAreaRef}
         onScroll={handleScroll}
@@ -448,12 +448,12 @@ export function DetailStage({
         </div>
 
         {/* ========================================================================= */}
-        {/* B. TAMPILAN KHUSUS DESKTOP (hidden lg:grid) - SCROLL MANDIRI (KIRI & KANAN) */}
+        {/* B. TAMPILAN KHUSUS DESKTOP (hidden lg:grid) - SCROLL MANDIRI KIRI & KANAN, TENGAH FIXED */}
         {/* ========================================================================= */}
         <div className="hidden lg:grid grid-cols-[340px_1fr_360px] xl:grid-cols-[370px_1fr_390px] gap-6 xl:gap-8 items-start w-full max-w-[1400px] mx-auto flex-1 h-full min-h-0 px-7 py-3 overflow-hidden">
-          {/* 1. KOLOM KIRI (IDENTITAS PRODUK, WARNA & COCOK UNTUK SIAPA) */}
+          {/* 1. KOLOM KIRI (SCROLL MANDIRI) */}
           <div
-            className={`h-full overflow-y-auto pr-1.5 pb-6 flex flex-col gap-4 min-h-0 no-scrollbar transition-all duration-300 ease-out motion-reduce:transition-none ${
+            className={`h-full overflow-y-auto pr-2 pb-6 flex flex-col gap-4 min-h-0 thin-scrollbar transition-all duration-300 ease-out motion-reduce:transition-none ${
               isVisible ? 'opacity-100 translate-y-0 delay-[120ms]' : 'opacity-0 translate-y-4 delay-0'
             }`}
           >
@@ -461,7 +461,7 @@ export function DetailStage({
             {renderAudienceCard()}
           </div>
 
-          {/* 2. KOLOM TENGAH: PRODUK DITENGAH (TETAP DIAM DI TENGAH, TIDAK IKUT TER-SCROLL) */}
+          {/* 2. KOLOM TENGAH: PRODUK FIXED DI TENGAH (TANPA SCROLL) */}
           <div className="h-full flex flex-col items-center justify-center select-none py-1 min-h-0">
             <div
               className={`relative w-full flex justify-center transition-all duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
@@ -481,7 +481,7 @@ export function DetailStage({
 
             {/* Tab Sudut Tampilan [Samping] [Depan] [Belakang] + Tombol Flash */}
             <div
-              className={`w-full flex flex-wrap items-center justify-center gap-2.5 mt-3 transition-all duration-300 ease-out motion-reduce:transition-none ${
+              className={`w-full flex flex-wrap items-center justify-center gap-2.5 mt-2 transition-all duration-300 ease-out motion-reduce:transition-none ${
                 isVisible ? 'opacity-100 translate-y-0 delay-[110ms]' : 'opacity-0 translate-y-3 delay-0'
               }`}
             >
@@ -505,7 +505,7 @@ export function DetailStage({
 
             {/* Keterangan Putar 3D */}
             <span
-              className={`text-[11.5px] text-ink/45 mt-2.5 font-medium transition-opacity duration-300 motion-reduce:transition-none ${
+              className={`text-[11.5px] text-ink/45 mt-2 font-medium transition-opacity duration-300 motion-reduce:transition-none ${
                 isVisible ? 'opacity-100 delay-[180ms]' : 'opacity-0 delay-0'
               }`}
             >
@@ -513,28 +513,33 @@ export function DetailStage({
             </span>
           </div>
 
-          {/* 3. KOLOM KANAN: KENAPA COCOK, JAMINAN VENDOR TERBAIK & CTA WHATSAPP */}
+          {/* 3. KOLOM KANAN (SCROLL MANDIRI, DIBERI RUANG BAWAH UNTUK FLOATING CTA) */}
           <div
-            className={`h-full overflow-y-auto pl-1 pr-0.5 pb-6 flex flex-col gap-4 min-h-0 no-scrollbar transition-all duration-300 ease-out motion-reduce:transition-none ${
+            className={`h-full overflow-y-auto pl-1 pr-2 pb-28 flex flex-col gap-4 min-h-0 thin-scrollbar transition-all duration-300 ease-out motion-reduce:transition-none ${
               isVisible ? 'opacity-100 translate-y-0 delay-[200ms]' : 'opacity-0 translate-y-4 delay-0'
             }`}
           >
             {renderReasonsCard()}
-            {renderVendorTrustCard(true)}
+            {renderVendorTrustCard(false)}
           </div>
         </div>
       </div>
 
-      {/* 3. FLOATING ORDER BAR DI HP & TABLET (Menempel tetap di bawah layar) */}
-      <div className="lg:hidden">
-        {/* Progressive blur + gradasi halus di tepi bawah agar teks kartu melebur bersih di belakang dock kaca */}
+      {/* 3. FLOATING ORDER BAR (Menempel tetap di bawah layar pada mobile & kanan bawah pada desktop) */}
+      <div>
+        {/* Progressive blur + gradasi halus di tepi bawah agar teks di belakang dock buram & tidak bertabrakan */}
         <div
           aria-hidden="true"
-          className="pointer-events-none fixed left-0 right-0 bottom-0 h-32 bg-gradient-to-t from-page/65 via-page/30 to-transparent backdrop-blur-lg [mask-image:linear-gradient(to_top,black_55%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_top,black_55%,transparent_100%)] z-30"
-        />
+          className="pointer-events-none fixed inset-x-0 bottom-0 h-32 z-30"
+        >
+          <div className="w-full max-w-[1400px] mx-auto h-full lg:px-5 flex justify-end">
+            <div className="w-full lg:w-[392px] xl:w-[422px] h-full bg-gradient-to-t from-page/95 via-page/65 to-transparent backdrop-blur-lg [mask-image:linear-gradient(to_top,black_55%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_top,black_55%,transparent_100%)]" />
+          </div>
+        </div>
         <OrderBottomBar
           onOrderViaWhatsApp={handleWhatsAppClick}
           isMobileFloating={true}
+          helperText="Gratis lihat contoh desain sebelum dicetak"
           className={`transition-[opacity,transform] duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
             isVisible ? 'opacity-100 delay-[280ms]' : 'opacity-0 translate-y-6 delay-0'
           }`}

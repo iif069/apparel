@@ -223,7 +223,7 @@ export function HangerRack({
   };
 
   return (
-    <section className="relative w-full flex-1 flex flex-col justify-between overflow-hidden bg-page select-none min-h-0">
+    <section className="relative w-full flex-1 flex flex-col justify-between overflow-x-clip bg-page select-none min-h-0">
       {/* 1. Banner CTA Desain Custom di Atas Rak (Hanya Tampil di Mobile, Fokus Utama Ajakan ke WA) */}
       <div className="w-full px-4 pt-2.5 pb-1 z-20 flex justify-center flex-shrink-0 md:hidden">
         <a
@@ -458,9 +458,9 @@ export function HangerRack({
           </div>
         </div>
 
-        {/* Tombol Efek Flash khusus item kaos sablon reflektif */}
-        {hasFlashEffect && onToggleFlash && (
-          <div className="w-full flex justify-center mt-1 mb-1 px-4 z-20">
+        {/* Slot tombol Efek Flash dengan tinggi tetap agar tinggi rak tidak berubah-ubah (desktop & mobile) */}
+        <div className="w-full h-[46px] flex items-center justify-center mt-1 mb-1 px-4 z-20 flex-shrink-0">
+          {hasFlashEffect && onToggleFlash && (
             <button
               type="button"
               onClick={onToggleFlash}
@@ -474,8 +474,8 @@ export function HangerRack({
               <Zap className={`w-4 h-4 ${isFlashActive ? 'text-yellow-300 fill-yellow-300' : 'text-brand'}`} />
               <span>{isFlashActive ? 'Efek Flash: Aktif' : 'Coba Efek Flash'}</span>
             </button>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Petunjuk interaksi halus khusus mobile */}
         <p className="md:hidden text-center text-[11.5px] font-medium text-muted/80 mt-1 px-4 select-none">

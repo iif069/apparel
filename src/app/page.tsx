@@ -154,7 +154,7 @@ export default function HomePage() {
   };
 
   return (
-    <main className="h-[100dvh] max-h-[100dvh] w-full bg-page flex flex-col relative overflow-hidden select-none md:select-auto">
+    <main className="min-h-[100dvh] w-full bg-page flex flex-col relative overflow-x-hidden select-none md:select-auto">
       {/* 1. Bar Atas (Header Toko & Kategori) */}
       <Topbar
         currentCategory={currentCategory}

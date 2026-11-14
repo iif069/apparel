@@ -42,19 +42,19 @@ export const CATEGORY_DETAILS: Record<CategoryId, CategoryDetailContent> = {
     reasons: [
       {
         title: 'Adem & Nyaman Dipakai Seharian',
-        description: 'Bahan 100% Cotton Combed 24s & 30s standar distro yang lembut di kulit dan mudah menyerap keringat.',
+        description: 'Bahan 100% katun halus standar distro yang lembut di kulit, adem, dan mudah menyerap keringat.',
       },
       {
-        title: 'Sablon Tajam, Lentur & Opsi Reflektif',
-        description: 'Tersedia DTF High-Res, Plastisol Curing, hingga sablon reflektif yang memantul terang saat kena lampu flash—favorit untuk kaos kelas.',
+        title: 'Sablon Tajam, Awet & Opsi Menyala',
+        description: 'Hasil sablon warna detail dan tebal tidak mudah retak—tersedia juga opsi sablon yang memantul terang saat kena lampu flash.',
       },
       {
         title: 'Bebas Custom Desain Sesuka Hati',
         description: 'Bisa cetak gambar, tulisan, maupun logo depan-belakang sesuai konsep acara atau komunitas kamu.',
       },
     ],
-    materialLabel: '100% Cotton Combed 24s & 30s Knitto',
-    printLabel: 'DTF High-Res, Plastisol Curing & Polyflex Reflektif',
+    materialLabel: '100% Katun Halus Standar Distro (Adem & Lembut)',
+    printLabel: 'Sablon Warna Tajam, Tebal Awet & Opsi Menyala (Flash)',
   },
   jersey: {
     audienceHeading: 'Cocok untuk siapa aja?',
@@ -77,19 +77,19 @@ export const CATEGORY_DETAILS: Record<CategoryId, CategoryDetailContent> = {
     reasons: [
       {
         title: 'Berpori, Ringan & Cepat Kering',
-        description: 'Material Dryfit Milano & Brazil UV Protection menjaga sirkulasi udara agar tidak gerah saat bergerak aktif.',
+        description: 'Bahan kain olahraga berpori yang sejuk di kulit, ringan dipakai gerak aktif, dan cepat menyerap keringat.',
       },
       {
-        title: 'Warna Full Printing Anti-Luntur',
-        description: 'Tinta sublimasi meresap sempurna ke serat kain sehingga warna cerah, tajam, dan tahan cuci.',
+        title: 'Warna Tajam & Anti-Luntur',
+        description: 'Tinta meresap langsung ke serat kain sehingga warna cerah, tajam, dan tidak mudah pudar meski sering dicuci.',
       },
       {
         title: 'Custom Nama, Nomor & Logo Bebas',
-        description: 'Tiap baju bisa pakai nama dan nomor berbeda, plus dibantu preview mockup sebelum masuk produksi.',
+        description: 'Tiap baju bisa pakai nama dan nomor berbeda, plus dibantu lihat contoh desain sebelum dicetak.',
       },
     ],
-    materialLabel: 'Dryfit Milano & Brazil UV Protection',
-    printLabel: 'Sublimasi Full Printing (warna tajam & anti-luntur)',
+    materialLabel: 'Kain Olahraga Berpori (Ringan, Adem & Cepat Kering)',
+    printLabel: 'Cetak Full Warna Menyatu ke Kain (Anti-Luntur)',
   },
   puffer: {
     audienceHeading: 'Cocok untuk siapa aja?',
@@ -112,18 +112,18 @@ export const CATEGORY_DETAILS: Record<CategoryId, CategoryDetailContent> = {
     reasons: [
       {
         title: 'Kain Tebal, Rapi & Tidak Mudah Kusut',
-        description: 'Menggunakan American & Japan Drill premium yang berstruktur kokoh namun tetap nyaman dipakai lama.',
+        description: 'Menggunakan bahan kain drill pilihan yang tebal dan berstruktur rapi namun tetap nyaman dipakai lama.',
       },
       {
-        title: 'Bordir Komputer Presisi & Jahitan Kuat',
-        description: 'Logo instansi, nama dada, dan emblem terlihat tegas, rapi, dan awet meski sering dicuci.',
+        title: 'Bordir Rapi & Jahitan Kuat',
+        description: 'Logo instansi, nama dada, dan emblem dibordir tegas, rapi, dan awet meski sering dicuci.',
       },
       {
         title: 'Detail Model & Warna Fleksibel',
         description: 'Bebas sesuaikan posisi bordir, kombinasi warna list, hingga pilihan lengan pendek atau panjang.',
       },
     ],
-    materialLabel: 'American & Japan Drill Premium',
-    printLabel: 'Bordir Komputer Presisi & Sablon Plastisol',
+    materialLabel: 'Kain Drill Pilihan (Tebal, Rapi & Tidak Mudah Kusut)',
+    printLabel: 'Bordir Rapi & Sablon Tebal Awet',
   },
 };
