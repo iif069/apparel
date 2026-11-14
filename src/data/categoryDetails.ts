@@ -45,8 +45,8 @@ export const CATEGORY_DETAILS: Record<CategoryId, CategoryDetailContent> = {
         description: 'Bahan 100% Cotton Combed 24s & 30s standar distro yang lembut di kulit dan mudah menyerap keringat.',
       },
       {
-        title: 'Sablon Tajam, Lentur & Awet',
-        description: 'Dicetak dengan DTF High-Res & Plastisol Curing agar warna pekat dan tidak mudah retak saat dicuci.',
+        title: 'Sablon Tajam, Lentur & Opsi Reflektif',
+        description: 'Tersedia DTF High-Res, Plastisol Curing, hingga sablon reflektif yang memantul terang saat kena lampu flash—favorit untuk kaos kelas.',
       },
       {
         title: 'Bebas Custom Desain Sesuka Hati',
@@ -54,7 +54,7 @@ export const CATEGORY_DETAILS: Record<CategoryId, CategoryDetailContent> = {
       },
     ],
     materialLabel: '100% Cotton Combed 24s & 30s Knitto',
-    printLabel: 'Sablon DTF High-Res & Plastisol Curing',
+    printLabel: 'DTF High-Res, Plastisol Curing & Polyflex Reflektif',
   },
   jersey: {
     audienceHeading: 'Cocok untuk siapa aja?',

@@ -18,6 +18,7 @@ export default function HomePage() {
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
 
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const { playSound } = useSound(soundEnabled);
 
   const [customPhotos, setCustomPhotos] = useState<Record<string, CustomPhotoData>>({});
@@ -54,10 +55,33 @@ export default function HomePage() {
       if (window.location.hash.includes('detail') || window.location.search.includes('detail')) {
         setIsDetailOpen(true);
       }
+
+      const savedDarkMode = localStorage.getItem('mig-apparel-dark-mode') === 'true';
+      if (savedDarkMode) {
+        setIsDarkMode(true);
+        document.documentElement.classList.add('dark');
+      }
     } catch {
       // Abaikan jika localStorage tidak tersedia
     }
   }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', isDarkMode);
+  }, [isDarkMode]);
+
+  const handleToggleDarkMode = () => {
+    playSound('click');
+    setIsDarkMode((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('mig-apparel-dark-mode', next ? 'true' : 'false');
+      } catch {
+        // Abaikan jika localStorage tidak tersedia
+      }
+      return next;
+    });
+  };
 
   const handleToggleAdmin = () => {
     setIsAdmin((prev) => {
@@ -158,6 +182,8 @@ export default function HomePage() {
         onToggleSound={() => setSoundEnabled((prev) => !prev)}
         isAdmin={isAdmin}
         onToggleAdmin={handleToggleAdmin}
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={handleToggleDarkMode}
       />
 
       {/* 2. Panggung Rak Gantungan 3D (Stage 1) */}
@@ -173,6 +199,7 @@ export default function HomePage() {
           setIsDetailOpen(true);
         }}
         customPhotos={customPhotos}
+        isDarkMode={isDarkMode}
         onPlaySound={playSound}
       />
 
@@ -184,6 +211,8 @@ export default function HomePage() {
         itemIndex={activeSlotIndex}
         onSelectIndex={setActiveSlotIndex}
         customPhotos={customPhotos}
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={handleToggleDarkMode}
         onOrderViaWhatsApp={handleOrderViaWhatsApp}
         onPlaySound={playSound}
       />

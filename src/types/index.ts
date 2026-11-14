@@ -14,6 +14,9 @@ export interface GarmentItem {
   side: string | null;
   front: string | null;
   back: string | null;
+  reflectiveFront?: string | null;
+  reflectiveBack?: string | null;
+  isReflective?: boolean;
 }
 
 export interface CategoryData {

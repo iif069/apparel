@@ -86,9 +86,9 @@ export function BackgroundMusic({ soundEnabled }: BackgroundMusicProps) {
       {/* Visualizer Bar Equalizer berdenyut saat musik aktif */}
       {isPlaying ? (
         <div className="flex items-end gap-0.5 h-3.5 w-3.5 shrink-0">
-          <span className="w-0.5 h-3 bg-brand rounded-full animate-music-bar-1" />
-          <span className="w-0.5 h-2 bg-brand rounded-full animate-music-bar-2" />
-          <span className="w-0.5 h-3 bg-brand rounded-full animate-music-bar-3" />
+          <span className="w-0.5 h-3 bg-brand dark:bg-white rounded-full animate-music-bar-1" />
+          <span className="w-0.5 h-2 bg-brand dark:bg-white rounded-full animate-music-bar-2" />
+          <span className="w-0.5 h-3 bg-brand dark:bg-white rounded-full animate-music-bar-3" />
         </div>
       ) : (
         <Music className="w-4 h-4 text-muted shrink-0" />
@@ -100,7 +100,7 @@ export function BackgroundMusic({ soundEnabled }: BackgroundMusicProps) {
 
       {/* Ikon Speaker Mute/Unmute */}
       <span className="text-muted transition-colors shrink-0">
-        {isPlaying ? <Volume2 className="w-3.5 h-3.5 text-brand" /> : <VolumeX className="w-3.5 h-3.5 text-muted" />}
+        {isPlaying ? <Volume2 className="w-3.5 h-3.5 text-brand dark:text-white" /> : <VolumeX className="w-3.5 h-3.5 text-muted" />}
       </span>
     </button>
   );

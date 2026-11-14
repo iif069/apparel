@@ -8,6 +8,8 @@ interface GarmentSVGProps {
   categoryId: CategoryId;
   viewAngle?: ViewAngle;
   custom?: CustomPhotoData;
+  isDarkMode?: boolean;
+  isLit?: boolean;
   className?: string;
 }
 
@@ -16,6 +18,8 @@ export function GarmentSVG({
   categoryId,
   viewAngle = 'front',
   custom,
+  isDarkMode = false,
+  isLit = false,
   className = '',
 }: GarmentSVGProps) {
   // 1. Jika ada foto kustom yang diunggah pengguna
@@ -60,22 +64,49 @@ export function GarmentSVG({
     );
   }
   if (viewAngle === 'front' && item.front) {
+    const showReflectiveOverlay = isDarkMode && isLit && !!item.reflectiveFront;
     return (
-      <img
-        src={item.front}
-        alt={`${item.name} tampak depan`}
-        className={`w-auto max-w-full h-full object-contain object-top ${className}`}
-      />
+      <div className="relative h-full w-auto max-w-full flex items-center justify-center">
+        <img
+          src={item.front}
+          alt={`${item.name} tampak depan`}
+          className={`w-auto max-w-full h-full object-contain object-top ${className}`}
+        />
+        {item.reflectiveFront && (
+          <img
+            src={item.reflectiveFront}
+            alt=""
+            aria-hidden="true"
+            className={`pointer-events-none absolute inset-0 w-full h-full object-contain object-top mix-blend-screen transition-opacity duration-200 ${
+              showReflectiveOverlay ? 'opacity-100 reflective-print-lit' : 'opacity-0'
+            }`}
+          />
+        )}
+      </div>
     );
   }
   const backSrc = item.back || item.front;
   if (viewAngle === 'back' && backSrc) {
+    const reflectiveBackSrc = item.reflectiveBack || (item.back ? null : item.reflectiveFront);
+    const showReflectiveOverlay = isDarkMode && isLit && !!reflectiveBackSrc;
     return (
-      <img
-        src={backSrc}
-        alt={`${item.name} tampak belakang`}
-        className={`w-auto max-w-full h-full object-contain object-top ${className}`}
-      />
+      <div className="relative h-full w-auto max-w-full flex items-center justify-center">
+        <img
+          src={backSrc}
+          alt={`${item.name} tampak belakang`}
+          className={`w-auto max-w-full h-full object-contain object-top ${className}`}
+        />
+        {reflectiveBackSrc && (
+          <img
+            src={reflectiveBackSrc}
+            alt=""
+            aria-hidden="true"
+            className={`pointer-events-none absolute inset-0 w-full h-full object-contain object-top mix-blend-screen transition-opacity duration-200 ${
+              showReflectiveOverlay ? 'opacity-100 reflective-print-lit' : 'opacity-0'
+            }`}
+          />
+        )}
+      </div>
     );
   }
 
@@ -187,6 +218,15 @@ export function GarmentSVG({
             strokeOpacity="0.4"
           />
         )}
+        {categoryId === 'kaos' && (
+          <path
+            d="M 55 156 Q 60 159 65 156"
+            stroke={isDarkMode && isLit ? '#ffffff' : isLight ? '#6b675e' : '#a1a1aa'}
+            strokeWidth={isDarkMode && isLit ? '2.6' : '2'}
+            strokeLinecap="round"
+            className={isDarkMode && isLit ? 'reflective-print-lit' : ''}
+          />
+        )}
       </svg>
     );
   }
@@ -277,10 +317,16 @@ export function GarmentSVG({
   }
 
   // -------------------------------------------------------------------------
-  // KAOS SABLON
+  // KAOS SABLON (Dilengkapi aksen sablon reflektif untuk Mode Gelap / Flash)
   // -------------------------------------------------------------------------
   const teeStroke = isLight ? '#d3d0dc' : 'rgba(255,255,255,0.18)';
-  const labelColor = isLight ? '#1c1b1a' : '#ffffff';
+  const isFlashOn = isDarkMode && isLit;
+  const reflectiveFill = isFlashOn
+    ? '#ffffff'
+    : isLight
+    ? '#6e6c78'
+    : '#9ca3af';
+  const subtleInk = isLight ? '#1c1b1a' : '#ffffff';
 
   return (
     <svg
@@ -298,13 +344,89 @@ export function GarmentSVG({
         strokeLinejoin="round"
       />
       {!isBack ? (
-        <text x="150" y="142" textAnchor="middle" fill={labelColor} fontFamily="Inter, sans-serif" fontSize="11.5" fontWeight="800" letterSpacing="2.2">
-          MIG APPAREL
-        </text>
+        <g className={isFlashOn ? 'reflective-print-lit' : 'transition-all duration-200'}>
+          <text
+            x="150"
+            y="126"
+            textAnchor="middle"
+            fill={reflectiveFill}
+            fontFamily="Inter, sans-serif"
+            fontSize="12.5"
+            fontWeight="800"
+            letterSpacing="2.4"
+          >
+            MIG APPAREL
+          </text>
+          <rect
+            x="120"
+            y="134"
+            width="60"
+            height="2.2"
+            rx="1.1"
+            fill={reflectiveFill}
+            opacity={isFlashOn ? 1 : 0.72}
+          />
+          <text
+            x="150"
+            y="148"
+            textAnchor="middle"
+            fill={isFlashOn ? '#ffffff' : subtleInk}
+            fontFamily="Inter, sans-serif"
+            fontSize="7.2"
+            fontWeight="700"
+            letterSpacing="2.8"
+            opacity={isFlashOn ? 0.95 : 0.48}
+          >
+            REFLECTIVE EDITION
+          </text>
+        </g>
       ) : (
-        <text x="150" y="122" textAnchor="middle" fill={labelColor} fontFamily="Inter, sans-serif" fontSize="10.5" fontWeight="700" letterSpacing="2" opacity="0.65">
-          MIG DIGITAL PRINTING
-        </text>
+        <g className={isFlashOn ? 'reflective-print-lit' : 'transition-all duration-200'}>
+          <text
+            x="150"
+            y="112"
+            textAnchor="middle"
+            fill={isFlashOn ? '#ffffff' : subtleInk}
+            fontFamily="Inter, sans-serif"
+            fontSize="8.5"
+            fontWeight="700"
+            letterSpacing="2.4"
+            opacity={isFlashOn ? 0.95 : 0.55}
+          >
+            MIG DIGITAL PRINTING
+          </text>
+          <text
+            x="150"
+            y="162"
+            textAnchor="middle"
+            fill={reflectiveFill}
+            fontFamily="Anton, sans-serif"
+            fontSize="36"
+            letterSpacing="2"
+          >
+            CLASS 26
+          </text>
+          <path
+            d="M112 174 H188"
+            stroke={reflectiveFill}
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            opacity={isFlashOn ? 1 : 0.75}
+          />
+          <text
+            x="150"
+            y="190"
+            textAnchor="middle"
+            fill={reflectiveFill}
+            fontFamily="Inter, sans-serif"
+            fontSize="7.5"
+            fontWeight="700"
+            letterSpacing="2.6"
+            opacity={isFlashOn ? 1 : 0.7}
+          >
+            GLOW ON FLASH
+          </text>
+        </g>
       )}
     </svg>
   );

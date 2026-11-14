@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
+  darkMode: 'class',
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -10,36 +11,36 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          DEFAULT: '#7b29ba',
-          hover: '#6a21a3',
-          deep: '#551c7d',
-          soft: '#f4ebfa',
+          DEFAULT: 'rgb(var(--color-brand-rgb) / <alpha-value>)',
+          hover: 'rgb(var(--color-brand-hover-rgb) / <alpha-value>)',
+          deep: 'rgb(var(--color-brand-deep-rgb) / <alpha-value>)',
+          soft: 'rgb(var(--color-brand-soft-rgb) / <alpha-value>)',
           glow: 'rgba(123, 41, 186, 0.35)',
         },
-        page: '#f5f4f8',
-        surface: '#ffffff',
-        line: '#e2e0ea',
+        page: 'rgb(var(--color-page-rgb) / <alpha-value>)',
+        surface: 'rgb(var(--color-surface-rgb) / <alpha-value>)',
+        line: 'rgb(var(--color-line-rgb) / <alpha-value>)',
         ink: {
-          DEFAULT: '#1c1b1a',
-          muted: '#6b675e',
+          DEFAULT: 'rgb(var(--color-ink-rgb) / <alpha-value>)',
+          muted: 'rgb(var(--color-muted-rgb) / <alpha-value>)',
         },
-        muted: '#6b675e',
+        muted: 'rgb(var(--color-muted-rgb) / <alpha-value>)',
         success: {
-          bg: '#dcfce7',
-          fg: '#15803d',
+          bg: 'var(--color-success-bg)',
+          fg: 'var(--color-success-fg)',
         },
         warning: {
-          bg: '#fdf0d5',
-          fg: '#8a5a00',
+          bg: 'var(--color-warning-bg)',
+          fg: 'var(--color-warning-fg)',
         },
         danger: {
-          bg: '#fee2e2',
-          fg: '#b91c1c',
+          bg: 'var(--color-danger-bg)',
+          fg: 'var(--color-danger-fg)',
         },
         live: '#4ade80',
         tag: {
-          bg: '#f4ebfa',
-          text: '#7b29ba',
+          bg: 'rgb(var(--color-brand-soft-rgb) / <alpha-value>)',
+          text: 'rgb(var(--color-brand-rgb) / <alpha-value>)',
         },
       },
       fontFamily: {
