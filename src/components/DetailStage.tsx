@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Check, Users, Sparkles, ShieldCheck, Package, Moon, Sun } from 'lucide-react';
+import { ArrowLeft, Check, Users, Sparkles, ShieldCheck, Package, Zap } from 'lucide-react';
 import { GarmentItem, CategoryData, ViewAngle, CustomPhotoData } from '@/types';
 import { CATEGORY_DETAILS } from '@/data/categoryDetails';
 import { getWhatsAppUrl } from '@/config/store';
@@ -23,8 +23,8 @@ interface DetailStageProps {
   itemIndex: number;
   onSelectIndex: (index: number) => void;
   customPhotos: Record<string, CustomPhotoData>;
-  isDarkMode: boolean;
-  onToggleDarkMode: () => void;
+  isFlashActive: boolean;
+  onToggleFlash: () => void;
   onOrderViaWhatsApp: (order: {
     item: GarmentItem;
     categoryId: CategoryData['id'];
@@ -39,8 +39,8 @@ export function DetailStage({
   itemIndex,
   onSelectIndex,
   customPhotos,
-  isDarkMode,
-  onToggleDarkMode,
+  isFlashActive,
+  onToggleFlash,
   onOrderViaWhatsApp,
   onPlaySound,
 }: DetailStageProps) {
@@ -125,14 +125,28 @@ export function DetailStage({
   };
 
   const counterText = `${String(itemIndex + 1).padStart(2, '0')} / ${String(items.length).padStart(2, '0')}`;
+  const hasFlashEffect = Boolean(
+    currentItem.isReflective ||
+      currentItem.flashFront ||
+      currentItem.flashBack ||
+      currentItem.reflectiveFront ||
+      currentItem.reflectiveBack
+  );
+
+  const handleStageToggleFlash = () => {
+    if (!isFlashActive && currentItem.flashBack && !currentItem.flashFront && viewAngle !== 'back') {
+      setViewAngle('back');
+    }
+    onToggleFlash();
+  };
 
   // Kartu Identitas Model & Pilihan Warna di Gantungan (tanpa harga & tanpa ukuran)
   const renderIdentityCard = (titleClass: string, swatchColsClass: string) => (
     <div className="bg-surface border border-line rounded-[28px] p-5 sm:p-6 flex flex-col gap-4 shadow-soft">
       {/* Badge Status */}
       <div className="flex items-center gap-2 flex-wrap">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold bg-brand-soft text-brand dark:text-white border border-brand/30 dark:border-white/20">
-          <span className="w-1.5 h-1.5 rounded-full bg-brand dark:bg-white animate-pulse" />
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold bg-brand-soft text-brand border border-brand/30">
+          <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
           Desain custom
         </span>
         <span className="px-3 py-1 rounded-full text-[12px] font-semibold bg-page text-ink/75 border border-line">
@@ -199,7 +213,7 @@ export function DetailStage({
   const renderAudienceCard = () => (
     <div className="bg-surface border border-line rounded-[28px] p-5 sm:p-6 flex flex-col gap-3.5 shadow-soft">
       <div className="flex items-center gap-2.5">
-        <div className="w-8 h-8 rounded-full bg-brand-soft text-brand dark:text-white flex items-center justify-center shrink-0">
+        <div className="w-8 h-8 rounded-full bg-brand-soft text-brand flex items-center justify-center shrink-0">
           <Users className="w-4 h-4" />
         </div>
         <h3 className="text-[16px] font-bold text-ink tracking-tight">{detailCopy.audienceHeading}</h3>
@@ -224,7 +238,7 @@ export function DetailStage({
   const renderReasonsCard = () => (
     <div className="bg-surface border border-line rounded-[28px] p-5 sm:p-6 flex flex-col gap-4 shadow-soft">
       <div className="flex items-center gap-2.5">
-        <div className="w-8 h-8 rounded-full bg-brand-soft text-brand dark:text-white flex items-center justify-center shrink-0">
+        <div className="w-8 h-8 rounded-full bg-brand-soft text-brand flex items-center justify-center shrink-0">
           <Sparkles className="w-4 h-4" />
         </div>
         <h3 className="text-[16px] font-bold text-ink tracking-tight">{detailCopy.reasonsHeading}</h3>
@@ -233,7 +247,7 @@ export function DetailStage({
       <div className="flex flex-col gap-3.5">
         {detailCopy.reasons.map((reason) => (
           <div key={reason.title} className="flex items-start gap-2.5">
-            <span className="w-5 h-5 rounded-full bg-brand-soft text-brand dark:text-white flex items-center justify-center shrink-0 mt-0.5">
+            <span className="w-5 h-5 rounded-full bg-brand-soft text-brand flex items-center justify-center shrink-0 mt-0.5">
               <Check className="w-3 h-3 stroke-[2.5]" />
             </span>
             <div className="flex flex-col gap-0.5">
@@ -263,7 +277,7 @@ export function DetailStage({
     <div className="bg-surface border border-line rounded-[28px] p-5 sm:p-6 flex flex-col gap-4 shadow-soft">
       <div className="flex flex-col gap-3.5">
         <div className="flex items-start gap-3">
-          <div className="w-8 h-8 rounded-full bg-brand-soft text-brand dark:text-white flex items-center justify-center shrink-0 mt-0.5">
+          <div className="w-8 h-8 rounded-full bg-brand-soft text-brand flex items-center justify-center shrink-0 mt-0.5">
             <ShieldCheck className="w-4 h-4" />
           </div>
           <div className="flex flex-col gap-0.5">
@@ -326,7 +340,7 @@ export function DetailStage({
             <button
               type="button"
               onClick={onClose}
-              className="press w-11 h-11 rounded-full bg-white/45 dark:bg-surface/75 lg:bg-surface border border-white/70 dark:border-white/15 lg:border-line lg:shadow-xs flex items-center justify-center hover:bg-white/75 dark:hover:bg-surface lg:hover:bg-surface text-ink transition-colors cursor-pointer"
+              className="press w-11 h-11 rounded-full bg-white/45 lg:bg-surface border border-white/70 lg:border-line lg:shadow-xs flex items-center justify-center hover:bg-white/75 lg:hover:bg-surface text-ink transition-colors cursor-pointer"
               aria-label="Kembali ke rak"
               title="Kembali ke rak"
             >
@@ -335,7 +349,7 @@ export function DetailStage({
             <button
               type="button"
               onClick={onClose}
-              className="press hidden md:inline-block text-[14px] font-bold text-ink hover:text-brand dark:hover:text-white/75 transition-colors cursor-pointer"
+              className="press hidden md:inline-block text-[14px] font-bold text-ink hover:text-brand transition-colors cursor-pointer"
             >
               Kembali ke rak
             </button>
@@ -348,40 +362,23 @@ export function DetailStage({
                 {productName}
               </span>
             ) : (
-              <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white/45 dark:bg-surface/75 lg:bg-page text-ink/85 border border-white/65 dark:border-white/15 lg:border-line tabular-nums">
+              <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white/45 lg:bg-page text-ink/85 border border-white/65 lg:border-line tabular-nums">
                 {counterText}
               </span>
             )}
           </div>
 
-          {/* Kanan: Toggle Mode Gelap & Tombol Chat WhatsApp CS */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <button
-              type="button"
-              onClick={onToggleDarkMode}
-              title={isDarkMode ? 'Aktifkan Mode Terang' : 'Aktifkan Mode Gelap (Spotlight & Flash Reflektif)'}
-              aria-label={isDarkMode ? 'Aktifkan Mode Terang' : 'Aktifkan Mode Gelap'}
-              aria-pressed={isDarkMode}
-              className={`press w-11 h-11 rounded-full border flex items-center justify-center transition-all cursor-pointer shrink-0 ${
-                isDarkMode
-                  ? 'bg-brand text-white border-brand-hover shadow-glow'
-                  : 'bg-white/45 dark:bg-surface/75 lg:bg-surface text-ink border-white/70 dark:border-white/15 lg:border-line hover:bg-white/75 lg:hover:border-brand/40 lg:shadow-xs'
-              }`}
-            >
-              {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
-
-            <a
-              href={getWhatsAppUrl(`Halo MIG Digital Printing, saya mau tanya dan konsultasi ${categoryData.tabLabel} (${productName})`)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="press flex items-center justify-center gap-2 h-11 px-4 rounded-full bg-white/45 dark:bg-surface/75 lg:bg-surface text-ink border border-white/70 dark:border-white/15 lg:border-line hover:bg-white/75 dark:hover:bg-surface lg:hover:border-brand/40 lg:shadow-xs transition-colors cursor-pointer shrink-0 whitespace-nowrap"
-              aria-label="Hubungi WhatsApp CS"
-            >
-              <WhatsAppIcon className="w-4 h-4 flex-shrink-0" />
-              <span className="text-[13px] font-bold text-ink">Chat WA</span>
-            </a>
-          </div>
+          {/* Kanan: Tombol Chat WhatsApp CS */}
+          <a
+            href={getWhatsAppUrl(`Halo MIG Digital Printing, saya mau tanya dan konsultasi ${categoryData.tabLabel} (${productName})`)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="press flex items-center justify-center gap-2 h-11 px-4 rounded-full bg-white/45 lg:bg-surface text-ink border border-white/70 lg:border-line hover:bg-white/75 lg:hover:border-brand/40 lg:shadow-xs transition-colors cursor-pointer shrink-0 whitespace-nowrap"
+            aria-label="Hubungi WhatsApp CS"
+          >
+            <WhatsAppIcon className="w-4 h-4 flex-shrink-0" />
+            <span className="text-[13px] font-bold text-ink">Chat WA</span>
+          </a>
         </div>
       </header>
 
@@ -408,25 +405,34 @@ export function DetailStage({
                 viewAngle={viewAngle}
                 onAngleChange={setViewAngle}
                 custom={custom}
-                isDarkMode={isDarkMode}
+                isFlashActive={isFlashActive}
                 onPlaySound={onPlaySound}
               />
             </div>
 
-            {/* Tab Sudut Tampilan [Samping] [Depan] [Belakang] */}
+            {/* Tab Sudut Tampilan [Samping] [Depan] [Belakang] + Tombol Flash */}
             <div
-              className={`w-full flex justify-center mt-2.5 transition-all duration-300 ease-out motion-reduce:transition-none ${
+              className={`w-full flex flex-wrap items-center justify-center gap-2 mt-2.5 transition-all duration-300 ease-out motion-reduce:transition-none ${
                 isVisible ? 'opacity-100 translate-y-0 delay-[140ms]' : 'opacity-0 translate-y-3 delay-0'
               }`}
             >
               <AngleTabs currentAngle={viewAngle} onSelectAngle={setViewAngle} onPlaySound={onPlaySound} />
+              {hasFlashEffect && (
+                <button
+                  type="button"
+                  onClick={handleStageToggleFlash}
+                  aria-pressed={isFlashActive}
+                  className={`press inline-flex items-center gap-2 min-h-[44px] px-4 py-2 rounded-full text-[13px] font-bold border transition-all cursor-pointer shadow-xs ${
+                    isFlashActive
+                      ? 'bg-ink text-surface border-ink shadow-soft'
+                      : 'bg-surface text-ink border-line hover:border-brand/50 hover:text-brand'
+                  }`}
+                >
+                  <Zap className={`w-4 h-4 ${isFlashActive ? 'text-yellow-300 fill-yellow-300' : 'text-brand'}`} />
+                  <span>{isFlashActive ? 'Flash Aktif' : 'Efek Flash'}</span>
+                </button>
+              )}
             </div>
-
-            {isDarkMode && (
-              <span className="text-[11px] text-muted mt-2 text-center font-medium">
-                Sentuh &amp; geser baju untuk menyalakan lampu sorot
-              </span>
-            )}
           </div>
 
           <div
@@ -468,18 +474,33 @@ export function DetailStage({
                 viewAngle={viewAngle}
                 onAngleChange={setViewAngle}
                 custom={custom}
-                isDarkMode={isDarkMode}
+                isFlashActive={isFlashActive}
                 onPlaySound={onPlaySound}
               />
             </div>
 
-            {/* Tab Sudut Tampilan [Samping] [Depan] [Belakang] */}
+            {/* Tab Sudut Tampilan [Samping] [Depan] [Belakang] + Tombol Flash */}
             <div
-              className={`w-full flex justify-center mt-3 transition-all duration-300 ease-out motion-reduce:transition-none ${
+              className={`w-full flex flex-wrap items-center justify-center gap-2.5 mt-3 transition-all duration-300 ease-out motion-reduce:transition-none ${
                 isVisible ? 'opacity-100 translate-y-0 delay-[110ms]' : 'opacity-0 translate-y-3 delay-0'
               }`}
             >
               <AngleTabs currentAngle={viewAngle} onSelectAngle={setViewAngle} onPlaySound={onPlaySound} />
+              {hasFlashEffect && (
+                <button
+                  type="button"
+                  onClick={handleStageToggleFlash}
+                  aria-pressed={isFlashActive}
+                  className={`press inline-flex items-center gap-2 min-h-[44px] px-4 py-2 rounded-full text-[13px] font-bold border transition-all cursor-pointer shadow-xs ${
+                    isFlashActive
+                      ? 'bg-ink text-surface border-ink shadow-soft'
+                      : 'bg-surface text-ink border-line hover:border-brand/50 hover:text-brand'
+                  }`}
+                >
+                  <Zap className={`w-4 h-4 ${isFlashActive ? 'text-yellow-300 fill-yellow-300' : 'text-brand'}`} />
+                  <span>{isFlashActive ? 'Flash Aktif' : 'Efek Flash'}</span>
+                </button>
+              )}
             </div>
 
             {/* Keterangan Putar 3D */}
@@ -488,9 +509,7 @@ export function DetailStage({
                 isVisible ? 'opacity-100 delay-[180ms]' : 'opacity-0 delay-0'
               }`}
             >
-              {isDarkMode
-                ? 'Arahkan kursor ke baju untuk menyalakan spotlight · Geser untuk memutar 360°'
-                : 'Geser ke kiri/kanan atau ketuk untuk memutar baju (360°)'}
+              Geser ke kiri/kanan atau ketuk untuk memutar baju (360°)
             </span>
           </div>
 

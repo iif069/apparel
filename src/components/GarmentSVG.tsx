@@ -8,8 +8,7 @@ interface GarmentSVGProps {
   categoryId: CategoryId;
   viewAngle?: ViewAngle;
   custom?: CustomPhotoData;
-  isDarkMode?: boolean;
-  isLit?: boolean;
+  isFlashActive?: boolean;
   className?: string;
 }
 
@@ -18,8 +17,7 @@ export function GarmentSVG({
   categoryId,
   viewAngle = 'front',
   custom,
-  isDarkMode = false,
-  isLit = false,
+  isFlashActive = false,
   className = '',
 }: GarmentSVGProps) {
   // 1. Jika ada foto kustom yang diunggah pengguna
@@ -64,21 +62,37 @@ export function GarmentSVG({
     );
   }
   if (viewAngle === 'front' && item.front) {
-    const showReflectiveOverlay = isDarkMode && isLit && !!item.reflectiveFront;
+    const showFlashPhoto = isFlashActive && !!item.flashFront;
+    const showReflectiveOverlay = isFlashActive && !showFlashPhoto && !!item.reflectiveFront;
     return (
       <div className="relative h-full w-auto max-w-full flex items-center justify-center">
         <img
           src={item.front}
           alt={`${item.name} tampak depan`}
-          className={`w-auto max-w-full h-full object-contain object-top ${className}`}
+          className={`w-auto max-w-full h-full object-contain object-top transition-all duration-250 ${
+            showFlashPhoto
+              ? 'opacity-0'
+              : showReflectiveOverlay
+              ? 'opacity-100 brightness-[0.52] contrast-[1.08]'
+              : 'opacity-100'
+          } ${className}`}
         />
+        {item.flashFront && (
+          <img
+            src={item.flashFront}
+            alt={`${item.name} tampak depan efek flash`}
+            className={`pointer-events-none absolute inset-0 w-full h-full object-contain object-top transition-opacity duration-250 ${
+              showFlashPhoto ? 'opacity-100' : 'opacity-0'
+            }`}
+          />
+        )}
         {item.reflectiveFront && (
           <img
             src={item.reflectiveFront}
             alt=""
             aria-hidden="true"
-            className={`pointer-events-none absolute inset-0 w-full h-full object-contain object-top mix-blend-screen transition-opacity duration-200 ${
-              showReflectiveOverlay ? 'opacity-100 reflective-print-lit' : 'opacity-0'
+            className={`pointer-events-none absolute inset-0 w-full h-full object-contain object-top mix-blend-screen transition-opacity duration-250 ${
+              showReflectiveOverlay ? 'opacity-95 reflective-print-lit' : 'opacity-0'
             }`}
           />
         )}
@@ -87,22 +101,38 @@ export function GarmentSVG({
   }
   const backSrc = item.back || item.front;
   if (viewAngle === 'back' && backSrc) {
+    const showFlashPhoto = isFlashActive && !!item.flashBack;
     const reflectiveBackSrc = item.reflectiveBack || (item.back ? null : item.reflectiveFront);
-    const showReflectiveOverlay = isDarkMode && isLit && !!reflectiveBackSrc;
+    const showReflectiveOverlay = isFlashActive && !showFlashPhoto && !!reflectiveBackSrc;
     return (
       <div className="relative h-full w-auto max-w-full flex items-center justify-center">
         <img
           src={backSrc}
           alt={`${item.name} tampak belakang`}
-          className={`w-auto max-w-full h-full object-contain object-top ${className}`}
+          className={`w-auto max-w-full h-full object-contain object-top transition-all duration-250 ${
+            showFlashPhoto
+              ? 'opacity-0'
+              : showReflectiveOverlay
+              ? 'opacity-100 brightness-[0.52] contrast-[1.08]'
+              : 'opacity-100'
+          } ${className}`}
         />
+        {item.flashBack && (
+          <img
+            src={item.flashBack}
+            alt={`${item.name} tampak belakang efek flash`}
+            className={`pointer-events-none absolute inset-0 w-full h-full object-contain object-top transition-opacity duration-250 ${
+              showFlashPhoto ? 'opacity-100' : 'opacity-0'
+            }`}
+          />
+        )}
         {reflectiveBackSrc && (
           <img
             src={reflectiveBackSrc}
             alt=""
             aria-hidden="true"
-            className={`pointer-events-none absolute inset-0 w-full h-full object-contain object-top mix-blend-screen transition-opacity duration-200 ${
-              showReflectiveOverlay ? 'opacity-100 reflective-print-lit' : 'opacity-0'
+            className={`pointer-events-none absolute inset-0 w-full h-full object-contain object-top mix-blend-screen transition-opacity duration-250 ${
+              showReflectiveOverlay ? 'opacity-95 reflective-print-lit' : 'opacity-0'
             }`}
           />
         )}
@@ -221,10 +251,10 @@ export function GarmentSVG({
         {categoryId === 'kaos' && (
           <path
             d="M 55 156 Q 60 159 65 156"
-            stroke={isDarkMode && isLit ? '#ffffff' : isLight ? '#6b675e' : '#a1a1aa'}
-            strokeWidth={isDarkMode && isLit ? '2.6' : '2'}
+            stroke={isFlashActive ? '#ffffff' : isLight ? '#6b675e' : '#a1a1aa'}
+            strokeWidth={isFlashActive ? '2.6' : '2'}
             strokeLinecap="round"
-            className={isDarkMode && isLit ? 'reflective-print-lit' : ''}
+            className={isFlashActive ? 'reflective-print-lit' : ''}
           />
         )}
       </svg>
@@ -317,10 +347,10 @@ export function GarmentSVG({
   }
 
   // -------------------------------------------------------------------------
-  // KAOS SABLON (Dilengkapi aksen sablon reflektif untuk Mode Gelap / Flash)
+  // KAOS SABLON (Dilengkapi aksen sablon reflektif untuk tombol Flash)
   // -------------------------------------------------------------------------
   const teeStroke = isLight ? '#d3d0dc' : 'rgba(255,255,255,0.18)';
-  const isFlashOn = isDarkMode && isLit;
+  const isFlashOn = isFlashActive;
   const reflectiveFill = isFlashOn
     ? '#ffffff'
     : isLight

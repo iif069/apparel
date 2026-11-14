@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Volume2, VolumeX, Edit3, MoreVertical, Lock, Unlock, Moon, Sun } from 'lucide-react';
+import { Volume2, VolumeX, Edit3, MoreVertical, Lock, Unlock } from 'lucide-react';
 import { CategoryId } from '@/types';
 import { BackgroundMusic } from '@/components/BackgroundMusic';
 
@@ -14,8 +14,6 @@ interface TopbarProps {
   onToggleSound: () => void;
   isAdmin: boolean;
   onToggleAdmin: () => void;
-  isDarkMode: boolean;
-  onToggleDarkMode: () => void;
 }
 
 export function Topbar({
@@ -27,8 +25,6 @@ export function Topbar({
   onToggleSound,
   isAdmin,
   onToggleAdmin,
-  isDarkMode,
-  onToggleDarkMode,
 }: TopbarProps) {
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [clickCount, setClickCount] = useState(0);
@@ -140,22 +136,6 @@ export function Topbar({
 
             {/* Tombol Musik Latar (BGM) */}
             <BackgroundMusic soundEnabled={soundEnabled} />
-
-            {/* Tombol Mode Gelap / Uji Spotlight & Flash Reflektif */}
-            <button
-              type="button"
-              onClick={onToggleDarkMode}
-              title={isDarkMode ? 'Aktifkan Mode Terang' : 'Aktifkan Mode Gelap (Spotlight & Flash Reflektif)'}
-              aria-label={isDarkMode ? 'Aktifkan Mode Terang' : 'Aktifkan Mode Gelap'}
-              aria-pressed={isDarkMode}
-              className={`press shrink-0 flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-full border transition-all cursor-pointer shadow-xs ${
-                isDarkMode
-                  ? 'bg-brand text-white border-brand-hover shadow-glow'
-                  : 'bg-surface text-ink border-line hover:border-brand/40'
-              }`}
-            >
-              {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
 
             {/* Tombol Menu Mode Admin di HP (Hanya muncul jika Mode Admin aktif) */}
             {isAdmin && (

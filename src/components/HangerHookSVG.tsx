@@ -74,10 +74,10 @@ export function HangerHookSVG({
         }`}
       >
         {/* Tali Benang Tag Miring */}
-        <svg className="w-[14px] h-[16px] block overflow-visible text-[#8a30d1] dark:text-white/65" viewBox="0 0 14 16" fill="none">
+        <svg className="w-[14px] h-[16px] block overflow-visible" viewBox="0 0 14 16" fill="none">
           <path
             d="M 1 1 Q 5 7 10 14"
-            stroke="currentColor"
+            stroke="#8a30d1"
             strokeWidth="1.2"
             strokeLinecap="round"
             strokeDasharray="2 1.5"
@@ -85,11 +85,11 @@ export function HangerHookSVG({
           />
         </svg>
 
-        {/* Label Harga Miring (-8°) Warna Ungu Brand Lembut (Putih kontras di Mode Gelap) */}
+        {/* Label Harga Miring (-8°) Warna Ungu Brand Lembut */}
         <span
-          className="absolute -top-[2px] left-[10px] inline-flex items-center gap-1 font-semibold text-[9.5px] leading-tight text-brand dark:text-white bg-brand-soft dark:bg-surface/90 border border-brand/40 dark:border-white/25 px-2 py-0.5 rounded-full shadow-sm whitespace-nowrap transform -rotate-[8deg] origin-top-left"
+          className="absolute -top-[2px] left-[10px] inline-flex items-center gap-1 font-semibold text-[9.5px] leading-tight text-brand bg-brand-soft border border-brand/40 px-2 py-0.5 rounded-full shadow-sm whitespace-nowrap transform -rotate-[8deg] origin-top-left"
         >
-          <span className="w-1.5 h-1.5 rounded-full border border-brand/50 dark:border-white/60 bg-white" />
+          <span className="w-1.5 h-1.5 rounded-full border border-brand/50 bg-white" />
           {priceTagText}
         </span>
       </div>

@@ -29,9 +29,12 @@
         "shadow": "#10151d",
         "accent": "#ffffff",
         "price": 65000,
-        "side": null,
-        "front": null,
-        "back": null
+        "side": "/products/kaos-02-side.png",
+        "front": "/products/kaos-02-front.png",
+        "back": "/products/kaos-02-back.png",
+        "flashFront": "/products/kaos-02-front-flash.png",
+        "flashBack": "/products/kaos-02-back-flash.png",
+        "isReflective": true
       },
       {
         "id": "kaos-mineral",
@@ -47,6 +50,22 @@
         "back": null
       },
       {
+        "id": "kaos-biru-muda",
+        "name": "Kaos Biru Muda",
+        "colorName": "Biru Muda",
+        "hex": "#5B9AD1",
+        "highlight": "#7BB4E6",
+        "shadow": "#3A6FA3",
+        "accent": "#ffffff",
+        "price": 65000,
+        "side": "/products/kaos-01-side.png",
+        "front": "/products/kaos-01-front.png",
+        "back": "/products/kaos-01-back.png",
+        "flashFront": "/products/kaos-01-front-flash.png",
+        "flashBack": "/products/kaos-01-back-flash.png",
+        "isReflective": true
+      },
+      {
         "id": "kaos-putih",
         "name": "Kaos Putih Netral",
         "colorName": "Putih",
@@ -60,30 +79,20 @@
         "back": null
       },
       {
-        "id": "kaos-benhur",
-        "name": "Kaos Benhur Spesial",
-        "colorName": "Benhur Spesial",
-        "hex": "#203B72",
-        "highlight": "#35589e",
-        "shadow": "#122244",
+        "id": "kaos-coral",
+        "name": "Kaos Merah Coral",
+        "colorName": "Merah Coral",
+        "hex": "#DC5B55",
+        "highlight": "#EF7C77",
+        "shadow": "#9C3732",
         "accent": "#ffffff",
         "price": 65000,
-        "side": null,
-        "front": null,
-        "back": null
-      },
-      {
-        "id": "kaos-burgundy",
-        "name": "Kaos Burgundy",
-        "colorName": "Burgundy",
-        "hex": "#602332",
-        "highlight": "#823548",
-        "shadow": "#3b121c",
-        "accent": "#ffffff",
-        "price": 65000,
-        "side": null,
-        "front": null,
-        "back": null
+        "side": "/products/kaos-03-side.png",
+        "front": "/products/kaos-03-front.png",
+        "back": "/products/kaos-03-back.png",
+        "flashFront": "/products/kaos-03-front-flash.png",
+        "flashBack": "/products/kaos-03-back-flash.png",
+        "isReflective": true
       },
       {
         "id": "kaos-purple",

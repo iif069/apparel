@@ -13,12 +13,12 @@ import { getWhatsAppUrl } from '@/config/store';
 
 export default function HomePage() {
   const [currentCategory, setCurrentCategory] = useState<CategoryId>('kaos');
-  const [activeSlotIndex, setActiveSlotIndex] = useState(3); // Kaos Putih Netral (04 / 07)
+  const [activeSlotIndex, setActiveSlotIndex] = useState(3); // Kaos Biru Muda (04 / 07)
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
 
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isFlashActive, setIsFlashActive] = useState(false);
   const { playSound } = useSound(soundEnabled);
 
   const [customPhotos, setCustomPhotos] = useState<Record<string, CustomPhotoData>>({});
@@ -55,32 +55,14 @@ export default function HomePage() {
       if (window.location.hash.includes('detail') || window.location.search.includes('detail')) {
         setIsDetailOpen(true);
       }
-
-      const savedDarkMode = localStorage.getItem('mig-apparel-dark-mode') === 'true';
-      if (savedDarkMode) {
-        setIsDarkMode(true);
-        document.documentElement.classList.add('dark');
-      }
     } catch {
       // Abaikan jika localStorage tidak tersedia
     }
   }, []);
 
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDarkMode);
-  }, [isDarkMode]);
-
-  const handleToggleDarkMode = () => {
+  const handleToggleFlash = () => {
     playSound('click');
-    setIsDarkMode((prev) => {
-      const next = !prev;
-      try {
-        localStorage.setItem('mig-apparel-dark-mode', next ? 'true' : 'false');
-      } catch {
-        // Abaikan jika localStorage tidak tersedia
-      }
-      return next;
-    });
+    setIsFlashActive((prev) => !prev);
   };
 
   const handleToggleAdmin = () => {
@@ -119,6 +101,7 @@ export default function HomePage() {
   const handleSelectCategory = (id: CategoryId) => {
     setCurrentCategory(id);
     setActiveSlotIndex(0);
+    setIsFlashActive(false);
     playSound('slide');
   };
 
@@ -182,8 +165,6 @@ export default function HomePage() {
         onToggleSound={() => setSoundEnabled((prev) => !prev)}
         isAdmin={isAdmin}
         onToggleAdmin={handleToggleAdmin}
-        isDarkMode={isDarkMode}
-        onToggleDarkMode={handleToggleDarkMode}
       />
 
       {/* 2. Panggung Rak Gantungan 3D (Stage 1) */}
@@ -199,7 +180,8 @@ export default function HomePage() {
           setIsDetailOpen(true);
         }}
         customPhotos={customPhotos}
-        isDarkMode={isDarkMode}
+        isFlashActive={isFlashActive}
+        onToggleFlash={handleToggleFlash}
         onPlaySound={playSound}
       />
 
@@ -211,8 +193,8 @@ export default function HomePage() {
         itemIndex={activeSlotIndex}
         onSelectIndex={setActiveSlotIndex}
         customPhotos={customPhotos}
-        isDarkMode={isDarkMode}
-        onToggleDarkMode={handleToggleDarkMode}
+        isFlashActive={isFlashActive}
+        onToggleFlash={handleToggleFlash}
         onOrderViaWhatsApp={handleOrderViaWhatsApp}
         onPlaySound={playSound}
       />

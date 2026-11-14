@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Zap } from 'lucide-react';
 import { GarmentItem, CategoryData, CustomPhotoData, CategoryId } from '@/types';
 import { getWhatsAppUrl } from '@/config/store';
 import { HangerHookSVG } from './HangerHookSVG';
@@ -23,7 +23,8 @@ interface HangerRackProps {
   onSelectIndex: (index: number) => void;
   onOpenDetail: (index: number) => void;
   customPhotos: Record<string, CustomPhotoData>;
-  isDarkMode?: boolean;
+  isFlashActive?: boolean;
+  onToggleFlash?: () => void;
   onPlaySound: (type: 'slide' | 'open' | 'click' | 'flip' | 'sway') => void;
 }
 
@@ -44,7 +45,8 @@ export function HangerRack({
   onSelectIndex,
   onOpenDetail,
   customPhotos,
-  isDarkMode = false,
+  isFlashActive = false,
+  onToggleFlash,
   onPlaySound,
 }: HangerRackProps) {
   const rackListRef = useRef<HTMLDivElement>(null);
@@ -67,17 +69,6 @@ export function HangerRack({
   const [isDragging, setIsDragging] = useState(false);
   const [swayEvent, setSwayEvent] = useState<SwayEvent | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [spotIndex, setSpotIndex] = useState<number | null>(null);
-  const [spotPos, setSpotPos] = useState<{ x: number; y: number }>({ x: 50, y: 45 });
-
-  const updateSlotSpotlight = (idx: number, e: React.PointerEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    if (!rect.width || !rect.height) return;
-    const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
-    const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
-    setSpotIndex(idx);
-    setSpotPos({ x, y });
-  };
 
   const items = categoryData.rack;
   const displayIndex = hoveredIndex !== null ? hoveredIndex : activeIndex;
@@ -85,6 +76,14 @@ export function HangerRack({
   const activeCustom = customPhotos[activeItem?.id];
   const activePrice = activeCustom?.price || activeItem?.price || 60000;
   const activeName = activeCustom?.name || activeItem?.name;
+  const hasFlashEffect = Boolean(
+    activeItem &&
+      (activeItem.isReflective ||
+        activeItem.flashFront ||
+        activeItem.flashBack ||
+        activeItem.reflectiveFront ||
+        activeItem.reflectiveBack)
+  );
 
   // Fungsi pemicu ayunan alami
   const triggerSway = (
@@ -182,10 +181,7 @@ export function HangerRack({
     setDragTilt(calculatedTilt);
   };
 
-  const handlePointerUp = (e?: React.PointerEvent) => {
-    if (e && e.pointerType !== 'mouse') {
-      setSpotIndex(null);
-    }
+  const handlePointerUp = () => {
     if (!isDraggingRef.current) return;
     isDraggingRef.current = false;
     setIsDragging(false);
@@ -238,8 +234,8 @@ export function HangerRack({
           title="Konsultasi Desain Custom via WhatsApp"
         >
           <span aria-hidden="true" className="cta-loop-ring pointer-events-none" />
-          <span className="relative z-10 inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-surface/95 backdrop-blur-md text-[13.5px] font-bold text-ink group-hover:text-brand dark:group-hover:text-white/80 transition-colors">
-            <WhatsAppIcon className="w-5 h-5 text-brand dark:text-white shrink-0" />
+          <span className="relative z-10 inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-surface/95 backdrop-blur-md text-[13.5px] font-bold text-ink group-hover:text-brand transition-colors">
+            <WhatsAppIcon className="w-5 h-5 text-brand shrink-0" />
             <span>Desain custom? Chat via WhatsApp</span>
           </span>
         </a>
@@ -248,7 +244,7 @@ export function HangerRack({
       {/* 2. Latar Polos & Tipografi Raksasa "APPAREL" Bersih Tanpa Bayangan Lantai */}
       <div className="absolute inset-0 pointer-events-none flex flex-col justify-center items-center overflow-hidden z-0">
         <div className="flex flex-col items-center select-none transform -translate-y-4 md:-translate-y-6">
-          <h1 className="font-display text-[32vw] md:text-[18vw] leading-none text-[#ebe8f2] dark:text-[#171422] tracking-wider select-none transition-colors duration-300">
+          <h1 className="font-display text-[32vw] md:text-[18vw] leading-none text-[#ebe8f2] tracking-wider select-none">
             {categoryData.heroTitle || 'APPAREL'}
           </h1>
         </div>
@@ -269,8 +265,8 @@ export function HangerRack({
       <div className="relative w-full z-10 flex-1 flex flex-col justify-center my-auto min-h-0">
         <div className="relative w-full">
           {/* Batang Kawat Chrome Horizontal (Tepat menembus lengkung kait hanger di y=6px + pt-3) */}
-          <div className="absolute top-[17px] md:top-[18px] left-0 right-0 h-[7px] md:h-[8px] bg-gradient-to-b from-[#d6d4de] via-white via-28% to-[#1c1b1a] dark:from-[#3d3a4d] dark:via-[#c9c5d8] dark:to-[#07060a] z-0 shadow-sm pointer-events-none">
-            <div className="w-full h-[2px] bg-white/85 dark:bg-white/40" />
+          <div className="absolute top-[17px] md:top-[18px] left-0 right-0 h-[7px] md:h-[8px] bg-gradient-to-b from-[#d6d4de] via-white via-28% to-[#1c1b1a] z-0 shadow-sm pointer-events-none">
+            <div className="w-full h-[2px] bg-white/85" />
           </div>
 
           {/* Deretan Baju Gantungan yang Bisa Digeser, Di-hover, & Di-klik di HP */}
@@ -280,9 +276,6 @@ export function HangerRack({
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
-            onPointerLeave={(e) => {
-              if (e.pointerType === 'mouse') setSpotIndex(null);
-            }}
             onScroll={handleScroll}
             className="w-full flex items-start justify-start md:justify-center overflow-x-auto overflow-y-hidden no-scrollbar px-6 md:px-12 pt-3 pb-3 md:pb-6 cursor-grab active:cursor-grabbing z-10"
           >
@@ -337,13 +330,11 @@ export function HangerRack({
 
                 // Kemiringan inersia dinamis saat digeser / di-drag
                 const itemTilt = dragTilt !== 0 ? (isDisplayFront ? dragTilt : dragTilt * 0.92) : 0;
-                const isLit = isDarkMode && spotIndex === idx;
 
                 return (
                   <div
                     key={item.id}
                     onPointerEnter={(e) => {
-                      updateSlotSpotlight(idx, e);
                       if (e.pointerType !== 'mouse') return;
 
                       // Deteksi arah sentuhan kursor (kiri vs kanan)
@@ -358,19 +349,6 @@ export function HangerRack({
                       if (displayIndex !== idx) {
                         setHoveredIndex(idx);
                         onSelectIndex(idx);
-                      }
-                    }}
-                    onPointerMove={(e) => {
-                      if (e.pointerType === 'mouse' || e.buttons > 0) {
-                        updateSlotSpotlight(idx, e);
-                      }
-                    }}
-                    onPointerDown={(e) => {
-                      updateSlotSpotlight(idx, e);
-                    }}
-                    onPointerLeave={(e) => {
-                      if (e.pointerType === 'mouse') {
-                        setSpotIndex((prev) => (prev === idx ? null : prev));
                       }
                     }}
                     onClick={() => {
@@ -397,19 +375,6 @@ export function HangerRack({
                         : 'w-[62px] md:w-[68px] z-10'
                     }`}
                   >
-                    {/* Lampu Sorot Spotlight Mengikuti Jari/Kursor Saat Mode Gelap */}
-                    {isDarkMode && (
-                      <div
-                        aria-hidden="true"
-                        className={`pointer-events-none absolute -inset-4 rounded-full transition-opacity duration-200 z-0 ${
-                          isLit ? 'opacity-100' : 'opacity-0'
-                        }`}
-                        style={{
-                          background: `radial-gradient(circle 135px at ${spotPos.x}% ${spotPos.y}%, rgba(255, 255, 255, 0.28) 0%, rgba(168, 85, 247, 0.14) 42%, transparent 74%)`,
-                        }}
-                      />
-                    )}
-
                     {/* PEMBUNGKUS FISIKA AYUNAN GANTUNGAN (Hanger Assembly)
                         Berporos tepat di lengkung kait kawat atas (50% 6px) */}
                     <div
@@ -425,11 +390,7 @@ export function HangerRack({
                       }}
                     >
                       {/* Gantungan Hook SVG + label harga */}
-                      <div
-                        className={`w-[100px] md:w-[110px] h-[52px] md:h-[58px] flex-shrink-0 ${
-                          isDarkMode ? (isLit ? 'garment-dark-lit' : 'garment-dark-dim') : ''
-                        }`}
-                      >
+                      <div className="w-[100px] md:w-[110px] h-[52px] md:h-[58px] flex-shrink-0">
                         <HangerHookSVG
                           priceTagText={priceText}
                           showPriceTag={isDisplayFront}
@@ -442,7 +403,7 @@ export function HangerRack({
                       <div
                         className={`relative w-full h-[260px] md:h-[268px] flex items-start justify-center [perspective:1000px] ${
                           hasPhotoHanger ? '-mt-[26px] md:-mt-[30px]' : '-mt-1.5'
-                        } ${isDarkMode ? (isLit ? 'garment-dark-lit' : 'garment-dark-dim') : ''}`}
+                        }`}
                       >
                         {/* SISI SAMPING (Tampil saat menyamping di rak) */}
                         <div
@@ -461,8 +422,6 @@ export function HangerRack({
                               categoryId={categoryData.id}
                               viewAngle="side-left"
                               custom={custom}
-                              isDarkMode={isDarkMode}
-                              isLit={isLit}
                               className="max-h-full"
                             />
                           </div>
@@ -485,8 +444,7 @@ export function HangerRack({
                               categoryId={categoryData.id}
                               viewAngle="front"
                               custom={custom}
-                              isDarkMode={isDarkMode}
-                              isLit={isLit}
+                              isFlashActive={isFlashActive && isDisplayFront}
                               className="max-h-full"
                             />
                           </div>
@@ -499,6 +457,25 @@ export function HangerRack({
             </div>
           </div>
         </div>
+
+        {/* Tombol Efek Flash khusus item kaos sablon reflektif */}
+        {hasFlashEffect && onToggleFlash && (
+          <div className="w-full flex justify-center mt-1 mb-1 px-4 z-20">
+            <button
+              type="button"
+              onClick={onToggleFlash}
+              aria-pressed={isFlashActive}
+              className={`press inline-flex items-center gap-2 min-h-[40px] px-4 py-2 rounded-full text-[12.5px] font-bold border transition-all cursor-pointer shadow-xs ${
+                isFlashActive
+                  ? 'bg-ink text-surface border-ink shadow-soft'
+                  : 'bg-surface text-ink border-line hover:border-brand/50 hover:text-brand'
+              }`}
+            >
+              <Zap className={`w-4 h-4 ${isFlashActive ? 'text-yellow-300 fill-yellow-300' : 'text-brand'}`} />
+              <span>{isFlashActive ? 'Efek Flash: Aktif' : 'Coba Efek Flash'}</span>
+            </button>
+          </div>
+        )}
 
         {/* Petunjuk interaksi halus khusus mobile */}
         <p className="md:hidden text-center text-[11.5px] font-medium text-muted/80 mt-1 px-4 select-none">
@@ -540,8 +517,8 @@ export function HangerRack({
         >
           <span aria-hidden="true" className="cta-loop-ring pointer-events-none" />
           <span className="relative z-10 flex items-center gap-2.5 sm:gap-3 bg-surface/95 backdrop-blur-md px-4 py-2.5 sm:px-5 sm:py-3 rounded-full">
-            <WhatsAppIcon className="w-5 h-5 sm:w-6 sm:h-6 text-brand dark:text-white shrink-0" />
-            <span className="text-[13.5px] sm:text-[14.5px] font-bold text-ink group-hover:text-brand dark:group-hover:text-white/80 transition-colors">
+            <WhatsAppIcon className="w-5 h-5 sm:w-6 sm:h-6 text-brand shrink-0" />
+            <span className="text-[13.5px] sm:text-[14.5px] font-bold text-ink group-hover:text-brand transition-colors">
               Desain custom? Chat via WhatsApp
             </span>
           </span>

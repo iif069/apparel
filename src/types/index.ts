@@ -16,6 +16,8 @@ export interface GarmentItem {
   back: string | null;
   reflectiveFront?: string | null;
   reflectiveBack?: string | null;
+  flashFront?: string | null;
+  flashBack?: string | null;
   isReflective?: boolean;
 }
 
