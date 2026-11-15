@@ -297,17 +297,17 @@ export function DetailStage({
 
   // Pembungkus icon seragam (outline lucide di lingkaran brand-soft)
   const renderIconCircle = (IconComponent: LucideIcon) => (
-    <span className="w-7 h-7 rounded-full bg-brand-soft text-brand flex items-center justify-center shrink-0">
-      <IconComponent className="w-3.5 h-3.5" />
+    <span className="w-8 h-8 rounded-full bg-brand-soft text-brand flex items-center justify-center shrink-0">
+      <IconComponent className="w-4 h-4" />
     </span>
   );
 
   // Kartu "Cocok untuk" ringkas dengan chip berikon seragam
   const renderAudienceCard = () => (
-    <div className="bg-surface border border-line rounded-[26px] p-4 sm:p-5 flex flex-col gap-3 shadow-soft">
+    <div className="bg-surface border border-line rounded-[28px] p-5 sm:p-6 flex flex-col gap-3.5 shadow-soft">
       <div className="flex items-center gap-2.5">
         {renderIconCircle(Users)}
-        <h3 className="text-[15px] font-bold text-ink tracking-tight">{detailCopy.audienceHeading}</h3>
+        <h3 className="text-[16px] font-bold text-ink tracking-tight">{detailCopy.audienceHeading}</h3>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -316,9 +316,9 @@ export function DetailStage({
           return (
             <span
               key={aud.label}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-page border border-line text-[12.5px] font-medium text-ink"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-page border border-line text-[13.5px] font-medium text-ink"
             >
-              <IconComponent className="w-3.5 h-3.5 text-brand shrink-0" />
+              <IconComponent className="w-4 h-4 text-brand shrink-0" />
               <span>{aud.label}</span>
             </span>
           );
@@ -329,21 +329,21 @@ export function DetailStage({
 
   // Kartu "Keunggulan & bahan" ringkas tanpa duplikasi teks
   const renderReasonsCard = () => (
-    <div className="bg-surface border border-line rounded-[26px] p-4 sm:p-5 flex flex-col gap-3 shadow-soft">
+    <div className="bg-surface border border-line rounded-[28px] p-5 sm:p-6 flex flex-col gap-4 shadow-soft">
       <div className="flex items-center gap-2.5">
         {renderIconCircle(Sparkles)}
-        <h3 className="text-[15px] font-bold text-ink tracking-tight">{detailCopy.reasonsHeading}</h3>
+        <h3 className="text-[16px] font-bold text-ink tracking-tight">{detailCopy.reasonsHeading}</h3>
       </div>
 
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-3.5">
         {detailCopy.reasons.map((reason) => {
           const IconComponent = DETAIL_ICON_MAP[reason.icon];
           return (
-            <div key={reason.title} className="flex items-start gap-2.5">
+            <div key={reason.title} className="flex items-start gap-3">
               <div className="mt-0.5">{renderIconCircle(IconComponent)}</div>
               <div className="flex flex-col gap-0.5 min-w-0">
-                <span className="text-[13px] font-semibold text-ink leading-snug">{reason.title}</span>
-                <p className="text-[12px] text-muted leading-snug">{reason.summary}</p>
+                <span className="text-[14.5px] font-semibold text-ink leading-snug">{reason.title}</span>
+                <p className="text-[13.5px] text-muted leading-relaxed">{reason.summary}</p>
               </div>
             </div>
           );
@@ -372,24 +372,24 @@ export function DetailStage({
 
   // Kartu Jaminan Vendor, Pemesanan & Lokasi Workshop (ringkas dengan icon seragam)
   const renderVendorTrustCard = () => (
-    <div className="bg-surface border border-line rounded-[26px] p-4 sm:p-5 flex flex-col gap-2.5 shadow-soft">
-      <div className="flex items-start gap-2.5">
+    <div className="bg-surface border border-line rounded-[28px] p-5 sm:p-6 flex flex-col gap-3.5 shadow-soft">
+      <div className="flex items-start gap-3">
         <div className="mt-0.5">{renderIconCircle(ShieldCheck)}</div>
         <div className="flex flex-col gap-0.5 min-w-0">
-          <span className="text-[13px] font-semibold text-ink leading-snug">Kualitas Vendor Terbaik</span>
-          <p className="text-[12px] text-muted leading-snug">
+          <span className="text-[14.5px] font-semibold text-ink leading-snug">Kualitas Vendor Terbaik</span>
+          <p className="text-[13.5px] text-muted leading-relaxed">
             Produksi dikerjakan pilihan vendor apparel terbaik agar hasil tetap terjaga.
           </p>
         </div>
       </div>
 
-      <div className="flex items-start gap-2.5 pt-2.5 border-t border-line">
+      <div className="flex items-start gap-3 pt-3.5 border-t border-line">
         <div className="mt-0.5">{renderIconCircle(Package)}</div>
         <div className="flex flex-col gap-0.5 min-w-0">
-          <span className="text-[13px] font-semibold text-ink leading-snug">
+          <span className="text-[14.5px] font-semibold text-ink leading-snug">
             {categoryData.id === 'kaos' ? 'Bisa Satuan atau Partai Besar' : 'Minimal 6 Pcs & Partai Besar'}
           </span>
-          <p className="text-[12px] text-muted leading-snug">
+          <p className="text-[13.5px] text-muted leading-relaxed">
             {categoryData.id === 'kaos'
               ? 'Pesan mulai 1 pcs hingga ratusan pcs — '
               : 'Pesan mulai 6 pcs hingga ratusan pcs — '}
@@ -398,12 +398,12 @@ export function DetailStage({
         </div>
       </div>
 
-      <div className="flex items-start gap-2.5 pt-2.5 border-t border-line">
+      <div className="flex items-start gap-3 pt-3.5 border-t border-line">
         <div className="mt-0.5">{renderIconCircle(MapPin)}</div>
         <div className="flex flex-col gap-0.5 min-w-0">
-          <span className="text-[13px] font-semibold text-ink leading-snug">{STORE_CONFIG.name}</span>
-          <p className="text-[12px] text-muted leading-snug">{STORE_CONFIG.location}</p>
-          <p className="text-[11.5px] text-ink/75 font-medium leading-snug">{STORE_CONFIG.operatingHours.daily}</p>
+          <span className="text-[14.5px] font-semibold text-ink leading-snug">{STORE_CONFIG.name}</span>
+          <p className="text-[13.5px] text-muted leading-relaxed">{STORE_CONFIG.location}</p>
+          <p className="text-[13px] text-ink/80 font-medium leading-relaxed">{STORE_CONFIG.operatingHours.daily}</p>
         </div>
       </div>
     </div>
@@ -620,7 +620,7 @@ export function DetailStage({
 
           {/* 3. KOLOM KANAN (SCROLL MANDIRI + DOCK CTA STICKY SEJAJAR KARTU) */}
           <div
-            className={`h-full overflow-y-auto -ml-3 pl-4 pr-2 pb-1 flex flex-col gap-3 min-h-0 thin-scrollbar transition-all duration-300 ease-out motion-reduce:transition-none ${
+            className={`h-full overflow-y-auto -ml-3 pl-4 pr-2 pb-1 flex flex-col gap-4 min-h-0 thin-scrollbar transition-all duration-300 ease-out motion-reduce:transition-none ${
               isVisible ? 'opacity-100 translate-y-0 delay-[200ms]' : 'opacity-0 translate-y-4 delay-0'
             }`}
           >
