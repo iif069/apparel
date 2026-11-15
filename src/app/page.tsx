@@ -60,6 +60,44 @@ export default function HomePage() {
     }
   }, []);
 
+  // Sinkronkan tombol Back HP / browser dengan state modal detail
+  useEffect(() => {
+    const handlePopState = () => {
+      const shouldOpen =
+        window.location.hash.includes('detail') ||
+        window.location.search.includes('detail') ||
+        Boolean(window.history.state?.detail);
+      setIsDetailOpen(shouldOpen);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const handleOpenDetail = (idx: number) => {
+    setActiveSlotIndex(idx);
+    setIsDetailOpen(true);
+    try {
+      if (window.location.hash !== '#detail') {
+        window.history.pushState({ detail: true }, '', '#detail');
+      }
+    } catch {
+      // Abaikan jika history API dibatasi
+    }
+  };
+
+  const handleCloseDetail = () => {
+    try {
+      if (window.location.hash === '#detail' || window.history.state?.detail) {
+        window.history.back();
+        return;
+      }
+    } catch {
+      // Abaikan jika history API dibatasi
+    }
+    setIsDetailOpen(false);
+  };
+
   const handleToggleFlash = () => {
     playSound('click');
     setIsFlashActive((prev) => !prev);
@@ -175,10 +213,7 @@ export default function HomePage() {
         onSelectCategory={handleSelectCategory}
         activeIndex={activeSlotIndex}
         onSelectIndex={setActiveSlotIndex}
-        onOpenDetail={(idx) => {
-          setActiveSlotIndex(idx);
-          setIsDetailOpen(true);
-        }}
+        onOpenDetail={handleOpenDetail}
         customPhotos={customPhotos}
         isFlashActive={isFlashActive}
         onToggleFlash={handleToggleFlash}
@@ -188,7 +223,7 @@ export default function HomePage() {
       {/* 3. Modal / Halaman Detail Produk (Stage 2) */}
       <DetailStage
         isOpen={isDetailOpen}
-        onClose={() => setIsDetailOpen(false)}
+        onClose={handleCloseDetail}
         categoryData={activeCategoryData}
         itemIndex={activeSlotIndex}
         onSelectIndex={setActiveSlotIndex}

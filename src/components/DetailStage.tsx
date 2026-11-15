@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Check, Users, Sparkles, ShieldCheck, Package, Zap } from 'lucide-react';
+import { ArrowLeft, Check, Users, Sparkles, ShieldCheck, Package, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
 import { GarmentItem, CategoryData, ViewAngle, CustomPhotoData } from '@/types';
 import { CATEGORY_DETAILS } from '@/data/categoryDetails';
 import { getWhatsAppUrl } from '@/config/store';
@@ -96,6 +96,18 @@ export function DetailStage({
     setColorPickerOpen(false);
   }, [itemIndex, isOpen]);
 
+  // Tutup detail dengan tombol Escape
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   // Pantau scroll di HP: sembunyikan navbar saat scroll ke bawah, munculkan lagi saat geser ke atas
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const top = Math.max(0, e.currentTarget.scrollTop);
@@ -177,7 +189,7 @@ export function DetailStage({
               setColorPickerOpen((prev) => !prev);
               onPlaySound('click');
             }}
-            className="min-h-[32px] px-3.5 py-1 rounded-full bg-surface border border-line text-[12.5px] font-semibold hover:bg-page press-active flex-shrink-0 cursor-pointer"
+            className="min-h-[44px] px-4 py-1.5 rounded-full bg-surface border border-line text-[12.5px] font-semibold hover:bg-page press-active flex-shrink-0 cursor-pointer"
           >
             {colorPickerOpen ? 'Tutup' : 'Ganti'}
           </button>
@@ -355,12 +367,40 @@ export function DetailStage({
             </button>
           </div>
 
-          {/* Tengah: Nomor Indeks (04/07) atau Judul saat di-scroll */}
+          {/* Tengah: Nomor Indeks (04/07) dengan navigasi prev/next atau Judul saat di-scroll */}
           <div className="flex items-center justify-center min-w-0">
             {isScrolled ? (
               <span className="text-[15px] md:text-[17px] font-bold text-ink truncate max-w-[160px] sm:max-w-[280px] md:max-w-[420px]">
                 {productName}
               </span>
+            ) : items.length > 1 ? (
+              <div className="inline-flex items-center rounded-full bg-white/45 lg:bg-page text-ink/85 border border-white/65 lg:border-line">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onPlaySound('flip');
+                    onSelectIndex((itemIndex - 1 + items.length) % items.length);
+                  }}
+                  aria-label="Model sebelumnya"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-ink/75 hover:text-ink hover:bg-white/50 lg:hover:bg-surface transition-colors press-active cursor-pointer"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <span className="px-1.5 text-xs font-bold tabular-nums select-none">
+                  {counterText}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onPlaySound('flip');
+                    onSelectIndex((itemIndex + 1) % items.length);
+                  }}
+                  aria-label="Model berikutnya"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-ink/75 hover:text-ink hover:bg-white/50 lg:hover:bg-surface transition-colors press-active cursor-pointer"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
             ) : (
               <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white/45 lg:bg-page text-ink/85 border border-white/65 lg:border-line tabular-nums">
                 {counterText}
@@ -503,13 +543,13 @@ export function DetailStage({
               )}
             </div>
 
-            {/* Keterangan Putar 3D */}
+            {/* Keterangan Putar */}
             <span
               className={`text-[11.5px] text-ink/45 mt-2 font-medium transition-opacity duration-300 motion-reduce:transition-none ${
                 isVisible ? 'opacity-100 delay-[180ms]' : 'opacity-0 delay-0'
               }`}
             >
-              Geser ke kiri/kanan atau ketuk untuk memutar baju (360°)
+              Geser atau ketuk baju untuk lihat sisi depan &amp; belakang
             </span>
           </div>
 

@@ -9,54 +9,30 @@ interface BackgroundMusicProps {
 
 export function BackgroundMusic({ soundEnabled }: BackgroundMusicProps) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const soundEnabledRef = useRef(soundEnabled);
-  soundEnabledRef.current = soundEnabled;
 
   useEffect(() => {
     // Inisialisasi audio musik latar bebas lisensi (Purrple Cat - Coffee Jelly, CC BY 4.0)
+    // Musik hanya berputar saat pengunjung mengklik tombol BGM secara langsung
     const audio = new Audio('/bg-music.mp3');
     audio.loop = true;
     audio.volume = 0.22; // Volume lembut & elegan standar ambient lounge
     audioRef.current = audio;
 
-    // Kebijakan browser (Autoplay Policy):
-    // Musik akan mulai berputar lembut segera setelah pengguna menyentuh/klik halaman web
-    const handleFirstInteraction = () => {
-      setHasInteracted(true);
-      if (soundEnabledRef.current && audioRef.current) {
-        audioRef.current.play().then(() => {
-          setIsPlaying(true);
-        }).catch(() => {
-          // Abaikan jika browser membatasi
-        });
-      }
-      window.removeEventListener('pointerdown', handleFirstInteraction);
-      window.removeEventListener('keydown', handleFirstInteraction);
-    };
-
-    window.addEventListener('pointerdown', handleFirstInteraction, { passive: true });
-    window.addEventListener('keydown', handleFirstInteraction, { passive: true });
-
     return () => {
       audio.pause();
       audio.src = '';
-      window.removeEventListener('pointerdown', handleFirstInteraction);
-      window.removeEventListener('keydown', handleFirstInteraction);
     };
   }, []);
 
-  // Sinkronkan pemutaran saat soundEnabled berubah
+  // Jeda musik jika suara dinonaktifkan
   useEffect(() => {
-    if (!audioRef.current || !hasInteracted) return;
-    if (soundEnabled) {
-      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
-    } else {
+    if (!audioRef.current) return;
+    if (!soundEnabled && isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
     }
-  }, [soundEnabled, hasInteracted]);
+  }, [soundEnabled, isPlaying]);
 
   const toggleMusic = () => {
     if (!audioRef.current) return;
@@ -66,7 +42,6 @@ export function BackgroundMusic({ soundEnabled }: BackgroundMusicProps) {
     } else {
       audioRef.current.play().then(() => {
         setIsPlaying(true);
-        setHasInteracted(true);
       }).catch(() => {});
     }
   };

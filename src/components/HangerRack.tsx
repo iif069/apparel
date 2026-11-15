@@ -74,7 +74,7 @@ export function HangerRack({
   const displayIndex = hoveredIndex !== null ? hoveredIndex : activeIndex;
   const activeItem = items[displayIndex] || items[0];
   const activeCustom = customPhotos[activeItem?.id];
-  const activePrice = activeCustom?.price || activeItem?.price || 60000;
+  const activeColorName = activeCustom?.colorName || activeItem?.colorName || '';
   const activeName = activeCustom?.name || activeItem?.name;
   const hasFlashEffect = Boolean(
     activeItem &&
@@ -269,6 +269,16 @@ export function HangerRack({
             <div className="w-full h-[2px] bg-white/85" />
           </div>
 
+          {/* Gradient fade tepi kiri & kanan khusus mobile agar jelas bisa digeser horizontal */}
+          <div
+            aria-hidden="true"
+            className="md:hidden pointer-events-none absolute inset-y-0 left-0 w-7 bg-gradient-to-r from-page to-transparent z-20"
+          />
+          <div
+            aria-hidden="true"
+            className="md:hidden pointer-events-none absolute inset-y-0 right-0 w-7 bg-gradient-to-l from-page to-transparent z-20"
+          />
+
           {/* Deretan Baju Gantungan yang Bisa Digeser, Di-hover, & Di-klik di HP */}
           <div
             ref={rackListRef}
@@ -283,8 +293,6 @@ export function HangerRack({
               {items.map((item, idx) => {
                 const isDisplayFront = idx === displayIndex;
                 const custom = customPhotos[item.id];
-                const price = custom?.price || item.price;
-                const priceText = `Rp ${Math.round(price / 1000)}rb`;
                 const hasPhotoHanger = !!((custom && (custom.frontDataUrl || custom.sideDataUrl)) || item.front || item.side);
 
                 // Menentukan kelas animasi ayunan untuk gantungan ini
@@ -369,7 +377,24 @@ export function HangerRack({
                         onOpenDetail(idx);
                       }
                     }}
-                    className={`relative hanger-slot flex flex-col items-center cursor-pointer transition-[width] duration-300 ease-out [perspective:1000px] ${
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        if (displayIndex !== idx) {
+                          onPlaySound('sway');
+                          triggerSway(idx, 'right', 'click');
+                          onSelectIndex(idx);
+                          setHoveredIndex(idx);
+                        } else {
+                          onPlaySound('open');
+                          onOpenDetail(idx);
+                        }
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`${custom?.name || item.name} (${custom?.colorName || item.colorName}) — tekan untuk lihat detail`}
+                    className={`relative hanger-slot flex flex-col items-center cursor-pointer transition-[width] duration-300 ease-out [perspective:1000px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 rounded-2xl ${
                       isDisplayFront
                         ? 'w-[224px] md:w-[240px] z-30'
                         : 'w-[62px] md:w-[68px] z-10'
@@ -389,11 +414,10 @@ export function HangerRack({
                           : undefined,
                       }}
                     >
-                      {/* Gantungan Hook SVG + label harga */}
+                      {/* Gantungan Hook SVG (tanpa tag harga) */}
                       <div className="w-[100px] md:w-[110px] h-[52px] md:h-[58px] flex-shrink-0">
                         <HangerHookSVG
-                          priceTagText={priceText}
-                          showPriceTag={isDisplayFront}
+                          showPriceTag={false}
                           isSideView={!isDisplayFront}
                           hideHangerBody={hasPhotoHanger}
                         />
@@ -459,13 +483,13 @@ export function HangerRack({
         </div>
 
         {/* Slot tombol Efek Flash dengan tinggi tetap agar tinggi rak tidak berubah-ubah (desktop & mobile) */}
-        <div className="w-full h-[46px] flex items-center justify-center mt-1 mb-1 px-4 z-20 flex-shrink-0">
+        <div className="w-full h-[50px] flex items-center justify-center mt-1 mb-1 px-4 z-20 flex-shrink-0">
           {hasFlashEffect && onToggleFlash && (
             <button
               type="button"
               onClick={onToggleFlash}
               aria-pressed={isFlashActive}
-              className={`press inline-flex items-center gap-2 min-h-[40px] px-4 py-2 rounded-full text-[12.5px] font-bold border transition-all cursor-pointer shadow-xs ${
+              className={`press inline-flex items-center gap-2 min-h-[44px] px-4 py-2 rounded-full text-[12.5px] font-bold border transition-all cursor-pointer shadow-xs ${
                 isFlashActive
                   ? 'bg-ink text-surface border-ink shadow-soft'
                   : 'bg-surface text-ink border-line hover:border-brand/50 hover:text-brand'
@@ -477,9 +501,12 @@ export function HangerRack({
           )}
         </div>
 
-        {/* Petunjuk interaksi halus khusus mobile */}
+        {/* Petunjuk interaksi halus (mobile & desktop) */}
         <p className="md:hidden text-center text-[11.5px] font-medium text-muted/80 mt-1 px-4 select-none">
           Geser untuk lihat model lain · Ketuk baju untuk detail
+        </p>
+        <p className="hidden md:block text-center text-[12px] font-medium text-muted/75 mt-1 px-4 select-none">
+          Arahkan kursor ke baju lain · Klik baju untuk lihat detail
         </p>
 
         {/* Bar Kategori Khusus HP di Bawah Rak Baju (Mudah Dijangkau Ibu Jari) */}
@@ -491,7 +518,7 @@ export function HangerRack({
                   key={cat.id}
                   type="button"
                   onClick={() => onSelectCategory && onSelectCategory(cat.id)}
-                  className={`h-[42px] min-h-[42px] px-2 rounded-full text-[13px] font-semibold flex items-center justify-center transition-all press-active ${
+                  className={`h-[44px] min-h-[44px] px-2 rounded-full text-[13px] font-semibold flex items-center justify-center transition-all press-active cursor-pointer ${
                     currentCategory === cat.id
                       ? 'bg-ink text-surface shadow-sm'
                       : 'bg-surface text-ink border border-line hover:border-ink/30'
@@ -524,13 +551,14 @@ export function HangerRack({
           </span>
         </a>
 
-        {/* Info Produk Aktif & Tombol Buka Detail (Ukuran Font & Tombol Proporsional Sesuai UI/UX MIG) */}
-        <div
+        {/* Info Produk Aktif & Tombol Buka Detail (Satu tombol utuh tanpa nested button) */}
+        <button
+          type="button"
           onClick={() => {
             onPlaySound('open');
             onOpenDetail(displayIndex);
           }}
-          className="press flex items-center justify-between gap-3 sm:gap-5 bg-surface/95 backdrop-blur-md border border-line px-4 py-2.5 sm:px-5 sm:py-3 rounded-full shadow-[0_6px_24px_rgba(0,0,0,0.08)] hover:border-brand/40 cursor-pointer transition-all w-full max-w-[440px] sm:w-auto"
+          className="press flex items-center justify-between gap-3 sm:gap-5 bg-surface/95 backdrop-blur-md border border-line px-4 py-2.5 sm:px-5 sm:py-3 rounded-full shadow-[0_6px_24px_rgba(0,0,0,0.08)] hover:border-brand/40 cursor-pointer transition-all w-full max-w-[440px] sm:w-auto text-left group"
         >
           <div className="flex items-center gap-3 min-w-0">
             <span
@@ -542,19 +570,16 @@ export function HangerRack({
                 {activeName}
               </span>
               <span className="text-xs sm:text-[13px] text-muted font-medium truncate leading-normal">
-                Mulai dari <strong className="text-ink font-bold tabular-nums">Rp {activePrice.toLocaleString('id-ID')}</strong>
+                {activeColorName} · Bisa custom desain
               </span>
             </div>
           </div>
 
-          <button
-            type="button"
-            className="press flex items-center gap-2 h-11 px-4 sm:px-5 rounded-full bg-brand hover:bg-brand-hover text-white text-sm font-bold shadow-xs transition-colors whitespace-nowrap shrink-0 cursor-pointer"
-          >
+          <span className="flex items-center gap-2 h-11 px-4 sm:px-5 rounded-full bg-brand group-hover:bg-brand-hover text-white text-sm font-bold shadow-xs transition-colors whitespace-nowrap shrink-0">
             <span>Lihat detail</span>
             <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
+          </span>
+        </button>
       </footer>
     </section>
   );

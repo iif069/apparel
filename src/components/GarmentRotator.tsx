@@ -29,8 +29,6 @@ export function GarmentRotator({
   const dragStartX = useRef(0);
   const dragStartDeg = useRef(0);
 
-  const price = custom?.price || item.price;
-  const priceText = `Rp ${Math.round(price / 1000)}rb`;
   const hasOwnHanger = !!(
     (custom && custom.ownHanger !== false && (custom.frontDataUrl || custom.sideDataUrl)) ||
     item.front ||
@@ -92,13 +90,13 @@ export function GarmentRotator({
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      title="Geser ke kiri/kanan atau ketuk untuk memutar baju"
+      title="Geser atau ketuk baju untuk lihat sisi depan & belakang"
       className="relative z-10 w-full max-w-[380px] sm:max-w-[420px] md:max-w-[460px] lg:max-w-[540px] xl:max-w-[580px] h-[365px] sm:h-[400px] md:h-[440px] lg:h-[clamp(385px,61dvh,540px)] lg:max-h-[calc(100dvh-176px)] xl:h-[clamp(420px,64dvh,580px)] flex flex-col items-center justify-center cursor-grab active:cursor-grabbing [perspective:1200px] select-none touch-pan-y"
     >
       {/* 1. Kait Gantungan Atas (Disembunyikan jika foto custom punya gantungan sendiri - tanpa pop-up tooltip) */}
       {!hasOwnHanger && (
         <div className="w-[116px] md:w-[130px] lg:w-[144px] h-[52px] md:h-[60px] lg:h-[66px] flex-shrink-0 z-20">
-          <HangerHookSVG priceTagText={priceText} showPriceTag={false} />
+          <HangerHookSVG showPriceTag={false} />
         </div>
       )}
 
