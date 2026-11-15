@@ -19,6 +19,8 @@ interface HangerRackProps {
   categories?: { id: CategoryId; tabLabel: string }[];
   currentCategory?: CategoryId;
   onSelectCategory?: (id: CategoryId) => void;
+  transitionPhase?: 'idle' | 'exiting' | 'entering';
+  transitionDirection?: 'forward' | 'backward';
   activeIndex: number;
   onSelectIndex: (index: number) => void;
   onOpenDetail: (index: number) => void;
@@ -41,6 +43,8 @@ export function HangerRack({
   categories = [],
   currentCategory,
   onSelectCategory,
+  transitionPhase = 'idle',
+  transitionDirection = 'forward',
   activeIndex,
   onSelectIndex,
   onOpenDetail,
@@ -101,10 +105,41 @@ export function HangerRack({
     });
   };
 
+  // Reset hover & posisi scroll mobile saat kategori berganti
+  useEffect(() => {
+    setHoveredIndex(null);
+    if (rackListRef.current) {
+      rackListRef.current.scrollLeft = 0;
+    }
+  }, [categoryData.id]);
+
   // Efek ayunan lembut cascading saat kategori atau indeks aktif berganti
   useEffect(() => {
-    triggerSway(activeIndex, 'right', 'category');
-  }, [categoryData.id, activeIndex]);
+    const swayDir: 'left' | 'right' = transitionDirection === 'forward' ? 'left' : 'right';
+    triggerSway(activeIndex, swayDir, 'category');
+  }, [categoryData.id, activeIndex, transitionDirection]);
+
+  const isForward = transitionDirection === 'forward';
+  const heroTransitionClass =
+    transitionPhase === 'exiting'
+      ? `duration-150 ease-in opacity-0 scale-95 ${isForward ? '-translate-x-5' : 'translate-x-5'}`
+      : transitionPhase === 'entering'
+      ? `duration-0 opacity-0 scale-[1.03] ${isForward ? 'translate-x-6' : '-translate-x-6'}`
+      : 'duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] opacity-100 scale-100 translate-x-0';
+
+  const rackTransitionClass =
+    transitionPhase === 'exiting'
+      ? `duration-150 ease-in opacity-0 scale-[0.985] ${isForward ? '-translate-x-8' : 'translate-x-8'}`
+      : transitionPhase === 'entering'
+      ? `duration-0 opacity-0 scale-[0.985] ${isForward ? 'translate-x-10' : '-translate-x-10'}`
+      : 'duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] opacity-100 scale-100 translate-x-0';
+
+  const metaTransitionClass =
+    transitionPhase === 'exiting'
+      ? 'duration-150 ease-in opacity-0 translate-y-1.5'
+      : transitionPhase === 'entering'
+      ? 'duration-0 opacity-0 translate-y-1.5'
+      : 'duration-300 ease-out opacity-100 translate-y-0';
 
   // Bersihkan timer scroll saat unmount
   useEffect(() => {
@@ -244,7 +279,9 @@ export function HangerRack({
       {/* 2. Latar Polos & Tipografi Raksasa "APPAREL" Bersih Tanpa Bayangan Lantai */}
       <div className="absolute inset-0 pointer-events-none flex flex-col justify-center items-center overflow-hidden z-0">
         <div className="flex flex-col items-center select-none transform -translate-y-4 md:-translate-y-6">
-          <h1 className="font-display text-[32vw] md:text-[18vw] leading-none text-[#ebe8f2] tracking-wider select-none">
+          <h1
+            className={`font-display text-[32vw] md:text-[18vw] leading-none text-[#ebe8f2] tracking-wider select-none transition-[opacity,transform] motion-reduce:transition-none motion-reduce:transform-none ${heroTransitionClass}`}
+          >
             {categoryData.heroTitle || 'APPAREL'}
           </h1>
         </div>
@@ -289,7 +326,9 @@ export function HangerRack({
             onScroll={handleScroll}
             className="w-full flex items-start justify-start md:justify-center overflow-x-auto overflow-y-hidden no-scrollbar px-6 md:px-12 pt-3 pb-3 md:pb-6 cursor-grab active:cursor-grabbing z-10"
           >
-            <div className="flex items-start gap-1 md:gap-2.5 mx-auto">
+            <div
+              className={`flex items-start gap-1 md:gap-2.5 mx-auto transition-[opacity,transform] will-change-transform motion-reduce:transition-none motion-reduce:transform-none ${rackTransitionClass}`}
+            >
               {items.map((item, idx) => {
                 const isDisplayFront = idx === displayIndex;
                 const custom = customPhotos[item.id];
@@ -518,7 +557,7 @@ export function HangerRack({
                   key={cat.id}
                   type="button"
                   onClick={() => onSelectCategory && onSelectCategory(cat.id)}
-                  className={`h-[44px] min-h-[44px] px-2 rounded-full text-[13px] font-semibold flex items-center justify-center transition-all press-active cursor-pointer ${
+                  className={`h-[44px] min-h-[44px] px-2 rounded-full text-[13px] font-semibold flex items-center justify-center transition-all duration-200 ease-out press-active cursor-pointer ${
                     currentCategory === cat.id
                       ? 'bg-ink text-surface shadow-sm'
                       : 'bg-surface text-ink border border-line hover:border-ink/30'
@@ -560,7 +599,7 @@ export function HangerRack({
           }}
           className="press flex items-center justify-between gap-3 sm:gap-5 bg-surface/95 backdrop-blur-md border border-line px-4 py-2.5 sm:px-5 sm:py-3 rounded-full shadow-[0_6px_24px_rgba(0,0,0,0.08)] hover:border-brand/40 cursor-pointer transition-all w-full max-w-[440px] sm:w-auto text-left group"
         >
-          <div className="flex items-center gap-3 min-w-0">
+          <div className={`flex items-center gap-3 min-w-0 transition-[opacity,transform] motion-reduce:transition-none motion-reduce:transform-none ${metaTransitionClass}`}>
             <span
               className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-surface ring-1 ring-line/80 shadow-xs shrink-0"
               style={{ backgroundColor: activeItem?.hex || '#ffffff' }}

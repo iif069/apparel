@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Lock, Unlock } from 'lucide-react';
 import { INITIAL_CATEGORIES } from '@/data/catalog';
 import { CategoryId, CategoryData, CustomPhotoData, CustomCategoryData } from '@/types';
@@ -9,13 +9,24 @@ import { Topbar } from '@/components/Topbar';
 import { HangerRack } from '@/components/HangerRack';
 import { DetailStage } from '@/components/DetailStage';
 import { CustomCatalogModal } from '@/components/CustomCatalogModal';
+import { CatalogPreloader } from '@/components/CatalogPreloader';
+import { collectCatalogImageUrls, preloadAllCatalogImages } from '@/lib/preloadCatalog';
 import { getWhatsAppUrl } from '@/config/store';
 
 export default function HomePage() {
   const [currentCategory, setCurrentCategory] = useState<CategoryId>('kaos');
+  const [displayedCategory, setDisplayedCategory] = useState<CategoryId>('kaos');
+  const [transitionPhase, setTransitionPhase] = useState<'idle' | 'exiting' | 'entering'>('idle');
+  const [transitionDirection, setTransitionDirection] = useState<'forward' | 'backward'>('forward');
   const [activeSlotIndex, setActiveSlotIndex] = useState(3); // Kaos Biru Muda (04 / 07)
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+
+  const [preloadProgress, setPreloadProgress] = useState({ loaded: 0, total: 0 });
+  const [isCatalogReady, setIsCatalogReady] = useState(false);
+
+  const exitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const enterRafRef = useRef<number | null>(null);
 
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [isFlashActive, setIsFlashActive] = useState(false);
@@ -58,6 +69,38 @@ export default function HomePage() {
     } catch {
       // Abaikan jika localStorage tidak tersedia
     }
+  }, []);
+
+  // 2. Unduh dan decode seluruh gambar katalog sebelum masuk halaman utama
+  useEffect(() => {
+    let cancelled = false;
+    const urls = collectCatalogImageUrls(INITIAL_CATEGORIES, 'kaos');
+    setPreloadProgress({ loaded: 0, total: urls.length });
+
+    preloadAllCatalogImages(urls, (loaded, total) => {
+      if (!cancelled) {
+        setPreloadProgress({ loaded, total });
+      }
+    }).then(() => {
+      if (cancelled) return;
+      requestAnimationFrame(() => {
+        if (!cancelled) {
+          setIsCatalogReady(true);
+        }
+      });
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Bersihkan timer transisi tab saat unmount
+  useEffect(() => {
+    return () => {
+      if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
+      if (enterRafRef.current) cancelAnimationFrame(enterRafRef.current);
+    };
   }, []);
 
   // Sinkronkan tombol Back HP / browser dengan state modal detail
@@ -117,9 +160,10 @@ export default function HomePage() {
     });
   };
 
-  // Siapkan data kategori aktif yang sudah digabung dengan kustomisasi
-  const baseCategory = INITIAL_CATEGORIES[currentCategory] || INITIAL_CATEGORIES.kaos;
-  const customCat = customCategories[currentCategory] || {};
+  // Siapkan data kategori yang sedang tampil (digabung dengan kustomisasi)
+  const categoryIds = Object.keys(INITIAL_CATEGORIES) as CategoryId[];
+  const baseCategory = INITIAL_CATEGORIES[displayedCategory] || INITIAL_CATEGORIES.kaos;
+  const customCat = customCategories[displayedCategory] || {};
   const activeCategoryData: CategoryData = {
     ...baseCategory,
     tabLabel: customCat.tabLabel || baseCategory.tabLabel,
@@ -127,7 +171,7 @@ export default function HomePage() {
     watermark: customCat.heroTitle || baseCategory.watermark,
   };
 
-  const categoryTabList = (Object.keys(INITIAL_CATEGORIES) as CategoryId[]).map((catId) => {
+  const categoryTabList = categoryIds.map((catId) => {
     const base = INITIAL_CATEGORIES[catId];
     const c = customCategories[catId] || {};
     return {
@@ -137,10 +181,45 @@ export default function HomePage() {
   });
 
   const handleSelectCategory = (id: CategoryId) => {
+    if (id === currentCategory) return;
+
+    const prevIdx = categoryIds.indexOf(currentCategory);
+    const nextIdx = categoryIds.indexOf(id);
+    const dir: 'forward' | 'backward' = nextIdx >= prevIdx ? 'forward' : 'backward';
+
     setCurrentCategory(id);
-    setActiveSlotIndex(0);
-    setIsFlashActive(false);
     playSound('slide');
+
+    if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
+    if (enterRafRef.current) cancelAnimationFrame(enterRafRef.current);
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion) {
+      setDisplayedCategory(id);
+      setActiveSlotIndex(0);
+      setIsFlashActive(false);
+      setTransitionPhase('idle');
+      return;
+    }
+
+    setTransitionDirection(dir);
+    setTransitionPhase('exiting');
+
+    exitTimerRef.current = setTimeout(() => {
+      setDisplayedCategory(id);
+      setActiveSlotIndex(0);
+      setIsFlashActive(false);
+      setTransitionPhase('entering');
+
+      enterRafRef.current = requestAnimationFrame(() => {
+        enterRafRef.current = requestAnimationFrame(() => {
+          setTransitionPhase('idle');
+        });
+      });
+    }, 150);
   };
 
   const handleOrderViaWhatsApp = (order: {
@@ -192,70 +271,83 @@ export default function HomePage() {
   };
 
   return (
-    <main className="min-h-[100dvh] w-full bg-page flex flex-col relative overflow-x-hidden select-none md:select-auto">
-      {/* 1. Bar Atas (Header Toko & Kategori) */}
-      <Topbar
-        currentCategory={currentCategory}
-        categories={categoryTabList}
-        onSelectCategory={handleSelectCategory}
-        onOpenCustomModal={() => setIsCustomModalOpen(true)}
-        soundEnabled={soundEnabled}
-        onToggleSound={() => setSoundEnabled((prev) => !prev)}
-        isAdmin={isAdmin}
-        onToggleAdmin={handleToggleAdmin}
+    <>
+      <CatalogPreloader
+        loaded={preloadProgress.loaded}
+        total={preloadProgress.total}
+        isReady={isCatalogReady}
       />
 
-      {/* 2. Panggung Rak Gantungan 3D (Stage 1) */}
-      <HangerRack
-        categoryData={activeCategoryData}
-        categories={categoryTabList}
-        currentCategory={currentCategory}
-        onSelectCategory={handleSelectCategory}
-        activeIndex={activeSlotIndex}
-        onSelectIndex={setActiveSlotIndex}
-        onOpenDetail={handleOpenDetail}
-        customPhotos={customPhotos}
-        isFlashActive={isFlashActive}
-        onToggleFlash={handleToggleFlash}
-        onPlaySound={playSound}
-      />
+      <main
+        aria-hidden={!isCatalogReady}
+        className="min-h-[100dvh] w-full bg-page flex flex-col relative overflow-x-hidden select-none md:select-auto"
+      >
+        {/* 1. Bar Atas (Header Toko & Kategori) */}
+        <Topbar
+          currentCategory={currentCategory}
+          categories={categoryTabList}
+          onSelectCategory={handleSelectCategory}
+          onOpenCustomModal={() => setIsCustomModalOpen(true)}
+          soundEnabled={soundEnabled}
+          onToggleSound={() => setSoundEnabled((prev) => !prev)}
+          isAdmin={isAdmin}
+          onToggleAdmin={handleToggleAdmin}
+        />
 
-      {/* 3. Modal / Halaman Detail Produk (Stage 2) */}
-      <DetailStage
-        isOpen={isDetailOpen}
-        onClose={handleCloseDetail}
-        categoryData={activeCategoryData}
-        itemIndex={activeSlotIndex}
-        onSelectIndex={setActiveSlotIndex}
-        customPhotos={customPhotos}
-        isFlashActive={isFlashActive}
-        onToggleFlash={handleToggleFlash}
-        onOrderViaWhatsApp={handleOrderViaWhatsApp}
-        onPlaySound={playSound}
-      />
+        {/* 2. Panggung Rak Gantungan 3D (Stage 1) */}
+        <HangerRack
+          categoryData={activeCategoryData}
+          categories={categoryTabList}
+          currentCategory={currentCategory}
+          onSelectCategory={handleSelectCategory}
+          transitionPhase={transitionPhase}
+          transitionDirection={transitionDirection}
+          activeIndex={activeSlotIndex}
+          onSelectIndex={setActiveSlotIndex}
+          onOpenDetail={handleOpenDetail}
+          customPhotos={customPhotos}
+          isFlashActive={isFlashActive}
+          onToggleFlash={handleToggleFlash}
+          onPlaySound={playSound}
+        />
 
-      {/* 4. Modal Atur Katalog (Khusus Mode Admin) */}
-      <CustomCatalogModal
-        isOpen={isCustomModalOpen}
-        onClose={() => setIsCustomModalOpen(false)}
-        categoryData={activeCategoryData}
-        customPhotos={customPhotos}
-        customCategories={customCategories}
-        onSaveCustom={handleSaveCustom}
-        onResetCustom={handleResetCustom}
-      />
+        {/* 3. Modal / Halaman Detail Produk (Stage 2) */}
+        <DetailStage
+          isOpen={isDetailOpen}
+          onClose={handleCloseDetail}
+          categoryData={activeCategoryData}
+          itemIndex={activeSlotIndex}
+          onSelectIndex={setActiveSlotIndex}
+          customPhotos={customPhotos}
+          isFlashActive={isFlashActive}
+          onToggleFlash={handleToggleFlash}
+          onOrderViaWhatsApp={handleOrderViaWhatsApp}
+          onPlaySound={playSound}
+        />
 
-      {/* Toast Notifikasi Mode Rahasia */}
-      {toast && (
-        <div className="fixed top-18 md:top-6 left-1/2 -translate-x-1/2 z-[100] px-4 py-2 rounded-2xl bg-ink/95 text-surface border border-line/20 shadow-float flex items-center gap-2 text-xs sm:text-[13px] font-semibold whitespace-nowrap backdrop-blur-md transition-all">
-          {toast.icon === 'unlock' ? (
-            <Unlock className="w-3.5 h-3.5 text-brand-soft shrink-0" />
-          ) : (
-            <Lock className="w-3.5 h-3.5 text-surface/60 shrink-0" />
-          )}
-          <span>{toast.text}</span>
-        </div>
-      )}
-    </main>
+        {/* 4. Modal Atur Katalog (Khusus Mode Admin) */}
+        <CustomCatalogModal
+          isOpen={isCustomModalOpen}
+          onClose={() => setIsCustomModalOpen(false)}
+          categoryData={activeCategoryData}
+          customPhotos={customPhotos}
+          customCategories={customCategories}
+          onSaveCustom={handleSaveCustom}
+          onResetCustom={handleResetCustom}
+        />
+
+        {/* Toast Notifikasi Mode Rahasia */}
+        {toast && (
+          <div className="fixed top-18 md:top-6 left-1/2 -translate-x-1/2 z-[100] px-4 py-2 rounded-2xl bg-ink/95 text-surface border border-line/20 shadow-float flex items-center gap-2 text-xs sm:text-[13px] font-semibold whitespace-nowrap backdrop-blur-md transition-all">
+            {toast.icon === 'unlock' ? (
+              <Unlock className="w-3.5 h-3.5 text-brand-soft shrink-0" />
+            ) : (
+              <Lock className="w-3.5 h-3.5 text-surface/60 shrink-0" />
+            )}
+            <span>{toast.text}</span>
+          </div>
+        )}
+      </main>
+    </>
   );
 }

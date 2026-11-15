@@ -5,6 +5,7 @@ import React from 'react';
 interface OrderBottomBarProps {
   onOrderViaWhatsApp: () => void;
   isMobileFloating?: boolean;
+  variant?: 'inline' | 'floating' | 'dock';
   helperText?: string;
   className?: string;
 }
@@ -12,9 +13,11 @@ interface OrderBottomBarProps {
 export function OrderBottomBar({
   onOrderViaWhatsApp,
   isMobileFloating = false,
+  variant,
   helperText = 'Bisa beli satuan atau partai besar',
   className = '',
 }: OrderBottomBarProps) {
+  const resolvedVariant = variant ?? (isMobileFloating ? 'floating' : 'inline');
   // SVG Resmi WhatsApp seragam (monokrom mengikuti currentColor)
   const WhatsAppIcon = (
     <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -22,28 +25,41 @@ export function OrderBottomBar({
     </svg>
   );
 
-  if (isMobileFloating) {
+  const ctaButton = (
+    <button
+      type="button"
+      onClick={onOrderViaWhatsApp}
+      className="press w-full flex items-center justify-center gap-2.5 h-12 px-5 rounded-full bg-brand hover:bg-brand-hover text-white text-[14px] font-bold shadow-xs transition-colors cursor-pointer whitespace-nowrap"
+    >
+      {WhatsAppIcon}
+      <span>Order &amp; Konsultasi via WA</span>
+    </button>
+  );
+
+  const glassCard = (extraClassName = '') => (
+    <div
+      className={`pointer-events-auto w-full flex flex-col gap-2 px-3.5 pt-2.5 pb-3 lg:px-4 lg:py-3 rounded-[28px] bg-surface/85 backdrop-blur-2xl backdrop-saturate-150 border border-white/80 lg:border-line/80 shadow-[0_8px_24px_rgba(28,27,26,0.10)] ${extraClassName}`}
+    >
+      {helperText && (
+        <p className="text-[12px] font-semibold text-center leading-snug text-ink/90">
+          {helperText}
+        </p>
+      )}
+      {ctaButton}
+    </div>
+  );
+
+  if (resolvedVariant === 'dock') {
+    return glassCard(className);
+  }
+
+  if (resolvedVariant === 'floating') {
     return (
       <div
-        className={`pointer-events-none fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(12px,env(safe-area-inset-bottom))] lg:px-7 lg:pb-5 ${className}`}
+        className={`pointer-events-none fixed inset-x-0 bottom-0 z-40 px-3 md:px-7 pb-[max(12px,env(safe-area-inset-bottom))] ${className}`}
       >
-        <div className="w-full max-w-[1400px] mx-auto flex justify-center lg:justify-end">
-          <div className="pointer-events-auto w-full lg:w-[360px] xl:w-[390px] flex flex-col gap-2 px-3.5 pt-2.5 pb-3 lg:px-4 lg:py-3 rounded-[28px] bg-surface/85 backdrop-blur-2xl backdrop-saturate-150 border border-white/80 lg:border-line/80 shadow-[0_10px_30px_rgba(28,27,26,0.12)]">
-            {helperText && (
-              <p className="text-[12px] font-semibold text-center leading-snug text-ink/90">
-                {helperText}
-              </p>
-            )}
-
-            <button
-              type="button"
-              onClick={onOrderViaWhatsApp}
-              className="press w-full flex items-center justify-center gap-2.5 h-12 px-5 rounded-full bg-brand hover:bg-brand-hover text-white text-[14px] font-bold shadow-xs transition-colors cursor-pointer whitespace-nowrap"
-            >
-              {WhatsAppIcon}
-              <span>Order &amp; Konsultasi via WA</span>
-            </button>
-          </div>
+        <div className="w-full max-w-[720px] mx-auto flex justify-center">
+          {glassCard()}
         </div>
       </div>
     );
@@ -56,15 +72,7 @@ export function OrderBottomBar({
           {helperText}
         </p>
       )}
-
-      <button
-        type="button"
-        onClick={onOrderViaWhatsApp}
-        className="press w-full flex items-center justify-center gap-2.5 h-12 px-5 rounded-full bg-brand hover:bg-brand-hover text-white text-[14px] font-bold shadow-xs transition-colors cursor-pointer whitespace-nowrap"
-      >
-        {WhatsAppIcon}
-        <span>Order &amp; Konsultasi via WA</span>
-      </button>
+      {ctaButton}
     </div>
   );
 }

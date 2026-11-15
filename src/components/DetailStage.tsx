@@ -490,7 +490,7 @@ export function DetailStage({
         {/* ========================================================================= */}
         {/* B. TAMPILAN KHUSUS DESKTOP (hidden lg:grid) - SCROLL MANDIRI KIRI & KANAN, TENGAH FIXED */}
         {/* ========================================================================= */}
-        <div className="hidden lg:grid grid-cols-[340px_1fr_360px] xl:grid-cols-[370px_1fr_390px] gap-6 xl:gap-8 items-start w-full max-w-[1400px] mx-auto flex-1 h-full min-h-0 px-7 py-3 overflow-hidden">
+        <div className="hidden lg:grid grid-cols-[340px_1fr_360px] xl:grid-cols-[370px_1fr_390px] gap-6 xl:gap-8 items-start w-full max-w-[1400px] mx-auto flex-1 h-full min-h-0 px-7 py-3">
           {/* 1. KOLOM KIRI (SCROLL MANDIRI) */}
           <div
             className={`h-full overflow-y-auto pr-2 pb-6 flex flex-col gap-4 min-h-0 thin-scrollbar transition-all duration-300 ease-out motion-reduce:transition-none ${
@@ -553,32 +553,45 @@ export function DetailStage({
             </span>
           </div>
 
-          {/* 3. KOLOM KANAN (SCROLL MANDIRI, DIBERI RUANG BAWAH UNTUK FLOATING CTA) */}
+          {/* 3. KOLOM KANAN (SCROLL MANDIRI + DOCK CTA STICKY SEJAJAR KARTU) */}
           <div
-            className={`h-full overflow-y-auto pl-1 pr-2 pb-28 flex flex-col gap-4 min-h-0 thin-scrollbar transition-all duration-300 ease-out motion-reduce:transition-none ${
+            className={`h-full overflow-y-auto -ml-3 pl-4 pr-2 pb-1 flex flex-col gap-4 min-h-0 thin-scrollbar transition-all duration-300 ease-out motion-reduce:transition-none ${
               isVisible ? 'opacity-100 translate-y-0 delay-[200ms]' : 'opacity-0 translate-y-4 delay-0'
             }`}
           >
             {renderReasonsCard()}
             {renderVendorTrustCard(false)}
+
+            <div
+              className={`sticky bottom-0 z-20 mt-auto pt-2 pb-1 pointer-events-none transition-[opacity,transform] duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                isVisible ? 'opacity-100 delay-[280ms]' : 'opacity-0 translate-y-6 delay-0'
+              }`}
+            >
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -left-3 right-0 bottom-0 -top-8 bg-gradient-to-t from-page via-page/80 to-transparent backdrop-blur-md [mask-image:linear-gradient(to_top,black_60%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_top,black_60%,transparent_100%)]"
+              />
+              <OrderBottomBar
+                onOrderViaWhatsApp={handleWhatsAppClick}
+                variant="dock"
+                helperText="Gratis lihat contoh desain sebelum dicetak"
+                className="relative"
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* 3. FLOATING ORDER BAR (Menempel tetap di bawah layar pada mobile & kanan bawah pada desktop) */}
-      <div>
+      {/* 3. FLOATING ORDER BAR KHUSUS MOBILE & TABLET (Menempel tetap di bawah layar) */}
+      <div className="lg:hidden">
         {/* Progressive blur + gradasi halus di tepi bawah agar teks di belakang dock buram & tidak bertabrakan */}
         <div
           aria-hidden="true"
-          className="pointer-events-none fixed inset-x-0 bottom-0 h-32 z-30"
-        >
-          <div className="w-full max-w-[1400px] mx-auto h-full lg:px-5 flex justify-end">
-            <div className="w-full lg:w-[392px] xl:w-[422px] h-full bg-gradient-to-t from-page/95 via-page/65 to-transparent backdrop-blur-lg [mask-image:linear-gradient(to_top,black_55%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_top,black_55%,transparent_100%)]" />
-          </div>
-        </div>
+          className="pointer-events-none fixed inset-x-0 bottom-0 h-32 z-30 bg-gradient-to-t from-page/95 via-page/65 to-transparent backdrop-blur-lg [mask-image:linear-gradient(to_top,black_55%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_top,black_55%,transparent_100%)]"
+        />
         <OrderBottomBar
           onOrderViaWhatsApp={handleWhatsAppClick}
-          isMobileFloating={true}
+          variant="floating"
           helperText="Gratis lihat contoh desain sebelum dicetak"
           className={`transition-[opacity,transform] duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
             isVisible ? 'opacity-100 delay-[280ms]' : 'opacity-0 translate-y-6 delay-0'
