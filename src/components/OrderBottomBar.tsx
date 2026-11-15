@@ -14,7 +14,7 @@ export function OrderBottomBar({
   onOrderViaWhatsApp,
   isMobileFloating = false,
   variant,
-  helperText = 'Bisa beli satuan atau partai besar',
+  helperText = 'Konsultasi desain & estimasi gratis via WA',
   className = '',
 }: OrderBottomBarProps) {
   const resolvedVariant = variant ?? (isMobileFloating ? 'floating' : 'inline');

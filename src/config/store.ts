@@ -2,12 +2,11 @@
 export const STORE_CONFIG = {
   name: 'MIG Digital Printing',
   tagline: 'Pusat Apparel & Percetakan Digital Rajadesa',
-  location: 'Jl. Raya Rajadesa (Dekat Alun-alun Rajadesa), Kec. Rajadesa, Kabupaten Ciamis, Jawa Barat.',
+  location: 'Jl. Raya Rajadesa - Rancah, Seberang MIG Swalayan, Kec. Rajadesa, Kab. Ciamis.',
   phoneDisplay: '+62 895-1040-5562',
   phoneRaw: '6289510405562',
   operatingHours: {
-    workdays: 'Senin – Sabtu: 08.00 – 17.00 WIB',
-    holidays: 'Minggu / Hari Libur: Pesanan Online Tetap Diproses',
+    daily: 'Buka setiap hari pukul 08.00 – 16.30 WIB',
   },
   whatsapp: {
     number: '6289510405562',

@@ -70,7 +70,7 @@ export function BackgroundMusic({ soundEnabled }: BackgroundMusicProps) {
       )}
 
       <span className="text-xs sm:text-[13px] font-bold text-ink">
-        {isPlaying ? 'Music' : 'BGM'}
+        Musik
       </span>
 
       {/* Ikon Speaker Mute/Unmute */}

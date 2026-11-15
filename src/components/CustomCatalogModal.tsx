@@ -53,10 +53,15 @@ export function CustomCatalogModal({
     }
   }, []);
 
-  // Sinkronkan input saat produk dipilih
+  // Sinkronkan input & selectedItemId saat kategori atau produk berubah
   useEffect(() => {
-    const item = items.find((i) => i.id === selectedItemId) || items[0];
+    const matched = items.find((i) => i.id === selectedItemId);
+    const item = matched || items[0];
     if (!item) return;
+
+    if (!matched) {
+      setSelectedItemId(item.id);
+    }
 
     const custom = customPhotos[item.id] || {};
     setProductName(custom.name || item.name);

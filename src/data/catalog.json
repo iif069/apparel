@@ -16,9 +16,9 @@
         "shadow": "#111111",
         "accent": "#ffffff",
         "price": 65000,
-        "side": "/products/kaos-04-side.png",
-        "front": "/products/kaos-04-front.png",
-        "back": "/products/kaos-04-back.png"
+        "side": "/products/kaos-04-side.webp",
+        "front": "/products/kaos-04-front.webp",
+        "back": "/products/kaos-04-back.webp"
       },
       {
         "id": "kaos-dongker",
@@ -29,11 +29,11 @@
         "shadow": "#10151d",
         "accent": "#ffffff",
         "price": 65000,
-        "side": "/products/kaos-02-side.png",
-        "front": "/products/kaos-02-front.png",
-        "back": "/products/kaos-02-back.png",
-        "flashFront": "/products/kaos-02-front-flash.png",
-        "flashBack": "/products/kaos-02-back-flash.png",
+        "side": "/products/kaos-02-side.webp",
+        "front": "/products/kaos-02-front.webp",
+        "back": "/products/kaos-02-back.webp",
+        "flashFront": "/products/kaos-02-front-flash.webp",
+        "flashBack": "/products/kaos-02-back-flash.webp",
         "isReflective": true
       },
       {
@@ -45,9 +45,9 @@
         "shadow": "#3b4a45",
         "accent": "#ffffff",
         "price": 65000,
-        "side": "/products/kaos-05-side.png",
-        "front": "/products/kaos-05-front.png",
-        "back": "/products/kaos-05-back.png"
+        "side": "/products/kaos-05-side.webp",
+        "front": "/products/kaos-05-front.webp",
+        "back": "/products/kaos-05-back.webp"
       },
       {
         "id": "kaos-biru-muda",
@@ -58,11 +58,11 @@
         "shadow": "#3A6FA3",
         "accent": "#ffffff",
         "price": 65000,
-        "side": "/products/kaos-01-side.png",
-        "front": "/products/kaos-01-front.png",
-        "back": "/products/kaos-01-back.png",
-        "flashFront": "/products/kaos-01-front-flash.png",
-        "flashBack": "/products/kaos-01-back-flash.png",
+        "side": "/products/kaos-01-side.webp",
+        "front": "/products/kaos-01-front.webp",
+        "back": "/products/kaos-01-back.webp",
+        "flashFront": "/products/kaos-01-front-flash.webp",
+        "flashBack": "/products/kaos-01-back-flash.webp",
         "isReflective": true
       },
       {
@@ -74,9 +74,9 @@
         "shadow": "#cac6bc",
         "accent": "#7b29ba",
         "price": 60000,
-        "side": "/products/kaos-06-side.png",
-        "front": "/products/kaos-06-front.png",
-        "back": "/products/kaos-06-back.png"
+        "side": "/products/kaos-06-side.webp",
+        "front": "/products/kaos-06-front.webp",
+        "back": "/products/kaos-06-back.webp"
       },
       {
         "id": "kaos-coral",
@@ -87,11 +87,11 @@
         "shadow": "#9C3732",
         "accent": "#ffffff",
         "price": 65000,
-        "side": "/products/kaos-03-side.png",
-        "front": "/products/kaos-03-front.png",
-        "back": "/products/kaos-03-back.png",
-        "flashFront": "/products/kaos-03-front-flash.png",
-        "flashBack": "/products/kaos-03-back-flash.png",
+        "side": "/products/kaos-03-side.webp",
+        "front": "/products/kaos-03-front.webp",
+        "back": "/products/kaos-03-back.webp",
+        "flashFront": "/products/kaos-03-front-flash.webp",
+        "flashBack": "/products/kaos-03-back-flash.webp",
         "isReflective": true
       },
       {
@@ -103,9 +103,9 @@
         "shadow": "#362242",
         "accent": "#ffffff",
         "price": 65000,
-        "side": "/products/kaos-07-side.png",
-        "front": "/products/kaos-07-front.png",
-        "back": "/products/kaos-07-back.png"
+        "side": "/products/kaos-07-side.webp",
+        "front": "/products/kaos-07-front.webp",
+        "back": "/products/kaos-07-back.webp"
       }
     ]
   },
@@ -119,94 +119,94 @@
     "rack": [
       {
         "id": "jersey-01",
-        "name": "Jersey 01",
+        "name": "Jersey Ungu Toska",
         "colorName": "Ungu Toska",
         "hex": "#34236a",
         "highlight": "#4c3794",
         "shadow": "#1e1442",
         "accent": "#23a0b5",
         "price": 100000,
-        "side": "/products/jersey-sedusi-side.png",
-        "front": "/products/jersey-sedusi-front.png",
-        "back": "/products/jersey-sedusi-back.png"
+        "side": "/products/jersey-sedusi-side.webp",
+        "front": "/products/jersey-sedusi-front.webp",
+        "back": "/products/jersey-sedusi-back.webp"
       },
       {
         "id": "jersey-02",
-        "name": "Jersey 02",
+        "name": "Jersey Cokelat Moka",
         "colorName": "Cokelat Moka",
         "hex": "#6e3430",
         "highlight": "#8c4540",
         "shadow": "#451e1b",
         "accent": "#dec9ac",
         "price": 100000,
-        "side": "/products/jersey-02-side.png",
-        "front": "/products/jersey-02-front.png",
-        "back": "/products/jersey-02-back.png"
+        "side": "/products/jersey-02-side.webp",
+        "front": "/products/jersey-02-front.webp",
+        "back": "/products/jersey-02-back.webp"
       },
       {
         "id": "jersey-03",
-        "name": "Jersey 03",
+        "name": "Jersey Biru Kuning",
         "colorName": "Biru Kuning Volt",
         "hex": "#1e50a2",
         "highlight": "#2a6bd8",
         "shadow": "#11326b",
         "accent": "#eed212",
         "price": 100000,
-        "side": "/products/jersey-03-side.png",
-        "front": "/products/jersey-03-front.png",
-        "back": "/products/jersey-03-back.png"
+        "side": "/products/jersey-03-side.webp",
+        "front": "/products/jersey-03-front.webp",
+        "back": "/products/jersey-03-back.webp"
       },
       {
         "id": "jersey-04",
-        "name": "Jersey 04",
+        "name": "Jersey Kuning Oranye",
         "colorName": "Kuning Oranye Hitam",
         "hex": "#f59e0b",
         "highlight": "#fbbf24",
         "shadow": "#92400e",
         "accent": "#1e293b",
         "price": 100000,
-        "side": "/products/jersey-04-side.png",
-        "front": "/products/jersey-04-front.png",
-        "back": "/products/jersey-04-back.png"
+        "side": "/products/jersey-04-side.webp",
+        "front": "/products/jersey-04-front.webp",
+        "back": "/products/jersey-04-back.webp"
       },
       {
         "id": "jersey-05",
-        "name": "Jersey 05",
+        "name": "Jersey Putih Navy",
         "colorName": "Putih Navy Neon",
         "hex": "#232d3f",
         "highlight": "#84cc16",
         "shadow": "#111722",
         "accent": "#a3e635",
         "price": 100000,
-        "side": "/products/jersey-05-side.png",
-        "front": "/products/jersey-05-front.png",
-        "back": "/products/jersey-05-back.png"
+        "side": "/products/jersey-05-side.webp",
+        "front": "/products/jersey-05-front.webp",
+        "back": "/products/jersey-05-back.webp"
       },
       {
         "id": "jersey-06",
-        "name": "Jersey 06",
+        "name": "Jersey Hitam Hijau",
         "colorName": "Hitam Hijau Neon",
         "hex": "#111827",
         "highlight": "#22c55e",
         "shadow": "#030712",
         "accent": "#4ade80",
         "price": 100000,
-        "side": "/products/jersey-06-side.png",
-        "front": "/products/jersey-06-front.png",
-        "back": "/products/jersey-06-back.png"
+        "side": "/products/jersey-06-side.webp",
+        "front": "/products/jersey-06-front.webp",
+        "back": "/products/jersey-06-back.webp"
       },
       {
         "id": "jersey-07",
-        "name": "Jersey 07",
+        "name": "Jersey Toska Hijau",
         "colorName": "Tosca Hijau SSB",
         "hex": "#1e7d6b",
         "highlight": "#2eb398",
         "shadow": "#0d4a3e",
         "accent": "#eab308",
         "price": 100000,
-        "side": "/products/jersey-07-side.png",
-        "front": "/products/jersey-07-front.png",
-        "back": "/products/jersey-07-back.png"
+        "side": "/products/jersey-07-side.webp",
+        "front": "/products/jersey-07-front.webp",
+        "back": "/products/jersey-07-back.webp"
       }
     ]
   },
@@ -220,81 +220,81 @@
     "rack": [
       {
         "id": "kemeja-01",
-        "name": "Kemeja 01",
-        "colorName": "Navy Dongker",
+        "name": "Kemeja Kerja Navy",
+        "colorName": "Navy",
         "hex": "#1E2535",
         "highlight": "#354257",
         "shadow": "#10151d",
         "accent": "#ffffff",
         "price": 95000,
-        "side": "/products/kemeja-01-side.png",
-        "front": "/products/kemeja-01-front.png",
-        "back": "/products/kemeja-01-back.png"
+        "side": "/products/kemeja-01-side.webp",
+        "front": "/products/kemeja-01-front.webp",
+        "back": "/products/kemeja-01-back.webp"
       },
       {
         "id": "kemeja-02",
-        "name": "Kemeja 02",
+        "name": "Kemeja Kerja Biru Langit",
         "colorName": "Biru Langit",
         "hex": "#6E93C7",
         "highlight": "#8CAEDD",
         "shadow": "#4A6C9B",
         "accent": "#ffffff",
         "price": 95000,
-        "side": "/products/kemeja-02-side.png",
-        "front": "/products/kemeja-02-front.png",
-        "back": "/products/kemeja-02-back.png"
+        "side": "/products/kemeja-02-side.webp",
+        "front": "/products/kemeja-02-front.webp",
+        "back": "/products/kemeja-02-back.webp"
       },
       {
         "id": "kemeja-03",
-        "name": "Kemeja 03",
+        "name": "Kemeja Kerja Biru Gelap",
         "colorName": "Biru Gelap",
         "hex": "#202F4C",
         "highlight": "#354870",
         "shadow": "#121C30",
         "accent": "#ffffff",
         "price": 95000,
-        "side": "/products/kemeja-03-side.png",
-        "front": "/products/kemeja-03-front.png",
-        "back": "/products/kemeja-03-back.png"
+        "side": "/products/kemeja-03-side.webp",
+        "front": "/products/kemeja-03-front.webp",
+        "back": "/products/kemeja-03-back.webp"
       },
       {
         "id": "kemeja-04",
-        "name": "Kemeja 04",
+        "name": "Kemeja Putih Formal",
         "colorName": "Putih Formal",
         "hex": "#F6F5F1",
         "highlight": "#ffffff",
         "shadow": "#cac6bc",
         "accent": "#7B29BA",
         "price": 95000,
-        "side": "/products/kemeja-04-side.png",
-        "front": "/products/kemeja-04-front.png",
-        "back": "/products/kemeja-04-back.png"
+        "side": "/products/kemeja-04-side.webp",
+        "front": "/products/kemeja-04-front.webp",
+        "back": "/products/kemeja-04-back.webp"
       },
       {
         "id": "kemeja-05",
-        "name": "Kemeja 05",
+        "name": "Kemeja Kerja Krem Khaki",
         "colorName": "Krem Khaki",
         "hex": "#DED0B3",
         "highlight": "#F0E5D0",
         "shadow": "#B5A483",
         "accent": "#ffffff",
         "price": 95000,
-        "side": "/products/kemeja-05-side.png",
-        "front": "/products/kemeja-05-front.png",
-        "back": "/products/kemeja-05-back.png"
+        "side": "/products/kemeja-05-side.webp",
+        "front": "/products/kemeja-05-front.webp",
+        "back": "/products/kemeja-05-back.webp"
       },
       {
         "id": "kemeja-06",
-        "name": "Kemeja 06",
+        "name": "Kemeja Kerja Biru Benhur",
         "colorName": "Biru Benhur",
         "hex": "#204395",
         "highlight": "#3761C4",
         "shadow": "#132B66",
         "accent": "#ffffff",
         "price": 95000,
-        "side": "/products/kemeja-06-side.png",
-        "front": "/products/kemeja-06-front.png",
-        "back": "/products/kemeja-06-back.png"
+        "side": "/products/kemeja-06-side.webp",
+        "front": "/products/kemeja-06-front.webp",
+        "back": "/products/kemeja-06-back.webp"
       }
     ]
   }

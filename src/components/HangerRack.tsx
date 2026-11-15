@@ -66,6 +66,7 @@ export function HangerRack({
   const dragVelocityRef = useRef(0);
   const lastScrollLeftRef = useRef(0);
   const scrollEndTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
   const prevHoveredIndexRef = useRef<number>(activeIndex);
   const swayToggleRef = useRef(false);
 
@@ -107,6 +108,10 @@ export function HangerRack({
 
   // Reset hover & posisi scroll mobile saat kategori berganti
   useEffect(() => {
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
+    }
     setHoveredIndex(null);
     if (rackListRef.current) {
       rackListRef.current.scrollLeft = 0;
@@ -141,11 +146,14 @@ export function HangerRack({
       ? 'duration-0 opacity-0 translate-y-1.5'
       : 'duration-300 ease-out opacity-100 translate-y-0';
 
-  // Bersihkan timer scroll saat unmount
+  // Bersihkan timer scroll & hover saat unmount
   useEffect(() => {
     return () => {
       if (scrollEndTimeoutRef.current) {
         clearTimeout(scrollEndTimeoutRef.current);
+      }
+      if (hoverTimerRef.current) {
+        clearTimeout(hoverTimerRef.current);
       }
     };
   }, []);
@@ -294,8 +302,12 @@ export function HangerRack({
       </aside>
 
       <aside className="hidden lg:flex flex-col absolute right-10 top-1/2 -translate-y-1/2 z-20 pointer-events-none text-right">
-        <span className="font-serif italic text-3xl md:text-4xl text-ink leading-tight">Langsung</span>
-        <span className="font-sans font-black text-2xl md:text-3xl text-ink tracking-tight">PILIH UKURAN</span>
+        <span className="font-serif italic text-3xl md:text-4xl text-ink leading-tight">
+          {categoryData.id === 'kaos' ? 'Bisa' : 'Minimal'}
+        </span>
+        <span className="font-sans font-black text-2xl md:text-3xl text-ink tracking-tight">
+          {categoryData.id === 'kaos' ? 'SATUAN & GROSIR' : '6 PCS & GROSIR'}
+        </span>
       </aside>
 
       {/* 4. PIPA GANTUNGAN CHROME HORIZONTAL & DERETAN BAJU BERGOYANG ALAMI */}
@@ -384,23 +396,39 @@ export function HangerRack({
                     onPointerEnter={(e) => {
                       if (e.pointerType !== 'mouse') return;
 
-                      // Deteksi arah sentuhan kursor (kiri vs kanan)
-                      const prevIdx = prevHoveredIndexRef.current;
-                      const dir: 'left' | 'right' = idx >= prevIdx ? 'right' : 'left';
-                      prevHoveredIndexRef.current = idx;
+                      if (hoverTimerRef.current) {
+                        clearTimeout(hoverTimerRef.current);
+                      }
 
-                      // Picu ayunan alami saat kursor mouse menyentuh produk
-                      triggerSway(idx, dir, 'hover');
-                      onPlaySound('sway');
+                      // Jeda singkat 105ms agar sapuan kursor menuju tombol bawah tidak tidak sengaja mengganti baju
+                      hoverTimerRef.current = setTimeout(() => {
+                        const prevIdx = prevHoveredIndexRef.current;
+                        const dir: 'left' | 'right' = idx >= prevIdx ? 'right' : 'left';
+                        prevHoveredIndexRef.current = idx;
 
-                      if (displayIndex !== idx) {
-                        setHoveredIndex(idx);
-                        onSelectIndex(idx);
+                        triggerSway(idx, dir, 'hover');
+                        onPlaySound('sway');
+
+                        if (displayIndex !== idx) {
+                          setHoveredIndex(idx);
+                          onSelectIndex(idx);
+                        }
+                      }, 105);
+                    }}
+                    onPointerLeave={(e) => {
+                      if (e.pointerType !== 'mouse') return;
+                      if (hoverTimerRef.current) {
+                        clearTimeout(hoverTimerRef.current);
+                        hoverTimerRef.current = null;
                       }
                     }}
                     onClick={() => {
                       // Hindari klik jika pengguna baru saja menggeser/swipe rel
                       if (hasDraggedRef.current) return;
+                      if (hoverTimerRef.current) {
+                        clearTimeout(hoverTimerRef.current);
+                        hoverTimerRef.current = null;
+                      }
 
                       if (displayIndex !== idx) {
                         // 1. Ketuk baju yang masih menyamping (misal di HP):
@@ -535,17 +563,17 @@ export function HangerRack({
               }`}
             >
               <Zap className={`w-4 h-4 ${isFlashActive ? 'text-yellow-300 fill-yellow-300' : 'text-brand'}`} />
-              <span>{isFlashActive ? 'Efek Flash: Aktif' : 'Coba Efek Flash'}</span>
+              <span>{isFlashActive ? 'Sablon Menyala: Aktif' : 'Tes Sablon Menyala (Flash)'}</span>
             </button>
           )}
         </div>
 
-        {/* Petunjuk interaksi halus (mobile & desktop) */}
-        <p className="md:hidden text-center text-[11.5px] font-medium text-muted/80 mt-1 px-4 select-none">
-          Geser untuk lihat model lain · Ketuk baju untuk detail
+        {/* Petunjuk interaksi & informasi bebas custom untuk pengunjung awam */}
+        <p className="md:hidden text-center text-[11.5px] font-medium text-muted/85 mt-1 px-4 select-none">
+          Contoh model &amp; warna · Geser baju · Desain bebas custom
         </p>
-        <p className="hidden md:block text-center text-[12px] font-medium text-muted/75 mt-1 px-4 select-none">
-          Arahkan kursor ke baju lain · Klik baju untuk lihat detail
+        <p className="hidden md:block text-center text-[12px] font-medium text-muted/80 mt-1 px-4 select-none">
+          Contoh model &amp; warna · Arahkan kursor atau klik baju · Desain &amp; tulisan bebas custom
         </p>
 
         {/* Bar Kategori Khusus HP di Bawah Rak Baju (Mudah Dijangkau Ibu Jari) */}
@@ -597,7 +625,7 @@ export function HangerRack({
             onPlaySound('open');
             onOpenDetail(displayIndex);
           }}
-          className="press flex items-center justify-between gap-3 sm:gap-5 bg-surface/95 backdrop-blur-md border border-line px-4 py-2.5 sm:px-5 sm:py-3 rounded-full shadow-[0_6px_24px_rgba(0,0,0,0.08)] hover:border-brand/40 cursor-pointer transition-all w-full max-w-[440px] sm:w-auto text-left group"
+          className="press flex items-center justify-between gap-3 sm:gap-5 bg-surface/95 backdrop-blur-md border border-line px-4 py-2.5 sm:px-5 sm:py-3 rounded-full shadow-[0_6px_24px_rgba(0,0,0,0.08)] hover:border-brand/40 cursor-pointer transition-all w-full max-w-[440px] sm:max-w-[560px] sm:w-auto text-left group"
         >
           <div className={`flex items-center gap-3 min-w-0 transition-[opacity,transform] motion-reduce:transition-none motion-reduce:transform-none ${metaTransitionClass}`}>
             <span
@@ -609,7 +637,7 @@ export function HangerRack({
                 {activeName}
               </span>
               <span className="text-xs sm:text-[13px] text-muted font-medium truncate leading-normal">
-                {activeColorName} · Bisa custom desain
+                {activeColorName} · Desain bebas custom
               </span>
             </div>
           </div>

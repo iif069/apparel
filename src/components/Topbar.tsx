@@ -74,7 +74,7 @@ export function Topbar({
                   </span>
                 )}
               </div>
-              <span className="text-[10.5px] sm:text-[11px] md:text-[12px] text-muted font-medium leading-none mt-0.5 truncate hidden xs:block">
+              <span className="text-[10.5px] sm:text-[11px] md:text-[12px] text-muted font-medium leading-none mt-0.5 truncate block">
                 MIG Digital Printing · Rajadesa
               </span>
             </div>
