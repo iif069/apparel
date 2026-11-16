@@ -12,6 +12,12 @@ import { CustomCatalogModal } from '@/components/CustomCatalogModal';
 import { CatalogPreloader } from '@/components/CatalogPreloader';
 import { collectSplitCatalogImageUrls, preloadAllCatalogImages } from '@/lib/preloadCatalog';
 import { getWhatsAppUrl } from '@/config/store';
+import {
+  resolveCategoryFromParam,
+  toPublicCategorySlug,
+  trackCategoryView,
+  trackWhatsAppClick,
+} from '@/lib/analytics';
 
 export default function HomePage() {
   const [currentCategory, setCurrentCategory] = useState<CategoryId>('kaos');
@@ -44,8 +50,10 @@ export default function HomePage() {
     setTimeout(() => setToast(null), 2500);
   };
 
-  // 1. Muat data dari localStorage & cek URL secret admin saat mount
+  // 1. Muat data lokal, cek parameter URL (?cat=kaos|jersey|kemeja, ?item=, ?admin=), & preload aset
   useEffect(() => {
+    let initialCat: CategoryId = 'kaos';
+
     try {
       const savedPhotos = localStorage.getItem('mig-apparel-custom-photos');
       if (savedPhotos) setCustomPhotos(JSON.parse(savedPhotos));
@@ -53,7 +61,6 @@ export default function HomePage() {
       const savedCats = localStorage.getItem('mig-apparel-custom-categories');
       if (savedCats) setCustomCategories(JSON.parse(savedCats));
 
-      // Cek apakah ada parameter URL rahasia ?admin=1 atau ?admin=mig atau tersimpan sebelumnya
       const params = new URLSearchParams(window.location.search);
       const adminParam = params.get('admin');
       const savedAdmin = localStorage.getItem('mig-apparel-admin-mode') === 'true';
@@ -63,18 +70,44 @@ export default function HomePage() {
         localStorage.setItem('mig-apparel-admin-mode', 'true');
       }
 
+      // Cek kategori awal dari URL (?cat=jersey, ?cat=kemeja, ?cat=kaos, atau ?kategori=...)
+      const paramCat = resolveCategoryFromParam(params.get('cat') || params.get('kategori'));
+      if (paramCat && INITIAL_CATEGORIES[paramCat]) {
+        initialCat = paramCat;
+        setCurrentCategory(paramCat);
+        setDisplayedCategory(paramCat);
+        setActiveSlotIndex(paramCat === 'kaos' ? 3 : 0);
+      }
+
+      // Cek parameter ?item= (bisa berupa ID produk atau nomor urut 1-based/0-based)
+      const itemParam = params.get('item');
+      if (itemParam) {
+        const rack = INITIAL_CATEGORIES[initialCat].rack;
+        const byId = rack.findIndex((it) => it.id.toLowerCase() === itemParam.toLowerCase());
+        if (byId >= 0) {
+          setActiveSlotIndex(byId);
+        } else {
+          const parsedIdx = Number(itemParam);
+          if (!Number.isNaN(parsedIdx) && parsedIdx >= 0 && parsedIdx < rack.length) {
+            setActiveSlotIndex(parsedIdx);
+          }
+        }
+      }
+
       if (window.location.hash.includes('detail') || window.location.search.includes('detail')) {
         setIsDetailOpen(true);
       }
     } catch {
       // Abaikan jika localStorage tidak tersedia
     }
-  }, []);
 
-  // 2. Muat gambar utama rak aktif terlebih dahulu, lalu lanjutkan aset lain di latar belakang
-  useEffect(() => {
+    // Catat kunjungan kategori awal ke analitik
+    const initCatData = INITIAL_CATEGORIES[initialCat] || INITIAL_CATEGORIES.kaos;
+    trackCategoryView(initialCat, initCatData.tabLabel);
+
+    // Preload gambar utama kategori yang dibuka terlebih dahulu, lalu lanjutkan aset lain di latar belakang
     let cancelled = false;
-    const { primary, secondary } = collectSplitCatalogImageUrls(INITIAL_CATEGORIES, 'kaos');
+    const { primary, secondary } = collectSplitCatalogImageUrls(INITIAL_CATEGORIES, initialCat);
     setPreloadProgress({ loaded: 0, total: primary.length });
 
     preloadAllCatalogImages(primary, (loaded, total) => {
@@ -193,6 +226,20 @@ export default function HomePage() {
     setCurrentCategory(id);
     playSound('slide');
 
+    // Sinkronkan URL (?cat=kaos|jersey|kemeja) agar link per kategori mudah disalin & dilacak
+    try {
+      const nextUrl = new URL(window.location.href);
+      nextUrl.searchParams.set('cat', toPublicCategorySlug(id));
+      nextUrl.searchParams.delete('kategori');
+      window.history.replaceState(window.history.state, '', nextUrl.toString());
+    } catch {
+      // Abaikan jika History API dibatasi
+    }
+
+    const nextCatInfo = INITIAL_CATEGORIES[id];
+    const nextCatCustom = customCategories[id];
+    trackCategoryView(id, nextCatCustom?.tabLabel || nextCatInfo?.tabLabel || id);
+
     if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
     if (enterRafRef.current) cancelAnimationFrame(enterRafRef.current);
 
@@ -238,6 +285,15 @@ export default function HomePage() {
     text += `*Kategori:* ${catLabel}\n`;
     text += `*Model Referensi:* ${name} (${color})\n\n`;
     text += `Boleh dibantu info detail dan konsultasi desainnya? Terima kasih!`;
+
+    trackWhatsAppClick({
+      location: 'detail_order_cta',
+      categoryId: order.categoryId,
+      categoryLabel: catLabel,
+      itemId: order.item.id,
+      itemName: name,
+      colorName: color,
+    });
 
     window.open(getWhatsAppUrl(text), '_blank');
   };

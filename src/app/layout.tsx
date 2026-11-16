@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, Anton, Cormorant_Garamond } from 'next/font/google';
+import { AnalyticsScripts } from '@/components/AnalyticsScripts';
 import './globals.css';
 
 const inter = Inter({
@@ -51,6 +52,7 @@ export default function RootLayout({
   return (
     <html lang="id" className={`${inter.variable} ${anton.variable} ${cormorant.variable}`}>
       <body className="min-h-screen bg-page text-ink antialiased select-none md:select-auto font-sans">
+        <AnalyticsScripts />
         {children}
       </body>
     </html>

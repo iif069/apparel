@@ -32,6 +32,7 @@ import { GarmentRotator } from './GarmentRotator';
 import { AngleTabs } from './AngleTabs';
 import { OrderBottomBar } from './OrderBottomBar';
 import { WhatsAppIcon } from './WhatsAppIcon';
+import { trackProductDetailView, trackWhatsAppClick } from '@/lib/analytics';
 
 const DETAIL_ICON_MAP: Record<DetailIconName, LucideIcon> = {
   graduation: GraduationCap,
@@ -129,7 +130,7 @@ export function DetailStage({
     }
   }, [isVisible]);
 
-  // Reset scroll saat item berganti
+  // Reset scroll saat item berganti & catat tayangan detail produk ke analitik
   useEffect(() => {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = 0;
@@ -139,6 +140,17 @@ export function DetailStage({
     setIsHeaderHidden(false);
     setViewAngle('front');
   }, [itemIndex, isOpen]);
+
+  useEffect(() => {
+    if (!isOpen || !currentItem) return;
+    trackProductDetailView({
+      itemId: currentItem.id,
+      itemName: productName,
+      colorName,
+      categoryId: categoryData.id,
+      categoryLabel: categoryData.tabLabel,
+    });
+  }, [isOpen, currentItem, productName, colorName, categoryData.id, categoryData.tabLabel]);
 
   // Tutup detail dengan tombol Escape
   useEffect(() => {
@@ -370,6 +382,16 @@ export function DetailStage({
               href={getWhatsAppUrl(`Halo MIG Digital Printing, saya mau tanya estimasi harga ${categoryData.tabLabel} (${productName})`)}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() =>
+                trackWhatsAppClick({
+                  location: 'detail_price_link',
+                  categoryId: categoryData.id,
+                  categoryLabel: categoryData.tabLabel,
+                  itemId: currentItem.id,
+                  itemName: productName,
+                  colorName,
+                })
+              }
               className="font-semibold text-brand underline decoration-brand/40 underline-offset-2 hover:text-brand-hover"
             >
               cek estimasi harga gratis via WA.
@@ -481,6 +503,16 @@ export function DetailStage({
             href={getWhatsAppUrl(`Halo MIG Digital Printing, saya mau tanya dan konsultasi ${categoryData.tabLabel} (${productName})`)}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() =>
+              trackWhatsAppClick({
+                location: 'detail_header_wa',
+                categoryId: categoryData.id,
+                categoryLabel: categoryData.tabLabel,
+                itemId: currentItem.id,
+                itemName: productName,
+                colorName,
+              })
+            }
             className="press flex items-center justify-center gap-2 h-11 px-4 rounded-full bg-white/45 lg:bg-surface text-ink border border-white/70 lg:border-line hover:bg-white/75 lg:hover:border-brand/40 lg:shadow-sm transition-colors cursor-pointer shrink-0 whitespace-nowrap"
             aria-label="Hubungi WhatsApp CS"
           >

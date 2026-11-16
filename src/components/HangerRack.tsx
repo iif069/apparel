@@ -7,6 +7,7 @@ import { getWhatsAppUrl } from '@/config/store';
 import { HangerHookSVG } from './HangerHookSVG';
 import { GarmentSVG } from './GarmentSVG';
 import { WhatsAppIcon } from './WhatsAppIcon';
+import { trackWhatsAppClick } from '@/lib/analytics';
 
 interface HangerRackProps {
   categoryData: CategoryData;
@@ -279,6 +280,16 @@ export function HangerRack({
           href={getWhatsAppUrl('Halo MIG Digital Printing, saya mau konsultasi bikin desain custom apparel/jersey')}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() =>
+            trackWhatsAppClick({
+              location: 'rack_mobile_banner',
+              categoryId: categoryData.id,
+              categoryLabel: categoryData.tabLabel,
+              itemId: activeItem?.id,
+              itemName: activeName,
+              colorName: activeColorName,
+            })
+          }
           className="press relative inline-flex rounded-full p-[2px] overflow-hidden shadow-[0_6px_22px_rgba(123,41,186,0.18)] cursor-pointer group"
           title="Konsultasi Desain Custom via WhatsApp"
         >
@@ -629,6 +640,16 @@ export function HangerRack({
           href={getWhatsAppUrl('Halo MIG Digital Printing, saya mau konsultasi bikin desain custom apparel/jersey')}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() =>
+            trackWhatsAppClick({
+              location: 'rack_desktop_cta',
+              categoryId: categoryData.id,
+              categoryLabel: categoryData.tabLabel,
+              itemId: activeItem?.id,
+              itemName: activeName,
+              colorName: activeColorName,
+            })
+          }
           className="press hidden md:inline-flex shrink-0 relative rounded-full p-[2px] overflow-hidden shadow-[0_6px_24px_rgba(123,41,186,0.18)] cursor-pointer group"
           title="Konsultasi Desain Custom via WhatsApp"
         >
