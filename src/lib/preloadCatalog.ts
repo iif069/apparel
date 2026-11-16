@@ -66,6 +66,57 @@ export function collectCatalogImageUrls(
   return urls;
 }
 
+/**
+ * Memisahkan URL gambar menjadi:
+ * - primary: logo + tampak depan/samping kategori utama (wajib siap sebelum masuk panggung utama)
+ * - secondary: kategori lain, tampak belakang, dan aset efek flash (dimuat bertahap di latar belakang)
+ */
+export function collectSplitCatalogImageUrls(
+  categories: Record<CategoryId, CategoryData>,
+  primaryCategory: CategoryId = 'kaos'
+): { primary: string[]; secondary: string[] } {
+  const primary: string[] = [];
+  const secondary: string[] = [];
+  const seen = new Set<string>();
+
+  pushUnique(primary, seen, '/logo.svg');
+
+  const categoryIds = Object.keys(categories) as CategoryId[];
+  const orderedIds: CategoryId[] = [
+    ...(categories[primaryCategory] ? [primaryCategory] : []),
+    ...categoryIds.filter((id) => id !== primaryCategory),
+  ];
+
+  // Tahap 1: Tampak depan & samping kategori utama
+  if (categories[primaryCategory]) {
+    for (const item of categories[primaryCategory].rack) {
+      collectItemUrls(item, ['front', 'side'], primary, seen);
+    }
+  }
+
+  // Tahap 2: Tampak depan & samping kategori lainnya
+  for (const catId of orderedIds) {
+    if (catId === primaryCategory) continue;
+    for (const item of categories[catId].rack) {
+      collectItemUrls(item, ['front', 'side'], secondary, seen);
+    }
+  }
+
+  // Tahap 3: Tampak belakang & aset efek flash semua kategori
+  for (const catId of orderedIds) {
+    for (const item of categories[catId].rack) {
+      collectItemUrls(
+        item,
+        ['back', 'flashFront', 'flashBack', 'reflectiveFront', 'reflectiveBack'],
+        secondary,
+        seen
+      );
+    }
+  }
+
+  return { primary, secondary };
+}
+
 function loadAndDecodeImage(url: string): Promise<void> {
   const cached = decodedImageCache.get(url);
   if (cached && cached.complete && cached.naturalWidth > 0) {

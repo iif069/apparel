@@ -1,18 +1,12 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { ArrowRight, Zap } from 'lucide-react';
 import { GarmentItem, CategoryData, CustomPhotoData, CategoryId } from '@/types';
 import { getWhatsAppUrl } from '@/config/store';
 import { HangerHookSVG } from './HangerHookSVG';
 import { GarmentSVG } from './GarmentSVG';
-
-// SVG Resmi WhatsApp seragam
-const WhatsAppIcon = ({ className = 'w-3.5 h-3.5 flex-shrink-0' }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2ZM12.04 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.16 12.04 20.16C10.66 20.16 9.3 19.81 8.1 19.14L7.54 18.82L4.43 19.64L5.26 16.6L4.91 16.03C4.18 14.77 3.8 13.35 3.8 11.91C3.8 7.37 7.5 3.67 12.04 3.67ZM8.73 7.34C8.54 7.34 8.35 7.35 8.17 7.73C7.99 8.12 7.45 8.63 7.45 9.69C7.45 10.74 8.22 11.75 8.33 11.9C8.44 12.05 9.8 14.23 11.94 15.07C13.72 15.77 14.08 15.63 14.47 15.59C14.85 15.55 15.71 15.08 15.89 14.57C16.07 14.06 16.07 13.63 16.01 13.54C15.96 13.45 15.81 13.4 15.58 13.28C15.35 13.17 14.23 12.62 14.02 12.54C13.81 12.47 13.66 12.43 13.51 12.66C13.36 12.89 12.93 13.4 12.8 13.55C12.67 13.71 12.54 13.73 12.31 13.61C12.08 13.5 11.35 13.26 10.47 12.48C9.79 11.87 9.33 11.12 9.2 10.89C9.07 10.66 9.18 10.54 9.3 10.42C9.4 10.32 9.53 10.15 9.65 10.01C9.76 9.87 9.8 9.77 9.88 9.62C9.96 9.46 9.92 9.33 9.86 9.22C9.8 9.11 9.35 7.99 9.16 7.54C8.98 7.1 8.79 7.16 8.73 7.34Z" />
-  </svg>
-);
+import { WhatsAppIcon } from './WhatsAppIcon';
 
 interface HangerRackProps {
   categoryData: CategoryData;
@@ -224,7 +218,7 @@ export function HangerRack({
     setDragTilt(calculatedTilt);
   };
 
-  const handlePointerUp = () => {
+  const handlePointerUp = useCallback(() => {
     if (!isDraggingRef.current) return;
     isDraggingRef.current = false;
     setIsDragging(false);
@@ -239,7 +233,19 @@ export function HangerRack({
         hasDraggedRef.current = false;
       }, 100);
     }
-  };
+  }, [onPlaySound]);
+
+  // Pastikan status drag selalu selesai walau pointer dilepas di luar area rak
+  useEffect(() => {
+    if (!isDragging) return;
+    const onWinPointerUp = () => handlePointerUp();
+    window.addEventListener('pointerup', onWinPointerUp);
+    window.addEventListener('pointercancel', onWinPointerUp);
+    return () => {
+      window.removeEventListener('pointerup', onWinPointerUp);
+      window.removeEventListener('pointercancel', onWinPointerUp);
+    };
+  }, [isDragging, handlePointerUp]);
 
   // Deteksi scroll sentuh alami (trackpad / swipe HP momentum)
   const handleScroll = () => {
@@ -285,27 +291,27 @@ export function HangerRack({
       </div>
 
       {/* 2. Latar Polos & Tipografi Raksasa "APPAREL" Bersih Tanpa Bayangan Lantai */}
-      <div className="absolute inset-0 pointer-events-none flex flex-col justify-center items-center overflow-hidden z-0">
+      <div aria-hidden="true" className="absolute inset-0 pointer-events-none flex flex-col justify-center items-center overflow-hidden z-0">
         <div className="flex flex-col items-center select-none transform -translate-y-4 md:-translate-y-6">
-          <h1
+          <span
             className={`font-display text-[32vw] md:text-[18vw] leading-none text-[#ebe8f2] tracking-wider select-none transition-[opacity,transform] motion-reduce:transition-none motion-reduce:transform-none ${heroTransitionClass}`}
           >
             {categoryData.heroTitle || 'APPAREL'}
-          </h1>
+          </span>
         </div>
       </div>
 
-      {/* 3. Callout Kiri & Kanan (Desktop) */}
-      <aside className="hidden lg:flex flex-col absolute left-10 top-1/2 -translate-y-1/2 z-20 pointer-events-none text-left">
-        <span className="font-serif italic text-3xl md:text-4xl text-ink leading-tight">Tampil</span>
-        <span className="font-sans font-black text-2xl md:text-3xl text-ink tracking-tight">MENAWAN</span>
+      {/* 3. Callout Kiri & Kanan (Hanya di Layar Lebar xl+ agar Tidak Menutupi Baju Pinggir) */}
+      <aside className="hidden xl:flex flex-col absolute xl:left-8 2xl:left-12 top-1/2 -translate-y-1/2 z-0 pointer-events-none text-left">
+        <span className="font-serif italic text-3xl 2xl:text-4xl text-ink leading-tight">Tampil</span>
+        <span className="font-sans font-black text-2xl 2xl:text-3xl text-ink tracking-tight">MENAWAN</span>
       </aside>
 
-      <aside className="hidden lg:flex flex-col absolute right-10 top-1/2 -translate-y-1/2 z-20 pointer-events-none text-right">
-        <span className="font-serif italic text-3xl md:text-4xl text-ink leading-tight">
+      <aside className="hidden xl:flex flex-col absolute xl:right-8 2xl:right-12 top-1/2 -translate-y-1/2 z-0 pointer-events-none text-right">
+        <span className="font-serif italic text-3xl 2xl:text-4xl text-ink leading-tight">
           {categoryData.id === 'kaos' ? 'Bisa' : 'Minimal'}
         </span>
-        <span className="font-sans font-black text-2xl md:text-3xl text-ink tracking-tight">
+        <span className="font-sans font-black text-2xl 2xl:text-3xl text-ink tracking-tight">
           {categoryData.id === 'kaos' ? 'SATUAN & GROSIR' : '6 PCS & GROSIR'}
         </span>
       </aside>
@@ -336,7 +342,7 @@ export function HangerRack({
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
             onScroll={handleScroll}
-            className="w-full flex items-start justify-start md:justify-center overflow-x-auto overflow-y-hidden no-scrollbar px-6 md:px-12 pt-3 pb-3 md:pb-6 cursor-grab active:cursor-grabbing z-10"
+            className="w-full flex items-start justify-start overflow-x-auto overflow-y-hidden no-scrollbar px-6 md:px-12 pt-3 pb-3 md:pb-6 cursor-grab active:cursor-grabbing z-10"
           >
             <div
               className={`flex items-start gap-1 md:gap-2.5 mx-auto transition-[opacity,transform] will-change-transform motion-reduce:transition-none motion-reduce:transform-none ${rackTransitionClass}`}
@@ -445,6 +451,22 @@ export function HangerRack({
                       }
                     }}
                     onKeyDown={(e) => {
+                      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        const nextIdx =
+                          e.key === 'ArrowRight'
+                            ? Math.min(items.length - 1, idx + 1)
+                            : Math.max(0, idx - 1);
+                        if (nextIdx !== idx) {
+                          onPlaySound('sway');
+                          triggerSway(nextIdx, e.key === 'ArrowRight' ? 'right' : 'left', 'click');
+                          onSelectIndex(nextIdx);
+                          setHoveredIndex(nextIdx);
+                          const slots = rackListRef.current?.querySelectorAll<HTMLElement>('.hanger-slot');
+                          slots?.[nextIdx]?.focus();
+                        }
+                        return;
+                      }
                       if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
                         if (displayIndex !== idx) {
@@ -498,7 +520,7 @@ export function HangerRack({
                       >
                         {/* SISI SAMPING (Tampil saat menyamping di rak) */}
                         <div
-                          className={`absolute inset-0 flex items-start justify-center transition-all duration-250 ease-out origin-center ${
+                          className={`absolute inset-0 flex items-start justify-center transition-all duration-[250ms] ease-out origin-center ${
                             isDisplayFront
                               ? 'opacity-0 [transform:rotateY(-85deg)] pointer-events-none'
                               : 'opacity-100 [transform:rotateY(0deg)]'
@@ -556,7 +578,7 @@ export function HangerRack({
               type="button"
               onClick={onToggleFlash}
               aria-pressed={isFlashActive}
-              className={`press inline-flex items-center gap-2 min-h-[44px] px-4 py-2 rounded-full text-[12.5px] font-bold border transition-all cursor-pointer shadow-xs ${
+              className={`press inline-flex items-center gap-2 min-h-[44px] px-4 py-2 rounded-full text-[12.5px] font-bold border transition-all cursor-pointer shadow-sm ${
                 isFlashActive
                   ? 'bg-ink text-surface border-ink shadow-soft'
                   : 'bg-surface text-ink border-line hover:border-brand/50 hover:text-brand'
@@ -576,14 +598,15 @@ export function HangerRack({
           Contoh model &amp; warna · Arahkan kursor atau klik baju · Desain &amp; tulisan bebas custom
         </p>
 
-        {/* Bar Kategori Khusus HP di Bawah Rak Baju (Mudah Dijangkau Ibu Jari) */}
+        {/* Bar Kategori di Bawah Rak Baju (Tampil di HP & layar < 900px agar header atas tidak penuh) */}
         {categories && categories.length > 0 && (
-          <div className="md:hidden w-full px-3.5 mt-4 z-20 flex-shrink-0">
+          <div className="min-[900px]:hidden w-full max-w-[500px] mx-auto px-3.5 mt-4 z-20 flex-shrink-0">
             <nav className="grid grid-cols-3 gap-2 w-full" aria-label="Kategori pakaian">
               {categories.map((cat) => (
                 <button
                   key={cat.id}
                   type="button"
+                  aria-pressed={currentCategory === cat.id}
                   onClick={() => onSelectCategory && onSelectCategory(cat.id)}
                   className={`h-[44px] min-h-[44px] px-2 rounded-full text-[13px] font-semibold flex items-center justify-center transition-all duration-200 ease-out press-active cursor-pointer ${
                     currentCategory === cat.id
@@ -600,17 +623,17 @@ export function HangerRack({
       </div>
 
       {/* 5. BAR AKSI BAWAH RAK */}
-      <footer className="relative w-full z-20 px-4 md:px-8 pt-1 pb-[max(20px,calc(16px+env(safe-area-inset-bottom)))] md:py-4 flex flex-col sm:flex-row items-center justify-between gap-2.5 md:gap-3 max-w-[1340px] mx-auto flex-shrink-0">
+      <footer className="relative w-full z-20 px-4 md:px-8 pt-1 pb-[max(20px,calc(16px+env(safe-area-inset-bottom)))] md:py-4 flex flex-col md:flex-row items-center justify-between gap-2.5 md:gap-3 max-w-[1340px] mx-auto flex-shrink-0">
         {/* Tombol CTA Desain Custom di Kiri Bawah (Satu-satunya CTA di Desktop, Selaras Desain Sistem) */}
         <a
           href={getWhatsAppUrl('Halo MIG Digital Printing, saya mau konsultasi bikin desain custom apparel/jersey')}
           target="_blank"
           rel="noopener noreferrer"
-          className="press hidden sm:inline-flex relative rounded-full p-[2px] overflow-hidden shadow-[0_6px_24px_rgba(123,41,186,0.18)] cursor-pointer group"
+          className="press hidden md:inline-flex shrink-0 relative rounded-full p-[2px] overflow-hidden shadow-[0_6px_24px_rgba(123,41,186,0.18)] cursor-pointer group"
           title="Konsultasi Desain Custom via WhatsApp"
         >
           <span aria-hidden="true" className="cta-loop-ring pointer-events-none" />
-          <span className="relative z-10 flex items-center gap-2.5 sm:gap-3 bg-surface/95 backdrop-blur-md px-4 py-2.5 sm:px-5 sm:py-3 rounded-full">
+          <span className="relative z-10 flex items-center gap-2.5 sm:gap-3 bg-surface/95 backdrop-blur-md px-4 py-2.5 sm:px-5 sm:py-3 rounded-full whitespace-nowrap">
             <WhatsAppIcon className="w-5 h-5 sm:w-6 sm:h-6 text-brand shrink-0" />
             <span className="text-[13.5px] sm:text-[14.5px] font-bold text-ink group-hover:text-brand transition-colors">
               Desain custom? Chat via WhatsApp
@@ -625,11 +648,11 @@ export function HangerRack({
             onPlaySound('open');
             onOpenDetail(displayIndex);
           }}
-          className="press flex items-center justify-between gap-3 sm:gap-5 bg-surface/95 backdrop-blur-md border border-line px-4 py-2.5 sm:px-5 sm:py-3 rounded-full shadow-[0_6px_24px_rgba(0,0,0,0.08)] hover:border-brand/40 cursor-pointer transition-all w-full max-w-[440px] sm:max-w-[560px] sm:w-auto text-left group"
+          className="press flex items-center justify-between gap-3 sm:gap-5 bg-surface/95 backdrop-blur-md border border-line px-4 py-2.5 sm:px-5 sm:py-3 rounded-full shadow-[0_6px_24px_rgba(0,0,0,0.08)] hover:border-brand/40 cursor-pointer transition-all w-full max-w-[440px] md:max-w-[560px] md:w-auto text-left group"
         >
           <div className={`flex items-center gap-3 min-w-0 transition-[opacity,transform] motion-reduce:transition-none motion-reduce:transform-none ${metaTransitionClass}`}>
             <span
-              className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-surface ring-1 ring-line/80 shadow-xs shrink-0"
+              className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-surface ring-1 ring-line/80 shadow-sm shrink-0"
               style={{ backgroundColor: activeItem?.hex || '#ffffff' }}
             />
             <div className="flex flex-col min-w-0">
@@ -642,7 +665,7 @@ export function HangerRack({
             </div>
           </div>
 
-          <span className="flex items-center gap-2 h-11 px-4 sm:px-5 rounded-full bg-brand group-hover:bg-brand-hover text-white text-sm font-bold shadow-xs transition-colors whitespace-nowrap shrink-0">
+          <span className="flex items-center gap-2 h-11 px-4 sm:px-5 rounded-full bg-brand group-hover:bg-brand-hover text-white text-sm font-bold shadow-sm transition-colors whitespace-nowrap shrink-0">
             <span>Lihat detail</span>
             <ArrowRight className="w-4 h-4" />
           </span>

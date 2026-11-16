@@ -26,6 +26,8 @@ export function GarmentRotator({
 }: GarmentRotatorProps) {
   const [spinDeg, setSpinDeg] = useState(viewAngle === 'back' ? 180 : 0);
   const [isDragging, setIsDragging] = useState(false);
+  const spinDegRef = useRef(spinDeg);
+  spinDegRef.current = spinDeg;
   const dragStartX = useRef(0);
   const dragStartDeg = useRef(0);
 
@@ -35,21 +37,28 @@ export function GarmentRotator({
     item.side
   );
 
-  // Sinkronisasi saat tab sudut diklik
+  // Sinkronisasi mulus ke kelipatan 180° terdekat saat tab sudut diklik
   React.useEffect(() => {
-    if (viewAngle === 'side-left') {
-      setSpinDeg(0);
-    } else if (viewAngle === 'back') {
-      setSpinDeg(180);
+    const cur = spinDegRef.current;
+    const baseTurn = Math.round(cur / 360) * 360;
+    if (viewAngle === 'back') {
+      const candPos = baseTurn + 180;
+      const candNeg = baseTurn - 180;
+      setSpinDeg(Math.abs(cur - candPos) <= Math.abs(cur - candNeg) ? candPos : candNeg);
     } else {
-      setSpinDeg(0);
+      setSpinDeg(baseTurn);
     }
   }, [viewAngle]);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     setIsDragging(true);
     dragStartX.current = e.clientX;
-    dragStartDeg.current = spinDeg;
+    dragStartDeg.current = spinDegRef.current;
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      // Abaikan jika event sintetis tidak mendukung pointer capture
+    }
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
@@ -58,40 +67,59 @@ export function GarmentRotator({
     setSpinDeg(dragStartDeg.current + dx * 0.85);
   };
 
-  const handlePointerUp = (e: React.PointerEvent) => {
+  const finishDrag = (e: React.PointerEvent, cancelled = false) => {
     if (!isDragging) return;
     setIsDragging(false);
+    try {
+      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      }
+    } catch {
+      // Abaikan
+    }
+
     const moved = Math.abs(e.clientX - dragStartX.current);
 
-    // Jika hanya klik ringan (moved < 6px): flip front/back
-    if (moved < 6) {
+    // Jika hanya klik ringan (moved < 6px): flip depan/belakang
+    if (!cancelled && moved < 6) {
       const nextAngle = viewAngle === 'front' ? 'back' : 'front';
       onAngleChange(nextAngle);
-      setSpinDeg(nextAngle === 'back' ? 180 : 0);
       onPlaySound('flip');
       return;
     }
 
-    // Normalisasi snap ke 0° (Depan) atau 180° (Belakang)
-    const normalized = ((spinDeg % 360) + 360) % 360;
-    if (normalized > 90 && normalized < 270) {
-      setSpinDeg(180);
-      onAngleChange('back');
-    } else {
-      setSpinDeg(0);
-      onAngleChange('front');
+    // Snap ke kelipatan 180° terdekat agar tidak berputar 360° balik arah
+    const nearestStep = Math.round(spinDegRef.current / 180);
+    const targetDeg = nearestStep * 180;
+    const isBack = Math.abs(nearestStep % 2) === 1;
+    setSpinDeg(targetDeg);
+    onAngleChange(isBack ? 'back' : 'front');
+    if (!cancelled) {
+      onPlaySound('flip');
     }
-    onPlaySound('flip');
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      const nextAngle = viewAngle === 'front' ? 'back' : 'front';
+      onAngleChange(nextAngle);
+      onPlaySound('flip');
+    }
   };
 
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-label={`${item.name} — tekan untuk membalik tampilan depan dan belakang`}
+      onKeyDown={handleKeyDown}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerUp}
+      onPointerUp={(e) => finishDrag(e, false)}
+      onPointerCancel={(e) => finishDrag(e, true)}
       title="Geser atau ketuk baju untuk lihat sisi depan & belakang"
-      className="relative z-10 w-full max-w-[380px] sm:max-w-[420px] md:max-w-[460px] lg:max-w-[540px] xl:max-w-[580px] h-[365px] sm:h-[400px] md:h-[440px] lg:h-[clamp(385px,61dvh,540px)] lg:max-h-[calc(100dvh-176px)] xl:h-[clamp(420px,64dvh,580px)] flex flex-col items-center justify-center cursor-grab active:cursor-grabbing [perspective:1200px] select-none touch-pan-y"
+      className="relative z-10 w-full max-w-[380px] sm:max-w-[420px] md:max-w-[460px] lg:max-w-[540px] xl:max-w-[580px] h-[365px] sm:h-[400px] md:h-[440px] lg:h-[clamp(385px,61dvh,540px)] lg:max-h-[calc(100dvh-176px)] xl:h-[clamp(420px,64dvh,580px)] flex flex-col items-center justify-center cursor-grab active:cursor-grabbing [perspective:1200px] select-none touch-pan-y focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 rounded-3xl"
     >
       {/* 1. Kait Gantungan Atas (Disembunyikan jika foto custom punya gantungan sendiri - tanpa pop-up tooltip) */}
       {!hasOwnHanger && (

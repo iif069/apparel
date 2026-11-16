@@ -10,7 +10,7 @@ import { HangerRack } from '@/components/HangerRack';
 import { DetailStage } from '@/components/DetailStage';
 import { CustomCatalogModal } from '@/components/CustomCatalogModal';
 import { CatalogPreloader } from '@/components/CatalogPreloader';
-import { collectCatalogImageUrls, preloadAllCatalogImages } from '@/lib/preloadCatalog';
+import { collectSplitCatalogImageUrls, preloadAllCatalogImages } from '@/lib/preloadCatalog';
 import { getWhatsAppUrl } from '@/config/store';
 
 export default function HomePage() {
@@ -71,13 +71,13 @@ export default function HomePage() {
     }
   }, []);
 
-  // 2. Unduh dan decode seluruh gambar katalog sebelum masuk halaman utama
+  // 2. Muat gambar utama rak aktif terlebih dahulu, lalu lanjutkan aset lain di latar belakang
   useEffect(() => {
     let cancelled = false;
-    const urls = collectCatalogImageUrls(INITIAL_CATEGORIES, 'kaos');
-    setPreloadProgress({ loaded: 0, total: urls.length });
+    const { primary, secondary } = collectSplitCatalogImageUrls(INITIAL_CATEGORIES, 'kaos');
+    setPreloadProgress({ loaded: 0, total: primary.length });
 
-    preloadAllCatalogImages(urls, (loaded, total) => {
+    preloadAllCatalogImages(primary, (loaded, total) => {
       if (!cancelled) {
         setPreloadProgress({ loaded, total });
       }
@@ -86,6 +86,9 @@ export default function HomePage() {
       requestAnimationFrame(() => {
         if (!cancelled) {
           setIsCatalogReady(true);
+          if (secondary.length > 0) {
+            preloadAllCatalogImages(secondary);
+          }
         }
       });
     });
@@ -279,9 +282,12 @@ export default function HomePage() {
       />
 
       <main
-        aria-hidden={!isCatalogReady}
+        aria-hidden={!isCatalogReady || isDetailOpen || isCustomModalOpen}
+        inert={isDetailOpen || isCustomModalOpen ? true : undefined}
         className="min-h-[100dvh] w-full bg-page flex flex-col relative overflow-x-hidden select-none md:select-auto"
       >
+        <h1 className="sr-only">MIG Apparel — Katalog Gantungan Interaktif</h1>
+
         {/* 1. Bar Atas (Header Toko & Kategori) */}
         <Topbar
           currentCategory={currentCategory}
@@ -310,44 +316,48 @@ export default function HomePage() {
           onToggleFlash={handleToggleFlash}
           onPlaySound={playSound}
         />
-
-        {/* 3. Modal / Halaman Detail Produk (Stage 2) */}
-        <DetailStage
-          isOpen={isDetailOpen}
-          onClose={handleCloseDetail}
-          categoryData={activeCategoryData}
-          itemIndex={activeSlotIndex}
-          onSelectIndex={setActiveSlotIndex}
-          customPhotos={customPhotos}
-          isFlashActive={isFlashActive}
-          onToggleFlash={handleToggleFlash}
-          onOrderViaWhatsApp={handleOrderViaWhatsApp}
-          onPlaySound={playSound}
-        />
-
-        {/* 4. Modal Atur Katalog (Khusus Mode Admin) */}
-        <CustomCatalogModal
-          isOpen={isCustomModalOpen}
-          onClose={() => setIsCustomModalOpen(false)}
-          categoryData={activeCategoryData}
-          customPhotos={customPhotos}
-          customCategories={customCategories}
-          onSaveCustom={handleSaveCustom}
-          onResetCustom={handleResetCustom}
-        />
-
-        {/* Toast Notifikasi Mode Rahasia */}
-        {toast && (
-          <div className="fixed top-18 md:top-6 left-1/2 -translate-x-1/2 z-[100] px-4 py-2 rounded-2xl bg-ink/95 text-surface border border-line/20 shadow-float flex items-center gap-2 text-xs sm:text-[13px] font-semibold whitespace-nowrap backdrop-blur-md transition-all">
-            {toast.icon === 'unlock' ? (
-              <Unlock className="w-3.5 h-3.5 text-brand-soft shrink-0" />
-            ) : (
-              <Lock className="w-3.5 h-3.5 text-surface/60 shrink-0" />
-            )}
-            <span>{toast.text}</span>
-          </div>
-        )}
       </main>
+
+      {/* 3. Modal / Halaman Detail Produk (Stage 2) */}
+      <DetailStage
+        isOpen={isDetailOpen}
+        onClose={handleCloseDetail}
+        categoryData={activeCategoryData}
+        itemIndex={activeSlotIndex}
+        onSelectIndex={setActiveSlotIndex}
+        customPhotos={customPhotos}
+        isFlashActive={isFlashActive}
+        onToggleFlash={handleToggleFlash}
+        onOrderViaWhatsApp={handleOrderViaWhatsApp}
+        onPlaySound={playSound}
+      />
+
+      {/* 4. Modal Atur Katalog (Khusus Mode Admin) */}
+      <CustomCatalogModal
+        isOpen={isCustomModalOpen}
+        onClose={() => setIsCustomModalOpen(false)}
+        categoryData={activeCategoryData}
+        customPhotos={customPhotos}
+        customCategories={customCategories}
+        onSaveCustom={handleSaveCustom}
+        onResetCustom={handleResetCustom}
+      />
+
+      {/* Toast Notifikasi Mode Rahasia */}
+      {toast && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed top-3 md:top-6 left-1/2 -translate-x-1/2 z-[100] px-4 py-2 rounded-2xl bg-ink/95 text-surface border border-line/20 shadow-float flex items-center gap-2 text-xs sm:text-[13px] font-semibold whitespace-nowrap backdrop-blur-md transition-all"
+        >
+          {toast.icon === 'unlock' ? (
+            <Unlock className="w-3.5 h-3.5 text-brand-soft shrink-0" />
+          ) : (
+            <Lock className="w-3.5 h-3.5 text-surface/60 shrink-0" />
+          )}
+          <span>{toast.text}</span>
+        </div>
+      )}
     </>
   );
 }

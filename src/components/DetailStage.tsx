@@ -31,6 +31,7 @@ import { STORE_CONFIG, getWhatsAppUrl } from '@/config/store';
 import { GarmentRotator } from './GarmentRotator';
 import { AngleTabs } from './AngleTabs';
 import { OrderBottomBar } from './OrderBottomBar';
+import { WhatsAppIcon } from './WhatsAppIcon';
 
 const DETAIL_ICON_MAP: Record<DetailIconName, LucideIcon> = {
   graduation: GraduationCap,
@@ -49,13 +50,6 @@ const DETAIL_ICON_MAP: Record<DetailIconName, LucideIcon> = {
   shield: ShieldCheck,
   palette: Palette,
 };
-
-// SVG Resmi WhatsApp seragam (monokrom mengikuti currentColor)
-const WhatsAppIcon = ({ className = 'w-4 h-4 flex-shrink-0' }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2ZM12.04 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.16 12.04 20.16C10.66 20.16 9.3 19.81 8.1 19.14L7.54 18.82L4.43 19.64L5.26 16.6L4.91 16.03C4.18 14.77 3.8 13.35 3.8 11.91C3.8 7.37 7.5 3.67 12.04 3.67ZM8.73 7.34C8.54 7.34 8.35 7.35 8.17 7.73C7.99 8.12 7.45 8.63 7.45 9.69C7.45 10.74 8.22 11.75 8.33 11.9C8.44 12.05 9.8 14.23 11.94 15.07C13.72 15.77 14.08 15.63 14.47 15.59C14.85 15.55 15.71 15.08 15.89 14.57C16.07 14.06 16.07 13.63 16.01 13.54C15.96 13.45 15.81 13.4 15.58 13.28C15.35 13.17 14.23 12.62 14.02 12.54C13.81 12.47 13.66 12.43 13.51 12.66C13.36 12.89 12.93 13.4 12.8 13.55C12.67 13.71 12.54 13.73 12.31 13.61C12.08 13.5 11.35 13.26 10.47 12.48C9.79 11.87 9.33 11.12 9.2 10.89C9.07 10.66 9.18 10.54 9.3 10.42C9.4 10.32 9.53 10.15 9.65 10.01C9.76 9.87 9.8 9.77 9.88 9.62C9.96 9.46 9.92 9.33 9.86 9.22C9.8 9.11 9.35 7.99 9.16 7.54C8.98 7.1 8.79 7.16 8.73 7.34Z" />
-  </svg>
-);
 
 interface DetailStageProps {
   isOpen: boolean;
@@ -86,7 +80,6 @@ export function DetailStage({
   onPlaySound,
 }: DetailStageProps) {
   const [viewAngle, setViewAngle] = useState<ViewAngle>('front');
-  const [colorPickerOpen, setColorPickerOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHeaderHidden, setIsHeaderHidden] = useState(false);
   const [shouldRender, setShouldRender] = useState(isOpen);
@@ -94,6 +87,8 @@ export function DetailStage({
 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const lastScrollTopRef = useRef(0);
+  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const items = categoryData.rack;
   const currentItem = items[itemIndex] || items[0];
@@ -102,9 +97,10 @@ export function DetailStage({
   const colorName = custom?.colorName || currentItem?.colorName;
   const detailCopy = CATEGORY_DETAILS[categoryData.id] || CATEGORY_DETAILS.kaos;
 
-  // Transisi halus saat membuka & menutup halaman detail
+  // Transisi halus saat membuka & menutup halaman detail + kelola fokus aksesibilitas
   useEffect(() => {
     if (isOpen) {
+      previousFocusRef.current = document.activeElement as HTMLElement | null;
       setShouldRender(true);
       let raf2 = 0;
       const raf1 = requestAnimationFrame(() => {
@@ -120,10 +116,18 @@ export function DetailStage({
       setIsVisible(false);
       const timer = setTimeout(() => {
         setShouldRender(false);
+        previousFocusRef.current?.focus?.({ preventScroll: true });
       }, 260);
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
+
+  // Pindahkan fokus setelah aria-hidden sudah dilepas pada render DOM
+  useEffect(() => {
+    if (isVisible) {
+      backButtonRef.current?.focus({ preventScroll: true });
+    }
+  }, [isVisible]);
 
   // Reset scroll saat item berganti
   useEffect(() => {
@@ -134,7 +138,6 @@ export function DetailStage({
     setIsScrolled(false);
     setIsHeaderHidden(false);
     setViewAngle('front');
-    setColorPickerOpen(false);
   }, [itemIndex, isOpen]);
 
   // Tutup detail dengan tombol Escape
@@ -194,7 +197,7 @@ export function DetailStage({
   };
 
   // Kartu Identitas Model & Pilihan Warna di Gantungan (tanpa harga & tanpa ukuran)
-  const renderIdentityCard = (titleClass: string, swatchColsClass: string) => (
+  const renderIdentityCard = (titleClass: string) => (
     <div className="bg-surface border border-line rounded-[28px] p-5 sm:p-6 flex flex-col gap-4 shadow-soft">
       {/* Badge Status */}
       <div className="flex items-center gap-1.5 flex-wrap">
@@ -210,33 +213,26 @@ export function DetailStage({
       {/* Judul & Keterangan Singkat */}
       <div>
         <h2 className={`${titleClass} font-bold text-ink tracking-tight`}>{productName}</h2>
-        <p className="text-[14px] text-muted mt-1.5 leading-relaxed">{categoryData.subtitle}</p>
+        <p className="text-[14px] text-muted mt-1.5 leading-relaxed">
+          {categoryData.kicker} · Warna, gambar, dan tulisan bebas disesuaikan kebutuhan acara kamu.
+        </p>
       </div>
 
       {/* Pilihan Warna / Model di Gantungan */}
-      <div className="flex flex-col gap-2 pt-3 border-t border-line">
-        <span className="text-[13.5px] font-semibold text-ink">Warna di gantungan</span>
-        <div className="flex items-center justify-between py-2 px-4 bg-page rounded-full border border-line">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <span
-              className="w-5 h-5 rounded-full border border-line shadow-inner flex-shrink-0"
-              style={{ backgroundColor: currentItem.hex }}
-            />
-            <span className="text-[14px] font-medium text-ink truncate">{colorName}</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              setColorPickerOpen((prev) => !prev);
-              onPlaySound('click');
-            }}
-            className="min-h-[44px] px-4 py-1.5 rounded-full bg-surface border border-line text-[12.5px] font-semibold hover:bg-page press-active flex-shrink-0 cursor-pointer"
-          >
-            {colorPickerOpen ? 'Tutup' : 'Ganti'}
-          </button>
+      <div className="flex flex-col gap-2.5 pt-3 border-t border-line">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[13.5px] font-semibold text-ink">Warna di gantungan</span>
+          <span className="text-[12px] font-medium text-muted tabular-nums">{counterText}</span>
+        </div>
+        <div className="flex items-center gap-2.5 py-2.5 px-4 bg-page rounded-full border border-line min-w-0">
+          <span
+            className="w-5 h-5 rounded-full border border-line shadow-inner flex-shrink-0"
+            style={{ backgroundColor: currentItem.hex }}
+          />
+          <span className="text-[14px] font-medium text-ink truncate">{colorName}</span>
         </div>
 
-        {/* Pilihan Warna Cepat (Langsung Terlihat) */}
+        {/* Pilihan Warna Cepat (Langsung Terlihat, Target Sentuh 44px) */}
         {items.length > 1 && (
           <div className="flex items-center gap-2 flex-wrap pt-1" role="group" aria-label="Pilih warna cepat">
             {items.map((it, idx) => {
@@ -266,29 +262,6 @@ export function DetailStage({
                 </button>
               );
             })}
-          </div>
-        )}
-
-        {/* Swatches Pilihan Warna Lainnya */}
-        {colorPickerOpen && (
-          <div className={`grid ${swatchColsClass} gap-2 p-3 bg-surface border border-line rounded-[22px] mt-1`}>
-            {items.map((it, idx) => (
-              <button
-                key={it.id}
-                type="button"
-                onClick={() => {
-                  onSelectIndex(idx);
-                  setColorPickerOpen(false);
-                  onPlaySound('flip');
-                }}
-                className={`flex items-center gap-2 px-3 py-2 rounded-full text-left transition-all cursor-pointer ${
-                  idx === itemIndex ? 'bg-brand-soft border border-brand/50' : 'hover:bg-page border border-transparent'
-                }`}
-              >
-                <span className="w-4 h-4 rounded-full border border-line flex-shrink-0" style={{ backgroundColor: it.hex }} />
-                <span className="text-[12.5px] font-medium text-ink truncate">{it.colorName}</span>
-              </button>
-            ))}
           </div>
         )}
       </div>
@@ -359,7 +332,7 @@ export function DetailStage({
         type="button"
         onClick={handleStageToggleFlash}
         aria-pressed={isFlashActive}
-        className={`press inline-flex items-center gap-2 min-h-[44px] px-4 py-2 rounded-full text-[13px] font-bold border transition-all cursor-pointer shadow-xs ${
+        className={`press inline-flex items-center gap-2 min-h-[44px] px-4 py-2 rounded-full text-[13px] font-bold border transition-all cursor-pointer shadow-sm ${
           isFlashActive
             ? 'bg-ink text-surface border-ink shadow-soft'
             : 'bg-surface text-ink border-line hover:border-brand/50 hover:text-brand'
@@ -393,7 +366,14 @@ export function DetailStage({
             {categoryData.id === 'kaos'
               ? 'Pesan mulai 1 pcs hingga ratusan pcs — '
               : 'Pesan mulai 6 pcs hingga ratusan pcs — '}
-            <span className="font-medium text-brand">cek estimasi harga gratis via WA.</span>
+            <a
+              href={getWhatsAppUrl(`Halo MIG Digital Printing, saya mau tanya estimasi harga ${categoryData.tabLabel} (${productName})`)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-brand underline decoration-brand/40 underline-offset-2 hover:text-brand-hover"
+            >
+              cek estimasi harga gratis via WA.
+            </a>
           </p>
         </div>
       </div>
@@ -413,9 +393,9 @@ export function DetailStage({
     <section
       role="dialog"
       aria-modal="true"
-      aria-hidden={!isVisible}
-      aria-label="Detail pakaian"
-      className={`fixed inset-0 z-50 bg-page flex flex-col w-full h-[100dvh] overflow-hidden transition-opacity duration-250 ease-out motion-reduce:transition-none ${
+      aria-hidden={!isVisible ? true : undefined}
+      aria-label={`Detail ${productName}`}
+      className={`fixed inset-0 z-50 bg-page flex flex-col w-full h-[100dvh] overflow-hidden transition-opacity duration-[250ms] ease-out motion-reduce:transition-none ${
         isVisible
           ? 'opacity-100 pointer-events-auto'
           : 'opacity-0 pointer-events-none'
@@ -437,9 +417,10 @@ export function DetailStage({
           {/* Tombol Kembali ke Rak */}
           <div className="flex items-center gap-2.5">
             <button
+              ref={backButtonRef}
               type="button"
               onClick={onClose}
-              className="press w-11 h-11 rounded-full bg-white/45 lg:bg-surface border border-white/70 lg:border-line lg:shadow-xs flex items-center justify-center hover:bg-white/75 lg:hover:bg-surface text-ink transition-colors cursor-pointer"
+              className="press w-11 h-11 rounded-full bg-white/45 lg:bg-surface border border-white/70 lg:border-line lg:shadow-sm flex items-center justify-center hover:bg-white/75 lg:hover:bg-surface text-ink transition-colors cursor-pointer"
               aria-label="Kembali ke rak"
               title="Kembali ke rak"
             >
@@ -500,7 +481,7 @@ export function DetailStage({
             href={getWhatsAppUrl(`Halo MIG Digital Printing, saya mau tanya dan konsultasi ${categoryData.tabLabel} (${productName})`)}
             target="_blank"
             rel="noopener noreferrer"
-            className="press flex items-center justify-center gap-2 h-11 px-4 rounded-full bg-white/45 lg:bg-surface text-ink border border-white/70 lg:border-line hover:bg-white/75 lg:hover:border-brand/40 lg:shadow-xs transition-colors cursor-pointer shrink-0 whitespace-nowrap"
+            className="press flex items-center justify-center gap-2 h-11 px-4 rounded-full bg-white/45 lg:bg-surface text-ink border border-white/70 lg:border-line hover:bg-white/75 lg:hover:border-brand/40 lg:shadow-sm transition-colors cursor-pointer shrink-0 whitespace-nowrap"
             aria-label="Hubungi WhatsApp CS"
           >
             <WhatsAppIcon className="w-4 h-4 flex-shrink-0" />
@@ -518,11 +499,11 @@ export function DetailStage({
         {/* ========================================================================= */}
         {/* A. TAMPILAN KHUSUS HP / TABLET (lg:hidden)                               */}
         {/* ========================================================================= */}
-        <div className="lg:hidden w-full max-w-[720px] mx-auto px-4 md:px-7 pt-[78px] md:pt-[86px] pb-[136px] flex flex-col gap-4">
+        <div className="lg:hidden w-full max-w-[720px] mx-auto px-4 md:px-7 pt-[78px] md:pt-[86px] pb-[calc(132px+env(safe-area-inset-bottom))] flex flex-col gap-4">
           {/* Panggung Baju 3D Mobile */}
           <div className="relative z-10 bg-page w-full px-0 pt-1 pb-2 flex flex-col items-center">
             <div
-              className={`relative w-full flex justify-center transition-all duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+              className={`relative w-full flex justify-center transition-all duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
                 isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-[0.86] translate-y-3'
               }`}
             >
@@ -554,11 +535,11 @@ export function DetailStage({
           </div>
 
           <div
-            className={`flex flex-col gap-4 transition-all duration-350 ease-out motion-reduce:transition-none ${
+            className={`flex flex-col gap-4 transition-all duration-[350ms] ease-out motion-reduce:transition-none ${
               isVisible ? 'opacity-100 translate-y-0 delay-[200ms]' : 'opacity-0 translate-y-5 delay-0'
             }`}
           >
-            {renderIdentityCard('text-xl', 'grid-cols-2 sm:grid-cols-3')}
+            {renderIdentityCard('text-xl')}
             {renderAudienceCard()}
             {renderReasonsCard()}
             {renderVendorTrustCard()}
@@ -568,21 +549,21 @@ export function DetailStage({
         {/* ========================================================================= */}
         {/* B. TAMPILAN KHUSUS DESKTOP (hidden lg:grid) - SCROLL MANDIRI KIRI & KANAN, TENGAH FIXED */}
         {/* ========================================================================= */}
-        <div className="hidden lg:grid grid-cols-[340px_1fr_360px] xl:grid-cols-[370px_1fr_390px] gap-6 xl:gap-8 items-start w-full max-w-[1400px] mx-auto flex-1 h-full min-h-0 px-7 py-3">
+        <div className="hidden lg:grid grid-cols-[300px_1fr_310px] xl:grid-cols-[360px_1fr_380px] gap-5 xl:gap-8 items-start w-full max-w-[1400px] mx-auto flex-1 h-full min-h-0 px-7 py-3">
           {/* 1. KOLOM KIRI (SCROLL MANDIRI) */}
           <div
             className={`h-full overflow-y-auto pr-2 pb-6 flex flex-col gap-4 min-h-0 thin-scrollbar transition-all duration-300 ease-out motion-reduce:transition-none ${
               isVisible ? 'opacity-100 translate-y-0 delay-[120ms]' : 'opacity-0 translate-y-4 delay-0'
             }`}
           >
-            {renderIdentityCard('text-2xl', 'grid-cols-2')}
+            {renderIdentityCard('text-2xl')}
             {renderAudienceCard()}
           </div>
 
           {/* 2. KOLOM TENGAH: PRODUK FIXED DI TENGAH (TANPA SCROLL) */}
           <div className="h-full flex flex-col items-center justify-center select-none py-1 min-h-0">
             <div
-              className={`relative w-full flex justify-center transition-all duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+              className={`relative w-full flex justify-center transition-all duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
                 isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-90 translate-y-3'
               }`}
             >
@@ -628,7 +609,7 @@ export function DetailStage({
             {renderVendorTrustCard()}
 
             <div
-              className={`sticky bottom-0 z-20 mt-auto pt-1.5 pb-1 pointer-events-none transition-[opacity,transform] duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+              className={`sticky bottom-0 z-20 mt-auto pt-1.5 pb-1 pointer-events-none transition-[opacity,transform] duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
                 isVisible ? 'opacity-100 delay-[280ms]' : 'opacity-0 translate-y-6 delay-0'
               }`}
             >
@@ -658,7 +639,7 @@ export function DetailStage({
           onOrderViaWhatsApp={handleWhatsAppClick}
           variant="floating"
           helperText="Gratis lihat contoh desain sebelum dicetak"
-          className={`transition-[opacity,transform] duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+          className={`transition-[opacity,transform] duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
             isVisible ? 'opacity-100 delay-[280ms]' : 'opacity-0 translate-y-6 delay-0'
           }`}
         />

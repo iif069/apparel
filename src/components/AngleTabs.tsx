@@ -22,13 +22,25 @@ export function AngleTabs({
     { angle: 'back', label: 'Belakang' },
   ];
 
+  const handleKeyDown = (e: React.KeyboardEvent, idx: number) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      const nextIdx =
+        e.key === 'ArrowRight'
+          ? (idx + 1) % tabs.length
+          : (idx - 1 + tabs.length) % tabs.length;
+      onPlaySound?.('flip');
+      onSelectAngle(tabs[nextIdx].angle);
+    }
+  };
+
   return (
     <div
-      role="tablist"
+      role="group"
       aria-label="Sudut tampilan"
-      className={`inline-flex items-center justify-center gap-1.5 md:gap-2 p-1 bg-surface border border-line rounded-full shadow-sm ${className}`}
+      className={`inline-flex items-center justify-center gap-1 md:gap-1.5 xl:gap-2 p-1 bg-surface border border-line rounded-full shadow-sm ${className}`}
     >
-      {tabs.map((tab) => {
+      {tabs.map((tab, idx) => {
         const isActive =
           currentAngle === tab.angle || (tab.angle === 'side-left' && currentAngle.startsWith('side'));
 
@@ -36,13 +48,13 @@ export function AngleTabs({
           <button
             key={tab.angle}
             type="button"
-            role="tab"
-            aria-selected={isActive}
+            aria-pressed={isActive}
+            onKeyDown={(e) => handleKeyDown(e, idx)}
             onClick={() => {
               onPlaySound?.('flip');
               onSelectAngle(tab.angle);
             }}
-            className={`min-w-[78px] md:min-w-[96px] min-h-[44px] h-11 px-3.5 md:px-4 rounded-full text-[12.5px] md:text-[13px] font-semibold transition-all press-active cursor-pointer ${
+            className={`min-w-[76px] md:min-w-[88px] lg:min-w-[80px] xl:min-w-[96px] min-h-[44px] h-11 px-3 md:px-3.5 xl:px-4 rounded-full text-[12.5px] md:text-[13px] font-semibold transition-all press-active cursor-pointer ${
               isActive
                 ? 'bg-ink text-surface shadow-sm'
                 : 'text-ink/70 hover:text-ink hover:bg-page'

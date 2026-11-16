@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Upload, RotateCcw, Check, Copy, CloudUpload, Loader2, Eye, EyeOff, KeyRound } from 'lucide-react';
 import { GarmentItem, CategoryData, CustomPhotoData, CustomCategoryData } from '@/types';
 import { INITIAL_CATEGORIES } from '@/data/catalog';
@@ -43,6 +43,8 @@ export function CustomCatalogModal({
   const [showToken, setShowToken] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishStatus, setPublishStatus] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     try {
@@ -52,6 +54,27 @@ export function CustomCatalogModal({
       // Abaikan jika localStorage tidak tersedia
     }
   }, []);
+
+  // Kelola fokus & tombol Escape saat modal admin dibuka/ditutup
+  useEffect(() => {
+    if (!isOpen) return;
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    const raf = requestAnimationFrame(() => {
+      closeButtonRef.current?.focus({ preventScroll: true });
+    });
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('keydown', handleKeyDown);
+      previousFocusRef.current?.focus?.({ preventScroll: true });
+    };
+  }, [isOpen, onClose]);
 
   // Sinkronkan input & selectedItemId saat kategori atau produk berubah
   useEffect(() => {
@@ -200,22 +223,31 @@ export function CustomCatalogModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="custom-catalog-modal-title"
+      className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4"
+    >
       {/* Backdrop */}
       <div onClick={onClose} className="fixed inset-0 bg-ink/50 backdrop-blur-sm transition-opacity" />
 
       {/* Modal Dialog */}
-      <div className="relative w-full max-w-[540px] bg-surface rounded-3xl shadow-float border border-line p-6 flex flex-col gap-5 z-10 max-h-[90vh] overflow-y-auto no-scrollbar">
+      <div className="relative w-full max-w-[540px] bg-surface rounded-3xl shadow-float border border-line p-6 flex flex-col gap-5 z-10 max-h-[90vh] overflow-y-auto thin-scrollbar">
         {/* Header Modal */}
         <div className="flex items-center justify-between pb-3 border-b border-line">
           <div>
-            <h2 className="text-lg font-bold text-ink">Atur Katalog Produk</h2>
+            <h2 id="custom-catalog-modal-title" className="text-lg font-bold text-ink">
+              Atur Katalog Produk
+            </h2>
             <p className="text-[12px] text-ink/60">Sesuaikan foto asli, nama, harga, dan judul kategori</p>
           </div>
           <button
+            ref={closeButtonRef}
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full border border-line flex items-center justify-center text-ink/60 hover:bg-page press-active"
+            aria-label="Tutup modal atur katalog"
+            className="w-11 h-11 rounded-full border border-line flex items-center justify-center text-ink/60 hover:bg-page press-active cursor-pointer shrink-0"
           >
             <X className="w-4 h-4" />
           </button>
@@ -408,22 +440,32 @@ export function CustomCatalogModal({
             <button
               type="button"
               onClick={onResetCustom}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-full text-[12px] font-semibold text-red-600 hover:bg-red-50 press-active"
+              className="flex items-center gap-1.5 min-h-[44px] px-3.5 py-2 rounded-full text-[12px] font-semibold text-red-600 hover:bg-red-50 press-active"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Reset</span>
             </button>
             <button
               type="button"
-              onClick={() => {
+              onClick={async () => {
                 const config = {
                   photos: customPhotos,
                   categories: customCategories,
                 };
-                navigator.clipboard.writeText(JSON.stringify(config, null, 2));
-                alert('Konfigurasi berhasil disalin ke clipboard!');
+                try {
+                  await navigator.clipboard.writeText(JSON.stringify(config, null, 2));
+                  setPublishStatus({
+                    type: 'success',
+                    text: 'Konfigurasi JSON berhasil disalin ke clipboard.',
+                  });
+                } catch {
+                  setPublishStatus({
+                    type: 'error',
+                    text: 'Gagal menyalin JSON. Izinkan akses clipboard di browser.',
+                  });
+                }
               }}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-full text-[12px] font-semibold text-muted hover:text-ink hover:bg-page press-active"
+              className="flex items-center gap-1.5 min-h-[44px] px-3.5 py-2 rounded-full text-[12px] font-semibold text-muted hover:text-ink hover:bg-page press-active"
               title="Salin data JSON untuk dijadikan permanen ke kode"
             >
               <Copy className="w-3.5 h-3.5" />
@@ -435,7 +477,7 @@ export function CustomCatalogModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-full text-[12.5px] font-semibold bg-page text-ink hover:bg-line press-active"
+              className="min-h-[44px] px-4 py-2 rounded-full text-[12.5px] font-semibold bg-page text-ink hover:bg-line press-active"
             >
               Batal
             </button>
@@ -443,7 +485,7 @@ export function CustomCatalogModal({
               type="button"
               onClick={handleSave}
               disabled={isPublishing}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-[12.5px] font-semibold bg-surface border border-line text-ink hover:border-brand/40 press-active disabled:opacity-50"
+              className="flex items-center gap-1.5 min-h-[44px] px-4 py-2 rounded-full text-[12.5px] font-semibold bg-surface border border-line text-ink hover:border-brand/40 press-active disabled:opacity-50"
             >
               <Check className="w-3.5 h-3.5" />
               <span>Simpan Lokal</span>
@@ -452,7 +494,7 @@ export function CustomCatalogModal({
               type="button"
               onClick={handlePublishToGitHub}
               disabled={isPublishing}
-              className="flex items-center gap-1.5 px-5 py-2 rounded-full text-[12.5px] font-bold bg-brand text-surface hover:bg-brand-hover shadow-sm press-active disabled:opacity-60"
+              className="flex items-center gap-1.5 min-h-[44px] px-5 py-2 rounded-full text-[12.5px] font-bold bg-brand text-surface hover:bg-brand-hover shadow-sm press-active disabled:opacity-60"
             >
               {isPublishing ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

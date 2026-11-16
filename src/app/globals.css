@@ -432,8 +432,21 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cta-loop-ring {
-    animation: none;
+  .cta-loop-ring,
+  .animate-hanger-idle-a,
+  .animate-hanger-idle-b,
+  .animate-sway-right,
+  .animate-sway-right-alt,
+  .animate-sway-left,
+  .animate-sway-left-alt,
+  .animate-sway-soft-right,
+  .animate-sway-soft-left,
+  .animate-music-bar-1,
+  .animate-music-bar-2,
+  .animate-music-bar-3,
+  .animate-bump,
+  .reflective-print-lit {
+    animation: none !important;
   }
 }
 

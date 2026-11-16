@@ -69,7 +69,7 @@ export function GarmentSVG({
         <img
           src={item.front}
           alt={`${item.name} tampak depan`}
-          className={`w-auto max-w-full h-full object-contain object-top transition-all duration-250 ${
+          className={`w-auto max-w-full h-full object-contain object-top transition-all duration-[250ms] ${
             showFlashPhoto
               ? 'opacity-0'
               : showReflectiveOverlay
@@ -81,7 +81,7 @@ export function GarmentSVG({
           <img
             src={item.flashFront}
             alt={`${item.name} tampak depan efek flash`}
-            className={`pointer-events-none absolute inset-0 w-full h-full object-contain object-top transition-opacity duration-250 ${
+            className={`pointer-events-none absolute inset-0 w-full h-full object-contain object-top transition-opacity duration-[250ms] ${
               showFlashPhoto ? 'opacity-100' : 'opacity-0'
             }`}
           />
@@ -91,7 +91,7 @@ export function GarmentSVG({
             src={item.reflectiveFront}
             alt=""
             aria-hidden="true"
-            className={`pointer-events-none absolute inset-0 w-full h-full object-contain object-top mix-blend-screen transition-opacity duration-250 ${
+            className={`pointer-events-none absolute inset-0 w-full h-full object-contain object-top mix-blend-screen transition-opacity duration-[250ms] ${
               showReflectiveOverlay ? 'opacity-95 reflective-print-lit' : 'opacity-0'
             }`}
           />
@@ -109,7 +109,7 @@ export function GarmentSVG({
         <img
           src={backSrc}
           alt={`${item.name} tampak belakang`}
-          className={`w-auto max-w-full h-full object-contain object-top transition-all duration-250 ${
+          className={`w-auto max-w-full h-full object-contain object-top transition-all duration-[250ms] ${
             showFlashPhoto
               ? 'opacity-0'
               : showReflectiveOverlay
@@ -121,7 +121,7 @@ export function GarmentSVG({
           <img
             src={item.flashBack}
             alt={`${item.name} tampak belakang efek flash`}
-            className={`pointer-events-none absolute inset-0 w-full h-full object-contain object-top transition-opacity duration-250 ${
+            className={`pointer-events-none absolute inset-0 w-full h-full object-contain object-top transition-opacity duration-[250ms] ${
               showFlashPhoto ? 'opacity-100' : 'opacity-0'
             }`}
           />
@@ -131,7 +131,7 @@ export function GarmentSVG({
             src={reflectiveBackSrc}
             alt=""
             aria-hidden="true"
-            className={`pointer-events-none absolute inset-0 w-full h-full object-contain object-top mix-blend-screen transition-opacity duration-250 ${
+            className={`pointer-events-none absolute inset-0 w-full h-full object-contain object-top mix-blend-screen transition-opacity duration-[250ms] ${
               showReflectiveOverlay ? 'opacity-95 reflective-print-lit' : 'opacity-0'
             }`}
           />

@@ -51,7 +51,8 @@ export function BackgroundMusic({ soundEnabled }: BackgroundMusicProps) {
       type="button"
       onClick={toggleMusic}
       title={isPlaying ? 'Jeda Musik Latar' : 'Putar Musik Latar'}
-      className={`press shrink-0 whitespace-nowrap select-none flex items-center justify-center gap-1.5 sm:gap-2 h-10 md:h-11 px-3 sm:px-4 rounded-full bg-surface text-ink border transition-colors cursor-pointer shadow-xs ${
+      aria-pressed={isPlaying}
+      className={`press shrink-0 whitespace-nowrap select-none flex items-center justify-center gap-1.5 sm:gap-2 min-h-[44px] h-11 px-3 sm:px-4 rounded-full bg-surface text-ink border transition-colors cursor-pointer shadow-sm ${
         isPlaying
           ? 'border-brand/40 shadow-soft'
           : 'border-line hover:border-brand/40'
