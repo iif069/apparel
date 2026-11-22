@@ -22,6 +22,10 @@
   --shadow-glass: 0 8px 28px rgba(40, 14, 62, 0.14);
 }
 
+html {
+  scroll-padding-top: 72px;
+}
+
 body {
   background-color: var(--color-page);
   color: var(--color-ink);
@@ -61,7 +65,7 @@ body {
 .press {
   transition: transform 120ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.press:active {
+.press:not(:disabled):active {
   transform: scale(0.97);
 }
 
@@ -129,7 +133,7 @@ body {
 }
 
 /* Active Press Effect */
-.press-active:active {
+.press-active:not(:disabled):active {
   transform: scale(0.97);
   transition: transform 80ms ease-out;
 }
@@ -433,6 +437,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .cta-loop-ring,
+  .animate-pulse,
   .animate-hanger-idle-a,
   .animate-hanger-idle-b,
   .animate-sway-right,

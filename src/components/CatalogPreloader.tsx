@@ -33,11 +33,11 @@ export function CatalogPreloader({ loaded, total, isReady }: CatalogPreloaderPro
 
   const percentage = total > 0 ? Math.min(100, Math.round((loaded / total) * 100)) : isReady ? 100 : 0;
 
-  let statusText = 'Menyiapkan katalog pakaian...';
+  let statusText = 'Menyiapkan katalog pakaian…';
   if (isReady) {
     statusText = 'Katalog siap ditampilkan!';
   } else if (percentage >= 92) {
-    statusText = 'Menyiapkan tampilan rak...';
+    statusText = 'Menyiapkan tampilan rak…';
   } else if (total > 0) {
     statusText = `Mengunduh produk (${loaded}/${total})`;
   }

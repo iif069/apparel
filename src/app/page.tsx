@@ -154,6 +154,9 @@ export default function HomePage() {
   }, []);
 
   const handleOpenDetail = (idx: number) => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     setActiveSlotIndex(idx);
     setIsDetailOpen(true);
     try {
@@ -339,8 +342,8 @@ export default function HomePage() {
 
       <main
         aria-hidden={!isCatalogReady || isDetailOpen || isCustomModalOpen}
-        inert={isDetailOpen || isCustomModalOpen ? true : undefined}
-        className="min-h-[100dvh] w-full bg-page flex flex-col relative overflow-x-hidden select-none md:select-auto"
+        inert={!isCatalogReady || isDetailOpen || isCustomModalOpen ? true : undefined}
+        className="min-h-[100dvh] w-full bg-page flex flex-col relative overflow-x-hidden"
       >
         <h1 className="sr-only">MIG Apparel — Katalog Gantungan Interaktif</h1>
 

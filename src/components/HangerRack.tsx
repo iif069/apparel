@@ -3,7 +3,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { ArrowRight, Zap } from 'lucide-react';
 import { GarmentItem, CategoryData, CustomPhotoData, CategoryId } from '@/types';
-import { getWhatsAppUrl } from '@/config/store';
+import { STORE_CONFIG, getWhatsAppUrl } from '@/config/store';
 import { HangerHookSVG } from './HangerHookSVG';
 import { GarmentSVG } from './GarmentSVG';
 import { WhatsAppIcon } from './WhatsAppIcon';
@@ -277,7 +277,7 @@ export function HangerRack({
       {/* 1. Banner CTA Desain Custom di Atas Rak (Hanya Tampil di Mobile, Fokus Utama Ajakan ke WA) */}
       <div className="w-full px-4 pt-2.5 pb-1 z-20 flex justify-center flex-shrink-0 md:hidden">
         <a
-          href={getWhatsAppUrl('Halo MIG Digital Printing, saya mau konsultasi bikin desain custom apparel/jersey')}
+          href={getWhatsAppUrl(STORE_CONFIG.whatsapp.customDesignMessage)}
           target="_blank"
           rel="noopener noreferrer"
           onClick={() =>
@@ -531,7 +531,7 @@ export function HangerRack({
                       >
                         {/* SISI SAMPING (Tampil saat menyamping di rak) */}
                         <div
-                          className={`absolute inset-0 flex items-start justify-center transition-all duration-[250ms] ease-out origin-center ${
+                          className={`absolute inset-0 flex items-start justify-center transition-[opacity,transform] duration-[250ms] ease-out motion-reduce:transition-none origin-center ${
                             isDisplayFront
                               ? 'opacity-0 [transform:rotateY(-85deg)] pointer-events-none'
                               : 'opacity-100 [transform:rotateY(0deg)]'
@@ -553,7 +553,7 @@ export function HangerRack({
 
                         {/* SISI DEPAN (Berputar masuk saat aktif/di-hover, ukuran stabil tanpa melompat) */}
                         <div
-                          className={`absolute inset-0 flex items-start justify-center transition-all duration-300 ease-out origin-center ${
+                          className={`absolute inset-0 flex items-start justify-center transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none origin-center ${
                             isDisplayFront
                               ? 'opacity-100 [transform:rotateY(0deg)]'
                               : 'opacity-0 [transform:rotateY(85deg)] pointer-events-none'
@@ -602,10 +602,10 @@ export function HangerRack({
         </div>
 
         {/* Petunjuk interaksi & informasi bebas custom untuk pengunjung awam */}
-        <p className="md:hidden text-center text-[11.5px] font-medium text-muted/85 mt-1 px-4 select-none">
-          Contoh hasil produksi · Geser baju · Motif &amp; logo bebas custom
+        <p className="md:hidden text-center text-[12px] font-medium text-muted mt-1 px-4 select-none">
+          Contoh hasil produksi · Geser &amp; ketuk baju · Motif &amp; logo bebas custom
         </p>
-        <p className="hidden md:block text-center text-[12px] font-medium text-muted/80 mt-1 px-4 select-none">
+        <p className="hidden md:block text-center text-[12px] font-medium text-muted mt-1 px-4 select-none">
           Contoh hasil produksi · Arahkan kursor atau klik baju · Motif, logo &amp; tulisan bebas custom
         </p>
 
@@ -637,7 +637,7 @@ export function HangerRack({
       <footer className="relative w-full z-20 px-4 md:px-8 pt-1 pb-[max(20px,calc(16px+env(safe-area-inset-bottom)))] md:py-4 flex flex-col md:flex-row items-center justify-between gap-2.5 md:gap-3 max-w-[1340px] mx-auto flex-shrink-0">
         {/* Tombol CTA Desain Custom di Kiri Bawah (Satu-satunya CTA di Desktop, Selaras Desain Sistem) */}
         <a
-          href={getWhatsAppUrl('Halo MIG Digital Printing, saya mau konsultasi bikin desain custom apparel/jersey')}
+          href={getWhatsAppUrl(STORE_CONFIG.whatsapp.customDesignMessage)}
           target="_blank"
           rel="noopener noreferrer"
           onClick={() =>

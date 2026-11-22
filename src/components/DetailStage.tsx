@@ -8,6 +8,7 @@ import {
   Building2,
   ChevronLeft,
   ChevronRight,
+  Clock,
   Compass,
   Droplets,
   Gamepad2,
@@ -214,7 +215,7 @@ export function DetailStage({
       {/* Badge Status */}
       <div className="flex items-center gap-1.5 flex-wrap">
         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11.5px] font-semibold bg-brand-soft text-brand border border-brand/30">
-          <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse motion-reduce:animate-none" />
           Contoh hasil custom
         </span>
         <span className="px-2.5 py-1 rounded-full text-[11.5px] font-semibold bg-page text-ink/75 border border-line">
@@ -236,17 +237,17 @@ export function DetailStage({
           <span className="text-[13.5px] font-semibold text-ink">Sampel di gantungan</span>
           <span className="text-[12px] font-medium text-muted tabular-nums">{counterText}</span>
         </div>
-        <div className="flex items-center gap-2.5 py-2.5 px-4 bg-page rounded-full border border-line min-w-0">
+        <div className="flex items-center gap-2.5 py-2.5 px-4 bg-page rounded-3xl border border-line min-w-0">
           <span
             className="w-5 h-5 rounded-full border border-line shadow-inner flex-shrink-0"
             style={{ backgroundColor: currentItem.hex }}
           />
-          <span className="text-[14px] font-medium text-ink truncate">{colorName}</span>
+          <span className="text-[14px] font-medium text-ink break-words leading-snug">{colorName}</span>
         </div>
 
-        {/* Pilihan Sampel Cepat (Langsung Terlihat, Target Sentuh 44px) */}
+        {/* Pilihan Sampel Cepat (Langsung Terlihat, Target Sentuh 44px tanpa tumpang tindih) */}
         {items.length > 1 && (
-          <div className="flex items-center gap-2 flex-wrap pt-1" role="group" aria-label="Pilih sampel cepat">
+          <div className="flex items-center gap-1.5 flex-wrap pt-1" role="group" aria-label="Pilih sampel cepat">
             {items.map((it, idx) => {
               const isSelected = idx === itemIndex;
               return (
@@ -261,7 +262,7 @@ export function DetailStage({
                   title={it.colorName}
                   aria-label={`Pilih sampel ${it.colorName}`}
                   aria-pressed={isSelected}
-                  className="w-11 h-11 -m-1.5 flex items-center justify-center rounded-full cursor-pointer press-active"
+                  className="w-11 h-11 -m-0.5 flex items-center justify-center rounded-full cursor-pointer press-active"
                 >
                   <span
                     className={`w-6 h-6 rounded-full transition-transform ${
@@ -355,6 +356,47 @@ export function DetailStage({
       </button>
     ) : null;
 
+  // Kartu Alur Order, DP & Estimasi Pengerjaan
+  const renderOrderFlowCard = () => {
+    const steps = [
+      {
+        title: 'Konsultasi & estimasi waktu',
+        summary: 'Kirim konsep, jumlah pesanan, dan target tanggal acara via WA untuk cek estimasi pengerjaan & harga.',
+      },
+      {
+        title: 'Wajib DP sebelum desain & produksi',
+        summary: 'Pembayaran DP wajib dilakukan terlebih dahulu sebelum masuk tahap pembuatan desain & proses produksi.',
+      },
+      {
+        title: 'Desain, ACC & produksi',
+        summary: 'Contoh desain dikirim untuk disetujui sebelum cetak, lalu masuk produksi sesuai antrean & jumlah pesanan.',
+      },
+    ];
+
+    return (
+      <div className="bg-surface border border-line rounded-[28px] p-5 sm:p-6 flex flex-col gap-3.5 shadow-soft">
+        <div className="flex items-center gap-2.5">
+          {renderIconCircle(Clock)}
+          <h3 className="text-[16px] font-bold text-ink tracking-tight">Alur order &amp; estimasi</h3>
+        </div>
+
+        <ol className="flex flex-col gap-3">
+          {steps.map((step, idx) => (
+            <li key={step.title} className="flex items-start gap-3">
+              <span className="mt-0.5 w-7 h-7 rounded-full bg-brand-soft text-brand text-[12px] font-bold flex items-center justify-center shrink-0 tabular-nums">
+                {idx + 1}
+              </span>
+              <div className="flex flex-col gap-0.5 min-w-0">
+                <span className="text-[14px] font-semibold text-ink leading-snug">{step.title}</span>
+                <p className="text-[13px] text-muted leading-relaxed">{step.summary}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    );
+  };
+
   // Kartu Jaminan Vendor, Pemesanan & Lokasi Workshop (ringkas dengan icon seragam)
   const renderVendorTrustCard = () => (
     <div className="bg-surface border border-line rounded-[28px] p-5 sm:p-6 flex flex-col gap-3.5 shadow-soft">
@@ -435,27 +477,18 @@ export function DetailStage({
           isHeaderHidden ? '-translate-y-[calc(100%+18px)] lg:translate-y-0' : 'translate-y-0'
         }`}
       >
-        <div className="w-full max-w-[1340px] mx-auto flex items-center justify-between gap-3">
+        <div className="w-full max-w-[1340px] mx-auto flex items-center justify-between gap-1.5 sm:gap-3">
           {/* Tombol Kembali ke Rak */}
-          <div className="flex items-center gap-2.5">
-            <button
-              ref={backButtonRef}
-              type="button"
-              onClick={onClose}
-              className="press w-11 h-11 rounded-full bg-white/45 lg:bg-surface border border-white/70 lg:border-line lg:shadow-sm flex items-center justify-center hover:bg-white/75 lg:hover:bg-surface text-ink transition-colors cursor-pointer"
-              aria-label="Kembali ke rak"
-              title="Kembali ke rak"
-            >
-              <ArrowLeft className="w-5 h-5 stroke-[2]" />
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="press hidden md:inline-block text-[14px] font-bold text-ink hover:text-brand transition-colors cursor-pointer"
-            >
-              Kembali ke rak
-            </button>
-          </div>
+          <button
+            ref={backButtonRef}
+            type="button"
+            onClick={onClose}
+            className="press inline-flex items-center gap-2.5 min-w-[44px] h-11 px-2.5 md:px-3.5 rounded-full bg-white/45 lg:bg-surface border border-white/70 lg:border-line lg:shadow-sm hover:bg-white/75 lg:hover:bg-surface text-ink hover:text-brand transition-colors cursor-pointer shrink-0"
+            aria-label="Kembali ke rak"
+          >
+            <ArrowLeft className="w-5 h-5 stroke-[2] shrink-0" />
+            <span className="hidden md:inline text-[14px] font-bold whitespace-nowrap">Kembali ke rak</span>
+          </button>
 
           {/* Tengah: Nomor Indeks (04/07) dengan navigasi prev/next atau Judul saat di-scroll */}
           <div className="flex items-center justify-center min-w-0">
@@ -464,7 +497,7 @@ export function DetailStage({
                 {productName}
               </span>
             ) : items.length > 1 ? (
-              <div className="inline-flex items-center rounded-full bg-white/45 lg:bg-page text-ink/85 border border-white/65 lg:border-line">
+              <div className="inline-flex items-center rounded-full bg-white/45 lg:bg-page text-ink/85 border border-white/65 lg:border-line shrink-0">
                 <button
                   type="button"
                   onClick={() => {
@@ -472,11 +505,11 @@ export function DetailStage({
                     onSelectIndex((itemIndex - 1 + items.length) % items.length);
                   }}
                   aria-label="Model sebelumnya"
-                  className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-ink/75 hover:text-ink hover:bg-white/50 lg:hover:bg-surface transition-colors press-active cursor-pointer"
+                  className="min-w-[40px] sm:min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-ink/75 hover:text-ink hover:bg-white/50 lg:hover:bg-surface transition-colors press-active cursor-pointer"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
-                <span className="px-1.5 text-xs font-bold tabular-nums select-none">
+                <span className="px-1 sm:px-1.5 text-xs font-bold tabular-nums whitespace-nowrap shrink-0 select-none">
                   {counterText}
                 </span>
                 <button
@@ -486,19 +519,29 @@ export function DetailStage({
                     onSelectIndex((itemIndex + 1) % items.length);
                   }}
                   aria-label="Model berikutnya"
-                  className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-ink/75 hover:text-ink hover:bg-white/50 lg:hover:bg-surface transition-colors press-active cursor-pointer"
+                  className="min-w-[40px] sm:min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-ink/75 hover:text-ink hover:bg-white/50 lg:hover:bg-surface transition-colors press-active cursor-pointer"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
             ) : (
-              <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white/45 lg:bg-page text-ink/85 border border-white/65 lg:border-line tabular-nums">
+              <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white/45 lg:bg-page text-ink/85 border border-white/65 lg:border-line tabular-nums whitespace-nowrap shrink-0">
                 {counterText}
               </span>
             )}
           </div>
 
-          {/* Kanan: Tombol Chat WhatsApp CS */}
+          {/* Kanan: CTA Utama di Desktop (menyatu di navbar agar tidak menutupi kartu) & Chat WA ringkas di Mobile */}
+          <button
+            type="button"
+            onClick={handleWhatsAppClick}
+            className="hidden lg:inline-flex press items-center justify-center gap-2 h-11 px-5 rounded-full bg-brand hover:bg-brand-hover text-white shadow-sm transition-colors cursor-pointer shrink-0 whitespace-nowrap"
+            aria-label="Order dan konsultasi via WhatsApp"
+          >
+            <WhatsAppIcon className="w-4 h-4 flex-shrink-0" />
+            <span className="text-[13.5px] font-bold">Order &amp; Konsultasi via WA</span>
+          </button>
+
           <a
             href={getWhatsAppUrl(`Halo MIG Digital Printing, saya mau tanya dan konsultasi ${categoryData.tabLabel} (${productName})`)}
             target="_blank"
@@ -513,7 +556,7 @@ export function DetailStage({
                 colorName,
               })
             }
-            className="press flex items-center justify-center gap-2 h-11 px-4 rounded-full bg-white/45 lg:bg-surface text-ink border border-white/70 lg:border-line hover:bg-white/75 lg:hover:border-brand/40 lg:shadow-sm transition-colors cursor-pointer shrink-0 whitespace-nowrap"
+            className="lg:hidden press flex items-center justify-center gap-1.5 sm:gap-2 h-11 px-3 sm:px-4 rounded-full bg-white/45 text-ink border border-white/70 hover:bg-white/75 transition-colors cursor-pointer shrink-0 whitespace-nowrap"
             aria-label="Hubungi WhatsApp CS"
           >
             <WhatsAppIcon className="w-4 h-4 flex-shrink-0" />
@@ -526,7 +569,7 @@ export function DetailStage({
       <div
         ref={scrollAreaRef}
         onScroll={handleScroll}
-        className="relative flex-1 w-full overflow-y-auto lg:overflow-hidden overflow-x-hidden no-scrollbar flex flex-col min-h-0"
+        className="relative flex-1 w-full overflow-y-auto lg:overflow-hidden overflow-x-hidden overscroll-contain scroll-pt-[76px] no-scrollbar flex flex-col min-h-0"
       >
         {/* ========================================================================= */}
         {/* A. TAMPILAN KHUSUS HP / TABLET (lg:hidden)                               */}
@@ -535,7 +578,7 @@ export function DetailStage({
           {/* Panggung Baju 3D Mobile */}
           <div className="relative z-10 bg-page w-full px-0 pt-1 pb-2 flex flex-col items-center">
             <div
-              className={`relative w-full flex justify-center transition-all duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+              className={`relative w-full flex justify-center transition-[opacity,transform] duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
                 isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-[0.86] translate-y-3'
               }`}
             >
@@ -552,7 +595,7 @@ export function DetailStage({
 
             {/* Tab Sudut Tampilan [Samping] [Depan] [Belakang] + Tombol Flash */}
             <div
-              className={`w-full flex flex-wrap items-center justify-center gap-2 mt-2.5 transition-all duration-300 ease-out motion-reduce:transition-none ${
+              className={`w-full flex flex-wrap items-center justify-center gap-2 mt-2.5 transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none ${
                 isVisible ? 'opacity-100 translate-y-0 delay-[140ms]' : 'opacity-0 translate-y-3 delay-0'
               }`}
             >
@@ -560,20 +603,21 @@ export function DetailStage({
               {renderFlashButton()}
             </div>
             {hasFlashEffect && (
-              <span className="text-[11px] text-ink/50 font-medium text-center">
+              <span className="text-[12px] text-muted font-medium text-center mt-1.5">
                 Sablon memantul terang saat kena cahaya flash
               </span>
             )}
           </div>
 
           <div
-            className={`flex flex-col gap-4 transition-all duration-[350ms] ease-out motion-reduce:transition-none ${
+            className={`flex flex-col gap-4 transition-[opacity,transform] duration-[350ms] ease-out motion-reduce:transition-none ${
               isVisible ? 'opacity-100 translate-y-0 delay-[200ms]' : 'opacity-0 translate-y-5 delay-0'
             }`}
           >
             {renderIdentityCard('text-xl')}
             {renderAudienceCard()}
             {renderReasonsCard()}
+            {renderOrderFlowCard()}
             {renderVendorTrustCard()}
           </div>
         </div>
@@ -584,7 +628,7 @@ export function DetailStage({
         <div className="hidden lg:grid grid-cols-[300px_1fr_310px] xl:grid-cols-[360px_1fr_380px] gap-5 xl:gap-8 items-start w-full max-w-[1400px] mx-auto flex-1 h-full min-h-0 px-7 py-3">
           {/* 1. KOLOM KIRI (SCROLL MANDIRI) */}
           <div
-            className={`h-full overflow-y-auto pr-2 pb-6 flex flex-col gap-4 min-h-0 thin-scrollbar transition-all duration-300 ease-out motion-reduce:transition-none ${
+            className={`h-full overflow-y-auto overscroll-contain pr-2 pb-6 flex flex-col gap-4 min-h-0 thin-scrollbar transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none ${
               isVisible ? 'opacity-100 translate-y-0 delay-[120ms]' : 'opacity-0 translate-y-4 delay-0'
             }`}
           >
@@ -595,7 +639,7 @@ export function DetailStage({
           {/* 2. KOLOM TENGAH: PRODUK FIXED DI TENGAH (TANPA SCROLL) */}
           <div className="h-full flex flex-col items-center justify-center select-none py-1 min-h-0">
             <div
-              className={`relative w-full flex justify-center transition-all duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+              className={`relative w-full flex justify-center transition-[opacity,transform] duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
                 isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-90 translate-y-3'
               }`}
             >
@@ -612,7 +656,7 @@ export function DetailStage({
 
             {/* Tab Sudut Tampilan [Samping] [Depan] [Belakang] + Tombol Flash */}
             <div
-              className={`w-full flex flex-wrap items-center justify-center gap-2.5 mt-2 transition-all duration-300 ease-out motion-reduce:transition-none ${
+              className={`w-full flex flex-wrap items-center justify-center gap-2.5 mt-2 transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none ${
                 isVisible ? 'opacity-100 translate-y-0 delay-[110ms]' : 'opacity-0 translate-y-3 delay-0'
               }`}
             >
@@ -622,40 +666,24 @@ export function DetailStage({
 
             {/* Keterangan Putar */}
             <span
-              className={`text-[11.5px] text-ink/45 mt-2 font-medium text-center transition-opacity duration-300 motion-reduce:transition-none ${
+              className={`text-[12px] text-muted mt-2 font-medium text-center transition-opacity duration-300 motion-reduce:transition-none ${
                 isVisible ? 'opacity-100 delay-[180ms]' : 'opacity-0 delay-0'
               }`}
             >
-              Geser atau ketuk baju untuk lihat sisi depan &amp; belakang
+              Geser atau ketuk baju untuk putar sudut pandang
               {hasFlashEffect ? ' · Sablon memantul terang saat kena cahaya flash' : ''}
             </span>
           </div>
 
-          {/* 3. KOLOM KANAN (SCROLL MANDIRI + DOCK CTA STICKY SEJAJAR KARTU) */}
+          {/* 3. KOLOM KANAN (SCROLL MANDIRI DENGAN EFEK TRANSPARAN ATAS-BAWAH AGAR TERLIHAT BISA DI-SCROLL) */}
           <div
-            className={`h-full overflow-y-auto -ml-3 pl-4 pr-2 pb-1 flex flex-col gap-4 min-h-0 thin-scrollbar transition-all duration-300 ease-out motion-reduce:transition-none ${
+            className={`relative h-full overflow-y-auto overscroll-contain -ml-3 pl-4 pr-2 pt-2 pb-10 flex flex-col gap-4 min-h-0 thin-scrollbar [mask-image:linear-gradient(to_bottom,transparent_0%,black_16px,black_calc(100%-44px),transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_16px,black_calc(100%-44px),transparent_100%)] transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none ${
               isVisible ? 'opacity-100 translate-y-0 delay-[200ms]' : 'opacity-0 translate-y-4 delay-0'
             }`}
           >
             {renderReasonsCard()}
+            {renderOrderFlowCard()}
             {renderVendorTrustCard()}
-
-            <div
-              className={`sticky bottom-0 z-20 mt-auto pt-1.5 pb-1 pointer-events-none transition-[opacity,transform] duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
-                isVisible ? 'opacity-100 delay-[280ms]' : 'opacity-0 translate-y-6 delay-0'
-              }`}
-            >
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute -left-3 right-0 bottom-0 -top-8 bg-gradient-to-t from-page via-page/80 to-transparent backdrop-blur-md [mask-image:linear-gradient(to_top,black_60%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_top,black_60%,transparent_100%)]"
-              />
-              <OrderBottomBar
-                onOrderViaWhatsApp={handleWhatsAppClick}
-                variant="dock"
-                helperText="Gratis lihat contoh desain sebelum dicetak"
-                className="relative"
-              />
-            </div>
           </div>
         </div>
       </div>
@@ -670,7 +698,7 @@ export function DetailStage({
         <OrderBottomBar
           onOrderViaWhatsApp={handleWhatsAppClick}
           variant="floating"
-          helperText="Gratis lihat contoh desain sebelum dicetak"
+          helperText="Konsultasi kebutuhan & estimasi gratis via WA"
           className={`transition-[opacity,transform] duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
             isVisible ? 'opacity-100 delay-[280ms]' : 'opacity-0 translate-y-6 delay-0'
           }`}

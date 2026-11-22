@@ -41,6 +41,7 @@ export function CustomCatalogModal({
 
   const [githubToken, setGithubToken] = useState('');
   const [showToken, setShowToken] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishStatus, setPublishStatus] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -227,224 +228,288 @@ export function CustomCatalogModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="custom-catalog-modal-title"
-      className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4"
     >
       {/* Backdrop */}
       <div onClick={onClose} className="fixed inset-0 bg-ink/50 backdrop-blur-sm transition-opacity" />
 
-      {/* Modal Dialog */}
-      <div className="relative w-full max-w-[540px] bg-surface rounded-3xl shadow-float border border-line p-6 flex flex-col gap-5 z-10 max-h-[90vh] overflow-y-auto thin-scrollbar">
-        {/* Header Modal */}
-        <div className="flex items-center justify-between pb-3 border-b border-line">
+      {/* Modal Dialog: Header & Footer selalu tetap di tempat; isi 2 kolom di desktop agar tidak perlu scroll */}
+      <div className="relative w-full max-w-[540px] md:max-w-[860px] max-h-[90dvh] bg-surface rounded-[32px] shadow-float border border-line flex flex-col overflow-hidden z-10">
+        {/* Header Modal (Selalu terlihat di atas) */}
+        <div className="shrink-0 flex items-center justify-between px-5 sm:px-6 pt-5 pb-3.5 border-b border-line bg-surface">
           <div>
             <h2 id="custom-catalog-modal-title" className="text-lg font-bold text-ink">
               Atur Katalog Produk
             </h2>
-            <p className="text-[12px] text-ink/60">Sesuaikan foto asli, nama, harga, dan judul kategori</p>
+            <p className="text-[12px] text-muted">Sesuaikan foto asli, nama, harga, dan judul kategori</p>
           </div>
           <button
             ref={closeButtonRef}
             type="button"
             onClick={onClose}
             aria-label="Tutup modal atur katalog"
-            className="w-11 h-11 rounded-full border border-line flex items-center justify-center text-ink/60 hover:bg-page press-active cursor-pointer shrink-0"
+            className="w-11 h-11 rounded-full border border-line flex items-center justify-center text-muted hover:text-ink hover:bg-page press-active cursor-pointer shrink-0"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* 1. Pilih Produk yang Ingin Diatur */}
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[12.5px] font-bold text-ink">Pilih Produk di Gantungan</label>
-          <select
-            value={selectedItemId}
-            onChange={(e) => setSelectedItemId(e.target.value)}
-            className="w-full h-11 px-3.5 bg-page border border-line rounded-2xl text-[13px] font-semibold text-ink focus:outline-none focus:border-brand"
-          >
-            {items.map((it) => (
-              <option key={it.id} value={it.id}>
-                {it.name} ({it.colorName})
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* Body Modal (2 kolom di desktop md+, scroll internal bila layar pendek) */}
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          className="flex-1 overflow-y-auto overscroll-contain px-5 sm:px-6 py-4 thin-scrollbar"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-stretch">
+            {/* KOLOM KIRI: Info Produk & Kategori */}
+            <div className="flex flex-col gap-3.5">
+              {/* 1. Pilih Produk yang Ingin Diatur */}
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="custom-catalog-item-select" className="text-[12.5px] font-bold text-ink">
+                  Pilih Produk di Gantungan
+                </label>
+                <select
+                  id="custom-catalog-item-select"
+                  value={selectedItemId}
+                  onChange={(e) => setSelectedItemId(e.target.value)}
+                  className="w-full h-11 px-4 bg-page border border-line rounded-full text-base sm:text-[13px] font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 focus:border-brand"
+                >
+                  {items.map((it) => (
+                    <option key={it.id} value={it.id}>
+                      {it.name} ({it.colorName})
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-        {/* 2. Nama & Harga */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="flex flex-col gap-1">
-            <label className="text-[12px] font-bold text-ink">Nama Produk</label>
-            <input
-              type="text"
-              value={productName}
-              onChange={(e) => setProductName(e.target.value)}
-              className="w-full h-10 px-3 bg-page border border-line rounded-xl text-[13px] text-ink focus:outline-none focus:border-brand"
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-[12px] font-bold text-ink">Nama Varian / Warna</label>
-            <input
-              type="text"
-              value={variantName}
-              onChange={(e) => setVariantName(e.target.value)}
-              className="w-full h-10 px-3 bg-page border border-line rounded-xl text-[13px] text-ink focus:outline-none focus:border-brand"
-            />
-          </div>
-        </div>
+              {/* 2. Nama & Varian */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1">
+                  <label htmlFor="custom-catalog-product-name" className="text-[12px] font-bold text-ink">
+                    Nama Produk
+                  </label>
+                  <input
+                    id="custom-catalog-product-name"
+                    type="text"
+                    value={productName}
+                    onChange={(e) => setProductName(e.target.value)}
+                    className="w-full h-11 px-4 bg-page border border-line rounded-full text-base sm:text-[13px] text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 focus:border-brand"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label htmlFor="custom-catalog-variant-name" className="text-[12px] font-bold text-ink">
+                    Nama Varian / Warna
+                  </label>
+                  <input
+                    id="custom-catalog-variant-name"
+                    type="text"
+                    value={variantName}
+                    onChange={(e) => setVariantName(e.target.value)}
+                    className="w-full h-11 px-4 bg-page border border-line rounded-full text-base sm:text-[13px] text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 focus:border-brand"
+                  />
+                </div>
+              </div>
 
-        <div className="flex flex-col gap-1">
-          <label className="text-[12px] font-bold text-ink">Harga (Rp)</label>
-          <input
-            type="number"
-            value={price}
-            onChange={(e) => setPrice(Number(e.target.value))}
-            className="w-full h-10 px-3 bg-page border border-line rounded-xl text-[13px] text-ink focus:outline-none focus:border-brand"
-          />
-        </div>
+              <div className="flex flex-col gap-1">
+                <label htmlFor="custom-catalog-price" className="text-[12px] font-bold text-ink">
+                  Harga (Rp)
+                </label>
+                <input
+                  id="custom-catalog-price"
+                  type="number"
+                  inputMode="numeric"
+                  value={price}
+                  onChange={(e) => setPrice(Number(e.target.value))}
+                  className="w-full h-11 px-4 bg-page border border-line rounded-full text-base sm:text-[13px] text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 focus:border-brand"
+                />
+              </div>
 
-        {/* 3. Upload Foto Tampak Depan, Samping, Belakang */}
-        <div className="flex flex-col gap-2 pt-2 border-t border-line">
-          <label className="text-[12.5px] font-bold text-ink">Upload Foto Produk</label>
-
-          <div className="grid grid-cols-3 gap-2">
-            {/* Foto Depan */}
-            <label className="flex flex-col items-center justify-center p-3 bg-page border border-dashed border-line hover:border-brand rounded-2xl cursor-pointer text-center group">
-              <Upload className="w-5 h-5 text-ink/40 group-hover:text-brand mb-1" />
-              <span className="text-[11px] font-semibold text-ink">Depan</span>
-              <span className="text-[9.5px] text-ink/50 mt-0.5 inline-flex items-center gap-0.5">
-                {frontDataUrl ? (
-                  <>
-                    <Check className="w-2.5 h-2.5 text-brand shrink-0" />
-                    <span>Terpilih</span>
-                  </>
-                ) : (
-                  <span>Upload</span>
-                )}
-              </span>
-              <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setFrontDataUrl)} className="hidden" />
-            </label>
-
-            {/* Foto Samping */}
-            <label className="flex flex-col items-center justify-center p-3 bg-page border border-dashed border-line hover:border-brand rounded-2xl cursor-pointer text-center group">
-              <Upload className="w-5 h-5 text-ink/40 group-hover:text-brand mb-1" />
-              <span className="text-[11px] font-semibold text-ink">Samping</span>
-              <span className="text-[9.5px] text-ink/50 mt-0.5 inline-flex items-center gap-0.5">
-                {sideDataUrl ? (
-                  <>
-                    <Check className="w-2.5 h-2.5 text-brand shrink-0" />
-                    <span>Terpilih</span>
-                  </>
-                ) : (
-                  <span>Auto</span>
-                )}
-              </span>
-              <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setSideDataUrl)} className="hidden" />
-            </label>
-
-            {/* Foto Belakang */}
-            <label className="flex flex-col items-center justify-center p-3 bg-page border border-dashed border-line hover:border-brand rounded-2xl cursor-pointer text-center group">
-              <Upload className="w-5 h-5 text-ink/40 group-hover:text-brand mb-1" />
-              <span className="text-[11px] font-semibold text-ink">Belakang</span>
-              <span className="text-[9.5px] text-ink/50 mt-0.5 inline-flex items-center gap-0.5">
-                {backDataUrl ? (
-                  <>
-                    <Check className="w-2.5 h-2.5 text-brand shrink-0" />
-                    <span>Terpilih</span>
-                  </>
-                ) : (
-                  <span>Upload</span>
-                )}
-              </span>
-              <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setBackDataUrl)} className="hidden" />
-            </label>
-          </div>
-
-          {/* Checkbox Gantungan Bawaan */}
-          <label className="flex items-center gap-2 mt-1 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={ownHanger}
-              onChange={(e) => setOwnHanger(e.target.checked)}
-              className="w-4 h-4 rounded text-brand focus:ring-brand"
-            />
-            <span className="text-[12px] text-ink/75">Foto produk sudah memiliki gantungan sendiri</span>
-          </label>
-        </div>
-
-        {/* 4. Kustomisasi Kategori */}
-        <div className="flex flex-col gap-2 pt-2 border-t border-line">
-          <label className="text-[12.5px] font-bold text-ink">Kustomisasi Kategori</label>
-          <div className="grid grid-cols-2 gap-2">
-            <input
-              type="text"
-              placeholder="Label Tab (mis: Kemeja)"
-              value={catTabLabel}
-              onChange={(e) => setCatTabLabel(e.target.value)}
-              className="w-full h-9 px-3 bg-page border border-line rounded-xl text-[12px] text-ink focus:outline-none focus:border-brand"
-            />
-            <input
-              type="text"
-              placeholder="Judul Besar (mis: KEMEJA)"
-              value={catHeroTitle}
-              onChange={(e) => setCatHeroTitle(e.target.value)}
-              className="w-full h-9 px-3 bg-page border border-line rounded-xl text-[12px] text-ink focus:outline-none focus:border-brand"
-            />
-          </div>
-        </div>
-
-        {/* 5. Auto-Push Permanen ke GitHub */}
-        <div className="flex flex-col gap-2 pt-2 border-t border-line">
-          <div className="flex items-center justify-between gap-2">
-            <label className="text-[12.5px] font-bold text-ink flex items-center gap-1.5">
-              <KeyRound className="w-3.5 h-3.5 text-brand" />
-              <span>Publish Permanen ke GitHub (Tanpa Coding)</span>
-            </label>
-            <span className="text-[11px] font-medium text-muted">iif069/apparel</span>
-          </div>
-          <div className="relative flex items-center">
-            <input
-              type={showToken ? 'text' : 'password'}
-              placeholder="Tempel GitHub Token (ghp_... atau github_pat_...)"
-              value={githubToken}
-              onChange={(e) => setGithubToken(e.target.value)}
-              className="w-full h-9 pl-3 pr-9 bg-page border border-line rounded-xl text-[12px] text-ink focus:outline-none focus:border-brand"
-            />
-            <button
-              type="button"
-              onClick={() => setShowToken((prev) => !prev)}
-              className="absolute right-2.5 text-muted hover:text-ink"
-              aria-label={showToken ? 'Sembunyikan token' : 'Tampilkan token'}
-            >
-              {showToken ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
-          </div>
-          <p className="text-[11px] text-muted leading-snug">
-            Token disimpan lokal di browser ini saja. Klik <strong>Publish ke GitHub</strong> untuk langsung memperbarui web semua pengunjung.
-          </p>
-
-          {publishStatus && (
-            <div
-              className={`px-3 py-2 rounded-xl text-[11.5px] font-medium border ${
-                publishStatus.type === 'success'
-                  ? 'bg-success-bg text-success-fg border-success-fg/20'
-                  : 'bg-danger-bg text-danger-fg border-danger-fg/20'
-              }`}
-            >
-              {publishStatus.text}
+              {/* 4. Kustomisasi Kategori */}
+              <div className="flex flex-col gap-2 pt-3 border-t border-line">
+                <span className="text-[12.5px] font-bold text-ink">Kustomisasi Kategori</span>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="flex flex-col gap-1">
+                    <label htmlFor="custom-catalog-tab-label" className="text-[11.5px] font-semibold text-muted">
+                      Label tab
+                    </label>
+                    <input
+                      id="custom-catalog-tab-label"
+                      type="text"
+                      placeholder="Kemeja"
+                      value={catTabLabel}
+                      onChange={(e) => setCatTabLabel(e.target.value)}
+                      className="w-full h-11 px-4 bg-page border border-line rounded-full text-base sm:text-[12px] text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 focus:border-brand"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label htmlFor="custom-catalog-hero-title" className="text-[11.5px] font-semibold text-muted">
+                      Judul besar
+                    </label>
+                    <input
+                      id="custom-catalog-hero-title"
+                      type="text"
+                      placeholder="KEMEJA"
+                      value={catHeroTitle}
+                      onChange={(e) => setCatHeroTitle(e.target.value)}
+                      className="w-full h-11 px-4 bg-page border border-line rounded-full text-base sm:text-[12px] text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 focus:border-brand"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
-          )}
-        </div>
 
-        {/* Tombol Aksi (Pill rounded-full sesuai Desain Sistem) */}
-        <div className="flex items-center justify-between pt-3 border-t border-line gap-2 flex-wrap">
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={onResetCustom}
-              className="flex items-center gap-1.5 min-h-[44px] px-3.5 py-2 rounded-full text-[12px] font-semibold text-red-600 hover:bg-red-50 press-active"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>Reset</span>
-            </button>
+            {/* KOLOM KANAN: Upload Foto & Publish GitHub */}
+            <div className="flex flex-col gap-3.5 md:border-l md:border-line md:pl-6">
+              {/* 3. Upload Foto Tampak Depan, Samping, Belakang */}
+              <div className="flex flex-col gap-2">
+                <span className="text-[12.5px] font-bold text-ink">Upload Foto Produk</span>
+
+                <div className="grid grid-cols-3 gap-2.5">
+                  {/* Foto Depan */}
+                  <label className="flex flex-col items-center justify-center p-3 bg-page border border-dashed border-line hover:border-brand rounded-3xl cursor-pointer text-center group">
+                    <Upload className="w-5 h-5 text-ink/40 group-hover:text-brand mb-1" />
+                    <span className="text-[11px] font-semibold text-ink">Depan</span>
+                    <span className="text-[9.5px] text-muted mt-0.5 inline-flex items-center gap-0.5">
+                      {frontDataUrl ? (
+                        <>
+                          <Check className="w-2.5 h-2.5 text-brand shrink-0" />
+                          <span>Terpilih</span>
+                        </>
+                      ) : (
+                        <span>Upload</span>
+                      )}
+                    </span>
+                    <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setFrontDataUrl)} className="hidden" />
+                  </label>
+
+                  {/* Foto Samping */}
+                  <label className="flex flex-col items-center justify-center p-3 bg-page border border-dashed border-line hover:border-brand rounded-3xl cursor-pointer text-center group">
+                    <Upload className="w-5 h-5 text-ink/40 group-hover:text-brand mb-1" />
+                    <span className="text-[11px] font-semibold text-ink">Samping</span>
+                    <span className="text-[9.5px] text-muted mt-0.5 inline-flex items-center gap-0.5">
+                      {sideDataUrl ? (
+                        <>
+                          <Check className="w-2.5 h-2.5 text-brand shrink-0" />
+                          <span>Terpilih</span>
+                        </>
+                      ) : (
+                        <span>Auto</span>
+                      )}
+                    </span>
+                    <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setSideDataUrl)} className="hidden" />
+                  </label>
+
+                  {/* Foto Belakang */}
+                  <label className="flex flex-col items-center justify-center p-3 bg-page border border-dashed border-line hover:border-brand rounded-3xl cursor-pointer text-center group">
+                    <Upload className="w-5 h-5 text-ink/40 group-hover:text-brand mb-1" />
+                    <span className="text-[11px] font-semibold text-ink">Belakang</span>
+                    <span className="text-[9.5px] text-muted mt-0.5 inline-flex items-center gap-0.5">
+                      {backDataUrl ? (
+                        <>
+                          <Check className="w-2.5 h-2.5 text-brand shrink-0" />
+                          <span>Terpilih</span>
+                        </>
+                      ) : (
+                        <span>Upload</span>
+                      )}
+                    </span>
+                    <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setBackDataUrl)} className="hidden" />
+                  </label>
+                </div>
+
+                {/* Checkbox Gantungan Bawaan */}
+                <label className="flex items-center gap-2 mt-1 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={ownHanger}
+                    onChange={(e) => setOwnHanger(e.target.checked)}
+                    className="w-4 h-4 rounded text-brand focus:ring-brand"
+                  />
+                  <span className="text-[12px] text-ink/75">Foto produk sudah memiliki gantungan sendiri</span>
+                </label>
+              </div>
+
+              {/* 5. Auto-Push Permanen ke GitHub */}
+              <div className="flex flex-col gap-2 pt-3 border-t border-line">
+                <div className="flex items-center justify-between gap-2">
+                  <label htmlFor="custom-catalog-github-token" className="text-[12.5px] font-bold text-ink flex items-center gap-1.5">
+                    <KeyRound className="w-3.5 h-3.5 text-brand" />
+                    <span>Publish Permanen ke GitHub</span>
+                  </label>
+                  <span className="text-[11px] font-medium text-muted">iif069/apparel</span>
+                </div>
+                <div className="relative flex items-center">
+                  <input
+                    id="custom-catalog-github-token"
+                    type={showToken ? 'text' : 'password'}
+                    autoComplete="off"
+                    placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                    value={githubToken}
+                    onChange={(e) => setGithubToken(e.target.value)}
+                    className="w-full h-11 pl-4 pr-11 bg-page border border-line rounded-full text-base sm:text-[12px] text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 focus:border-brand"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowToken((prev) => !prev)}
+                    className="absolute right-1.5 w-9 h-9 flex items-center justify-center rounded-full text-muted hover:text-ink"
+                    aria-label={showToken ? 'Sembunyikan token' : 'Tampilkan token'}
+                  >
+                    {showToken ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <p className="text-[11px] text-muted leading-snug">
+                  Token disimpan lokal di browser ini saja. Klik <strong>Publish ke GitHub</strong> untuk langsung memperbarui web semua pengunjung.
+                </p>
+
+                {publishStatus && (
+                  <div
+                    role="status"
+                    className={`px-4 py-2.5 rounded-2xl text-[11.5px] font-medium border ${
+                      publishStatus.type === 'success'
+                        ? 'bg-success-bg text-success-fg border-success-fg/20'
+                        : 'bg-danger-bg text-danger-fg border-danger-fg/20'
+                    }`}
+                  >
+                    {publishStatus.text}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </form>
+
+        {/* Footer Aksi (Selalu terlihat di bawah, Pill rounded-full sesuai Desain Sistem) */}
+        <div className="shrink-0 flex items-center justify-between px-5 sm:px-6 py-3.5 border-t border-line bg-surface gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {confirmReset ? (
+              <div className="inline-flex items-center gap-1 bg-danger-bg border border-danger-fg/20 rounded-full p-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setConfirmReset(false);
+                    onResetCustom();
+                  }}
+                  className="min-h-[36px] px-3 py-1 rounded-full text-[12px] font-bold bg-danger-fg text-surface hover:opacity-90 press-active"
+                >
+                  Ya, reset lokal
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmReset(false)}
+                  className="min-h-[36px] px-2.5 py-1 rounded-full text-[12px] font-semibold text-ink hover:bg-surface/80 press-active"
+                >
+                  Batal
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setConfirmReset(true)}
+                className="flex items-center gap-1.5 min-h-[44px] px-3.5 py-2 rounded-full text-[12px] font-semibold text-danger-fg hover:bg-danger-bg press-active"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Reset</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={async () => {
@@ -501,7 +566,7 @@ export function CustomCatalogModal({
               ) : (
                 <CloudUpload className="w-4 h-4" />
               )}
-              <span>{isPublishing ? 'Mem-push...' : 'Publish ke GitHub'}</span>
+              <span>{isPublishing ? 'Mem-push…' : 'Publish ke GitHub'}</span>
             </button>
           </div>
         </div>

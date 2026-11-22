@@ -42,6 +42,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({
@@ -51,7 +52,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" className={`${inter.variable} ${anton.variable} ${cormorant.variable}`}>
-      <body className="min-h-screen bg-page text-ink antialiased select-none md:select-auto font-sans">
+      <body className="min-h-screen bg-page text-ink antialiased font-sans">
         <AnalyticsScripts />
         {children}
       </body>

@@ -84,7 +84,7 @@ export function Topbar({
             <img
               src="/logo.svg"
               alt="MIG Logo"
-              className="w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-full object-cover overflow-hidden transition-transform group-active:scale-95 shadow-sm border border-line/80 shrink-0"
+              className="w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-full object-cover overflow-hidden transition-transform group-active:scale-[0.97] shadow-sm border border-line/80 shrink-0"
             />
             <div className="flex flex-col justify-center min-w-0">
               <div className="flex items-center gap-1.5 sm:gap-2">
@@ -92,7 +92,7 @@ export function Topbar({
                   MIG Apparel
                 </span>
                 {isAdmin && (
-                  <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-brand text-white shadow-sm animate-pulse shrink-0">
+                  <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-brand text-white shadow-sm animate-pulse motion-reduce:animate-none shrink-0">
                     <Unlock className="w-2.5 h-2.5" />
                     ADMIN
                   </span>
@@ -112,7 +112,7 @@ export function Topbar({
                 type="button"
                 aria-pressed={currentCategory === cat.id}
                 onClick={() => onSelectCategory(cat.id)}
-                className={`press min-h-[44px] px-4 py-2 rounded-full text-[13px] font-semibold whitespace-nowrap transition-all ${
+                className={`press min-h-[44px] px-4 py-2 rounded-full text-[13px] font-semibold whitespace-nowrap transition-colors ${
                   currentCategory === cat.id
                     ? 'bg-ink text-surface shadow-sm'
                     : 'bg-surface text-ink border border-line hover:border-ink/30'
@@ -203,7 +203,7 @@ export function Topbar({
                         setShowMoreMenu(false);
                         onToggleAdmin();
                       }}
-                      className="flex items-center gap-2.5 min-h-[44px] px-3 py-2 text-[13px] font-medium text-red-600 hover:bg-red-50 rounded-xl text-left"
+                      className="flex items-center gap-2.5 min-h-[44px] px-3 py-2 text-[13px] font-medium text-danger-fg hover:bg-danger-bg rounded-xl text-left"
                     >
                       <Lock className="w-4 h-4" />
                       <span>Kunci / Keluar Admin</span>

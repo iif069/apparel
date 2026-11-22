@@ -54,7 +54,7 @@ export function AngleTabs({
               onPlaySound?.('flip');
               onSelectAngle(tab.angle);
             }}
-            className={`min-w-[76px] md:min-w-[88px] lg:min-w-[80px] xl:min-w-[96px] min-h-[44px] h-11 px-3 md:px-3.5 xl:px-4 rounded-full text-[12.5px] md:text-[13px] font-semibold transition-all press-active cursor-pointer ${
+            className={`min-w-[76px] md:min-w-[88px] lg:min-w-[80px] xl:min-w-[96px] min-h-[44px] h-11 px-3 md:px-3.5 xl:px-4 rounded-full text-[12.5px] md:text-[13px] font-semibold transition-colors press-active cursor-pointer ${
               isActive
                 ? 'bg-ink text-surface shadow-sm'
                 : 'text-ink/70 hover:text-ink hover:bg-page'
