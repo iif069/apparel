@@ -603,10 +603,10 @@ export function HangerRack({
 
         {/* Petunjuk interaksi & informasi bebas custom untuk pengunjung awam */}
         <p className="md:hidden text-center text-[11.5px] font-medium text-muted/85 mt-1 px-4 select-none">
-          Contoh model &amp; warna · Geser baju · Desain bebas custom
+          Contoh hasil produksi · Geser baju · Motif &amp; logo bebas custom
         </p>
         <p className="hidden md:block text-center text-[12px] font-medium text-muted/80 mt-1 px-4 select-none">
-          Contoh model &amp; warna · Arahkan kursor atau klik baju · Desain &amp; tulisan bebas custom
+          Contoh hasil produksi · Arahkan kursor atau klik baju · Motif, logo &amp; tulisan bebas custom
         </p>
 
         {/* Bar Kategori di Bawah Rak Baju (Tampil di HP & layar < 900px agar header atas tidak penuh) */}
@@ -681,7 +681,7 @@ export function HangerRack({
                 {activeName}
               </span>
               <span className="text-xs sm:text-[13px] text-muted font-medium truncate leading-normal">
-                {activeColorName} · Desain bebas custom
+                {activeColorName} · Bisa custom motif &amp; logo
               </span>
             </div>
           </div>

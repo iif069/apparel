@@ -215,7 +215,7 @@ export function DetailStage({
       <div className="flex items-center gap-1.5 flex-wrap">
         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11.5px] font-semibold bg-brand-soft text-brand border border-brand/30">
           <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
-          Desain custom
+          Contoh hasil custom
         </span>
         <span className="px-2.5 py-1 rounded-full text-[11.5px] font-semibold bg-page text-ink/75 border border-line">
           {categoryData.id === 'kaos' ? 'Satuan & partai besar' : 'Minimal 6 pcs · Partai besar'}
@@ -226,14 +226,14 @@ export function DetailStage({
       <div>
         <h2 className={`${titleClass} font-bold text-ink tracking-tight`}>{productName}</h2>
         <p className="text-[14px] text-muted mt-1.5 leading-relaxed">
-          {categoryData.kicker} · Warna, gambar, dan tulisan bebas disesuaikan kebutuhan acara kamu.
+          {categoryData.kicker} · Motif, warna, logo, dan tulisan pada sampel ini bebas disesuaikan kebutuhan acara kamu.
         </p>
       </div>
 
-      {/* Pilihan Warna / Model di Gantungan */}
+      {/* Pilihan Sampel / Referensi di Gantungan */}
       <div className="flex flex-col gap-2.5 pt-3 border-t border-line">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-[13.5px] font-semibold text-ink">Warna di gantungan</span>
+          <span className="text-[13.5px] font-semibold text-ink">Sampel di gantungan</span>
           <span className="text-[12px] font-medium text-muted tabular-nums">{counterText}</span>
         </div>
         <div className="flex items-center gap-2.5 py-2.5 px-4 bg-page rounded-full border border-line min-w-0">
@@ -244,9 +244,9 @@ export function DetailStage({
           <span className="text-[14px] font-medium text-ink truncate">{colorName}</span>
         </div>
 
-        {/* Pilihan Warna Cepat (Langsung Terlihat, Target Sentuh 44px) */}
+        {/* Pilihan Sampel Cepat (Langsung Terlihat, Target Sentuh 44px) */}
         {items.length > 1 && (
-          <div className="flex items-center gap-2 flex-wrap pt-1" role="group" aria-label="Pilih warna cepat">
+          <div className="flex items-center gap-2 flex-wrap pt-1" role="group" aria-label="Pilih sampel cepat">
             {items.map((it, idx) => {
               const isSelected = idx === itemIndex;
               return (
@@ -259,7 +259,7 @@ export function DetailStage({
                     onPlaySound('flip');
                   }}
                   title={it.colorName}
-                  aria-label={`Pilih warna ${it.colorName}`}
+                  aria-label={`Pilih sampel ${it.colorName}`}
                   aria-pressed={isSelected}
                   className="w-11 h-11 -m-1.5 flex items-center justify-center rounded-full cursor-pointer press-active"
                 >
