@@ -73,55 +73,56 @@ export function Topbar({
 
   return (
     <>
-      <header className="sticky top-0 w-full h-[64px] md:h-[72px] z-50 glass border-b border-line/60 flex items-center px-3 sm:px-4 md:px-7 transition-colors">
-        <div className="w-full max-w-[1340px] mx-auto flex items-center justify-between gap-2.5 sm:gap-3">
-          {/* Logo & Brand (Secret click area) */}
-          <div
-            onClick={handleLogoSecretClick}
-            className="flex items-center gap-2.5 sm:gap-3 cursor-pointer select-none group press min-w-0"
-            title={isAdmin ? "Mode Admin Aktif (Klik 5x untuk keluar)" : "MIG Apparel"}
-          >
-            <img
-              src="/logo.svg"
-              alt="MIG Logo"
-              className="w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-full object-cover overflow-hidden transition-transform group-active:scale-[0.97] shadow-sm border border-line/80 shrink-0"
-            />
-            <div className="flex flex-col justify-center min-w-0">
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <span className="font-bold text-[16px] sm:text-[18px] md:text-[20px] tracking-tight text-ink leading-tight truncate">
-                  MIG Apparel
-                </span>
-                {isAdmin && (
-                  <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-brand text-white shadow-sm animate-pulse motion-reduce:animate-none shrink-0">
-                    <Unlock className="w-2.5 h-2.5" />
-                    ADMIN
+      <div className="sticky top-2.5 md:top-3 z-50 w-full px-3 md:px-7 pointer-events-none">
+        <header className="pointer-events-auto relative w-full max-w-[1340px] mx-auto h-[56px] md:h-[64px] rounded-full px-2.5 sm:px-3.5 md:px-4 liquid-glass flex items-center transition-colors">
+          <div className="relative z-10 w-full flex items-center justify-between gap-2.5 sm:gap-3">
+            {/* Logo & Brand (Secret click area) */}
+            <div
+              onClick={handleLogoSecretClick}
+              className="flex items-center gap-2.5 sm:gap-3 cursor-pointer select-none group press min-w-0 pl-0.5"
+              title={isAdmin ? "Mode Admin Aktif (Klik 5x untuk keluar)" : "MIG Apparel"}
+            >
+              <img
+                src="/logo.svg"
+                alt="MIG Logo"
+                className="w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-full object-cover overflow-hidden transition-transform group-active:scale-[0.97] shadow-sm border border-white/80 shrink-0"
+              />
+              <div className="flex flex-col justify-center min-w-0">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="font-bold text-[15.5px] sm:text-[17.5px] md:text-[19px] tracking-tight text-ink leading-tight truncate">
+                    MIG Apparel
                   </span>
-                )}
+                  {isAdmin && (
+                    <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-brand text-white shadow-sm animate-pulse motion-reduce:animate-none shrink-0">
+                      <Unlock className="w-2.5 h-2.5" />
+                      ADMIN
+                    </span>
+                  )}
+                </div>
+                <span className="text-[10.5px] sm:text-[11px] md:text-[12px] text-muted font-medium leading-none mt-0.5 truncate block">
+                  MIG Digital Printing · Rajadesa
+                </span>
               </div>
-              <span className="text-[10.5px] sm:text-[11px] md:text-[12px] text-muted font-medium leading-none mt-0.5 truncate block">
-                MIG Digital Printing · Rajadesa
-              </span>
             </div>
-          </div>
 
-          {/* Kategori Desktop (Tampil di header mulai 900px+ agar layar di bawah 900px tidak penuh) */}
-          <nav className="hidden min-[900px]:flex items-center gap-2" aria-label="Kategori pakaian">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                type="button"
-                aria-pressed={currentCategory === cat.id}
-                onClick={() => onSelectCategory(cat.id)}
-                className={`press min-h-[44px] px-4 py-2 rounded-full text-[13px] font-semibold whitespace-nowrap transition-colors ${
-                  currentCategory === cat.id
-                    ? 'bg-ink text-surface shadow-sm'
-                    : 'bg-surface text-ink border border-line hover:border-ink/30'
-                }`}
-              >
-                {cat.tabLabel}
-              </button>
-            ))}
-          </nav>
+            {/* Kategori Desktop (Tampil di header mulai 900px+ agar layar di bawah 900px tidak penuh) */}
+            <nav className="hidden min-[900px]:flex items-center gap-2" aria-label="Kategori pakaian">
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  aria-pressed={currentCategory === cat.id}
+                  onClick={() => onSelectCategory(cat.id)}
+                  className={`press min-h-[44px] px-4 py-2 rounded-full text-[13px] font-semibold whitespace-nowrap transition-colors ${
+                    currentCategory === cat.id
+                      ? 'bg-ink text-surface shadow-sm'
+                      : 'bg-white/50 text-ink border border-white/75 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)] hover:bg-white/80 hover:border-brand/30'
+                  }`}
+                >
+                  {cat.tabLabel}
+                </button>
+              ))}
+            </nav>
 
           {/* Sisi Kanan: Atur Katalog, Suara, Musik */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
@@ -225,7 +226,8 @@ export function Topbar({
             )}
           </div>
         </div>
-      </header>
+        </header>
+      </div>
     </>
   );
 }

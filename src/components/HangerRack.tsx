@@ -275,7 +275,7 @@ export function HangerRack({
   return (
     <section className="relative w-full flex-1 flex flex-col justify-between overflow-x-clip bg-page select-none min-h-0">
       {/* 1. Banner CTA Desain Custom di Atas Rak (Hanya Tampil di Mobile, Fokus Utama Ajakan ke WA) */}
-      <div className="w-full px-4 pt-2.5 pb-1 z-20 flex justify-center flex-shrink-0 md:hidden">
+      <div className="w-full px-4 pt-4 pb-1 z-20 flex justify-center flex-shrink-0 md:hidden">
         <a
           href={getWhatsAppUrl(STORE_CONFIG.whatsapp.customDesignMessage)}
           target="_blank"
@@ -290,11 +290,11 @@ export function HangerRack({
               colorName: activeColorName,
             })
           }
-          className="press relative inline-flex rounded-full p-[2px] overflow-hidden shadow-[0_6px_22px_rgba(123,41,186,0.18)] cursor-pointer group"
+          className="press relative inline-flex rounded-full p-[2px] overflow-hidden shadow-[0_8px_24px_rgba(123,41,186,0.18)] cursor-pointer group"
           title="Konsultasi Desain Custom via WhatsApp"
         >
           <span aria-hidden="true" className="cta-loop-ring pointer-events-none" />
-          <span className="relative z-10 inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-surface/95 backdrop-blur-md text-[13.5px] font-bold text-ink group-hover:text-brand transition-colors">
+          <span className="relative z-10 inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/70 backdrop-blur-xl shadow-[inset_0_1.5px_1px_rgba(255,255,255,0.95)] text-[13.5px] font-bold text-ink group-hover:text-brand transition-colors">
             <WhatsAppIcon className="w-5 h-5 text-brand shrink-0" />
             <span>Desain custom? Chat via WhatsApp</span>
           </span>
@@ -589,14 +589,14 @@ export function HangerRack({
               type="button"
               onClick={onToggleFlash}
               aria-pressed={isFlashActive}
-              className={`press inline-flex items-center gap-2 min-h-[44px] px-4 py-2 rounded-full text-[12.5px] font-bold border transition-all cursor-pointer shadow-sm ${
+              className={`press relative inline-flex items-center gap-2 min-h-[44px] px-4 py-2 rounded-full text-[12.5px] font-bold transition-all cursor-pointer ${
                 isFlashActive
-                  ? 'bg-ink text-surface border-ink shadow-soft'
-                  : 'bg-surface text-ink border-line hover:border-brand/50 hover:text-brand'
+                  ? 'bg-ink text-surface border border-ink shadow-soft'
+                  : 'liquid-glass text-ink hover:text-brand'
               }`}
             >
-              <Zap className={`w-4 h-4 ${isFlashActive ? 'text-yellow-300 fill-yellow-300' : 'text-brand'}`} />
-              <span>{isFlashActive ? 'Sablon Menyala: Aktif' : 'Tes Sablon Menyala (Flash)'}</span>
+              <Zap className={`relative z-10 w-4 h-4 ${isFlashActive ? 'text-yellow-300 fill-yellow-300' : 'text-brand'}`} />
+              <span className="relative z-10">{isFlashActive ? 'Sablon Menyala: Aktif' : 'Tes Sablon Menyala (Flash)'}</span>
             </button>
           )}
         </div>
@@ -619,13 +619,13 @@ export function HangerRack({
                   type="button"
                   aria-pressed={currentCategory === cat.id}
                   onClick={() => onSelectCategory && onSelectCategory(cat.id)}
-                  className={`h-[44px] min-h-[44px] px-2 rounded-full text-[13px] font-semibold flex items-center justify-center transition-all duration-200 ease-out press-active cursor-pointer ${
+                  className={`relative h-[44px] min-h-[44px] px-2 rounded-full text-[13px] font-semibold flex items-center justify-center transition-all duration-200 ease-out press-active cursor-pointer ${
                     currentCategory === cat.id
                       ? 'bg-ink text-surface shadow-sm'
-                      : 'bg-surface text-ink border border-line hover:border-ink/30'
+                      : 'liquid-glass text-ink hover:text-brand'
                   }`}
                 >
-                  {cat.tabLabel}
+                  <span className="relative z-10">{cat.tabLabel}</span>
                 </button>
               ))}
             </nav>
@@ -650,11 +650,11 @@ export function HangerRack({
               colorName: activeColorName,
             })
           }
-          className="press hidden md:inline-flex shrink-0 relative rounded-full p-[2px] overflow-hidden shadow-[0_6px_24px_rgba(123,41,186,0.18)] cursor-pointer group"
+          className="press hidden md:inline-flex shrink-0 relative rounded-full p-[2px] overflow-hidden shadow-[0_8px_26px_rgba(123,41,186,0.18)] cursor-pointer group"
           title="Konsultasi Desain Custom via WhatsApp"
         >
           <span aria-hidden="true" className="cta-loop-ring pointer-events-none" />
-          <span className="relative z-10 flex items-center gap-2.5 sm:gap-3 bg-surface/95 backdrop-blur-md px-4 py-2.5 sm:px-5 sm:py-3 rounded-full whitespace-nowrap">
+          <span className="relative z-10 flex items-center gap-2.5 sm:gap-3 bg-white/70 backdrop-blur-xl shadow-[inset_0_1.5px_1px_rgba(255,255,255,0.95)] px-4 py-2.5 sm:px-5 sm:py-3 rounded-full whitespace-nowrap">
             <WhatsAppIcon className="w-5 h-5 sm:w-6 sm:h-6 text-brand shrink-0" />
             <span className="text-[13.5px] sm:text-[14.5px] font-bold text-ink group-hover:text-brand transition-colors">
               Desain custom? Chat via WhatsApp
@@ -669,9 +669,9 @@ export function HangerRack({
             onPlaySound('open');
             onOpenDetail(displayIndex);
           }}
-          className="press flex items-center justify-between gap-3 sm:gap-5 bg-surface/95 backdrop-blur-md border border-line px-4 py-2.5 sm:px-5 sm:py-3 rounded-full shadow-[0_6px_24px_rgba(0,0,0,0.08)] hover:border-brand/40 cursor-pointer transition-all w-full max-w-[440px] md:max-w-[560px] md:w-auto text-left group"
+          className="press relative flex items-center justify-between gap-3 sm:gap-5 liquid-glass px-4 py-2.5 sm:px-5 sm:py-3 rounded-full cursor-pointer transition-all w-full max-w-[440px] md:max-w-[560px] md:w-auto text-left group"
         >
-          <div className={`flex items-center gap-3 min-w-0 transition-[opacity,transform] motion-reduce:transition-none motion-reduce:transform-none ${metaTransitionClass}`}>
+          <div className={`relative z-10 flex items-center gap-3 min-w-0 transition-[opacity,transform] motion-reduce:transition-none motion-reduce:transform-none ${metaTransitionClass}`}>
             <span
               className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-surface ring-1 ring-line/80 shadow-sm shrink-0"
               style={{ backgroundColor: activeItem?.hex || '#ffffff' }}
@@ -686,7 +686,7 @@ export function HangerRack({
             </div>
           </div>
 
-          <span className="flex items-center gap-2 h-11 px-4 sm:px-5 rounded-full bg-brand group-hover:bg-brand-hover text-white text-sm font-bold shadow-sm transition-colors whitespace-nowrap shrink-0">
+          <span className="relative z-10 flex items-center gap-2 h-11 px-4 sm:px-5 rounded-full bg-brand group-hover:bg-brand-hover text-white text-sm font-bold shadow-sm transition-colors whitespace-nowrap shrink-0">
             <span>Lihat detail</span>
             <ArrowRight className="w-4 h-4" />
           </span>

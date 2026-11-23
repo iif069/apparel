@@ -38,7 +38,7 @@ export function AngleTabs({
     <div
       role="group"
       aria-label="Sudut tampilan"
-      className={`inline-flex items-center justify-center gap-1 md:gap-1.5 xl:gap-2 p-1 bg-surface border border-line rounded-full shadow-sm ${className}`}
+      className={`relative inline-flex items-center justify-center gap-1 md:gap-1.5 xl:gap-2 p-1 rounded-full liquid-glass ${className}`}
     >
       {tabs.map((tab, idx) => {
         const isActive =
@@ -54,10 +54,10 @@ export function AngleTabs({
               onPlaySound?.('flip');
               onSelectAngle(tab.angle);
             }}
-            className={`min-w-[76px] md:min-w-[88px] lg:min-w-[80px] xl:min-w-[96px] min-h-[44px] h-11 px-3 md:px-3.5 xl:px-4 rounded-full text-[12.5px] md:text-[13px] font-semibold transition-colors press-active cursor-pointer ${
+            className={`relative z-10 min-w-[76px] md:min-w-[88px] lg:min-w-[80px] xl:min-w-[96px] min-h-[44px] h-11 px-3 md:px-3.5 xl:px-4 rounded-full text-[12.5px] md:text-[13px] font-semibold transition-colors press-active cursor-pointer ${
               isActive
                 ? 'bg-ink text-surface shadow-sm'
-                : 'text-ink/70 hover:text-ink hover:bg-page'
+                : 'text-ink/75 hover:text-ink hover:bg-white/55'
             }`}
           >
             {tab.label}
