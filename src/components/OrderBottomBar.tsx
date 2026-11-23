@@ -33,18 +33,18 @@ export function OrderBottomBar({
 
   const glassCard = (extraClassName = '') => (
     <div
-      className={`pointer-events-auto w-full flex flex-col gap-2 px-3.5 pt-2.5 pb-3 lg:px-4 lg:py-3 rounded-[28px] ${
+      className={`pointer-events-auto relative w-full flex flex-col gap-2 px-3.5 pt-2.5 pb-3 lg:px-4 lg:py-3 rounded-[28px] ${
         resolvedVariant === 'floating'
-          ? 'liquid-glass !shadow-[inset_0_1.5px_1px_rgba(255,255,255,0.96),inset_0_-1px_1px_rgba(255,255,255,0.5),0_0_0_1px_rgba(28,27,26,0.06),0_12px_32px_rgba(40,14,62,0.14)]'
+          ? 'liquid-glass'
           : 'bg-surface/95 backdrop-blur-2xl backdrop-saturate-150 border border-line/90 shadow-[0_10px_28px_rgba(28,27,26,0.14)]'
       } ${extraClassName}`}
     >
       {helperText && (
-        <p className="text-[12px] font-semibold text-center leading-snug text-ink/90">
+        <p className="relative z-10 text-[12px] font-semibold text-center leading-snug text-ink [text-shadow:0_1px_4px_rgba(255,255,255,0.85)]">
           {helperText}
         </p>
       )}
-      {ctaButton}
+      <div className="relative z-10">{ctaButton}</div>
     </div>
   );
 

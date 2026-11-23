@@ -694,15 +694,6 @@ export function DetailStage({
 
       {/* 3. FLOATING ORDER BAR KHUSUS MOBILE & TABLET (Menempel tetap di bawah layar) */}
       <div className="lg:hidden">
-        {/* Progressive blur + gradasi transparan terpisah agar kartu di belakang memudar halus & dock CTA kaca tampak melayang terpisah */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none fixed inset-x-0 bottom-0 h-48 z-30 backdrop-blur-xl [mask-image:linear-gradient(to_top,black_0%,black_65%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_top,black_0%,black_65%,transparent_100%)]"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none fixed inset-x-0 bottom-0 h-48 z-30 bg-gradient-to-t from-page/80 via-page/50 via-60% to-transparent"
-        />
         <OrderBottomBar
           onOrderViaWhatsApp={handleWhatsAppClick}
           variant="floating"
