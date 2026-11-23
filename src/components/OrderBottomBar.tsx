@@ -33,7 +33,7 @@ export function OrderBottomBar({
 
   const glassCard = (extraClassName = '') => (
     <div
-      className={`pointer-events-auto w-full flex flex-col gap-2 px-3.5 pt-2.5 pb-3 lg:px-4 lg:py-3 rounded-[28px] bg-surface/85 backdrop-blur-2xl backdrop-saturate-150 border border-white/80 lg:border-line/80 shadow-[0_8px_24px_rgba(28,27,26,0.10)] ${extraClassName}`}
+      className={`pointer-events-auto w-full flex flex-col gap-2 px-3.5 pt-2.5 pb-3 lg:px-4 lg:py-3 rounded-[28px] bg-surface/95 backdrop-blur-2xl backdrop-saturate-150 border border-line/90 shadow-[0_10px_28px_rgba(28,27,26,0.14)] ${extraClassName}`}
     >
       {helperText && (
         <p className="text-[12px] font-semibold text-center leading-snug text-ink/90">

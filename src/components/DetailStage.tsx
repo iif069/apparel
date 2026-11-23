@@ -531,17 +531,7 @@ export function DetailStage({
             )}
           </div>
 
-          {/* Kanan: CTA Utama di Desktop (menyatu di navbar agar tidak menutupi kartu) & Chat WA ringkas di Mobile */}
-          <button
-            type="button"
-            onClick={handleWhatsAppClick}
-            className="hidden lg:inline-flex press items-center justify-center gap-2 h-11 px-5 rounded-full bg-brand hover:bg-brand-hover text-white shadow-sm transition-colors cursor-pointer shrink-0 whitespace-nowrap"
-            aria-label="Order dan konsultasi via WhatsApp"
-          >
-            <WhatsAppIcon className="w-4 h-4 flex-shrink-0" />
-            <span className="text-[13.5px] font-bold">Order &amp; Konsultasi via WA</span>
-          </button>
-
+          {/* Kanan: Tombol Chat WhatsApp CS */}
           <a
             href={getWhatsAppUrl(`Halo MIG Digital Printing, saya mau tanya dan konsultasi ${categoryData.tabLabel} (${productName})`)}
             target="_blank"
@@ -556,7 +546,7 @@ export function DetailStage({
                 colorName,
               })
             }
-            className="lg:hidden press flex items-center justify-center gap-1.5 sm:gap-2 h-11 px-3 sm:px-4 rounded-full bg-white/45 text-ink border border-white/70 hover:bg-white/75 transition-colors cursor-pointer shrink-0 whitespace-nowrap"
+            className="press flex items-center justify-center gap-1.5 sm:gap-2 h-11 px-3 sm:px-4 rounded-full bg-white/45 lg:bg-surface text-ink border border-white/70 lg:border-line hover:bg-white/75 lg:hover:border-brand/40 lg:shadow-sm transition-colors cursor-pointer shrink-0 whitespace-nowrap"
             aria-label="Hubungi WhatsApp CS"
           >
             <WhatsAppIcon className="w-4 h-4 flex-shrink-0" />
@@ -626,14 +616,28 @@ export function DetailStage({
         {/* B. TAMPILAN KHUSUS DESKTOP (hidden lg:grid) - SCROLL MANDIRI KIRI & KANAN, TENGAH FIXED */}
         {/* ========================================================================= */}
         <div className="hidden lg:grid grid-cols-[300px_1fr_310px] xl:grid-cols-[360px_1fr_380px] gap-5 xl:gap-8 items-start w-full max-w-[1400px] mx-auto flex-1 h-full min-h-0 px-7 py-3">
-          {/* 1. KOLOM KIRI (SCROLL MANDIRI) */}
+          {/* 1. KOLOM KIRI (KARTU SCROLL MANDIRI + CTA UTAMA DI KIRI BAWAH KONSISTEN DENGAN PANGGUNG RAK) */}
           <div
-            className={`h-full overflow-y-auto overscroll-contain pr-2 pb-6 flex flex-col gap-4 min-h-0 thin-scrollbar transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none ${
+            className={`h-full flex flex-col min-h-0 transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none ${
               isVisible ? 'opacity-100 translate-y-0 delay-[120ms]' : 'opacity-0 translate-y-4 delay-0'
             }`}
           >
-            {renderIdentityCard('text-2xl')}
-            {renderAudienceCard()}
+            <div className="flex-1 overflow-y-auto overscroll-contain pr-2 pt-1 pb-4 flex flex-col gap-4 min-h-0 thin-scrollbar [mask-image:linear-gradient(to_bottom,transparent_0%,black_12px,black_calc(100%-24px),transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_12px,black_calc(100%-24px),transparent_100%)]">
+              {renderIdentityCard('text-2xl')}
+              {renderAudienceCard()}
+            </div>
+
+            <div
+              className={`shrink-0 pr-2 pt-2 pb-1 transition-[opacity,transform] duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                isVisible ? 'opacity-100 delay-[260ms]' : 'opacity-0 translate-y-4 delay-0'
+              }`}
+            >
+              <OrderBottomBar
+                onOrderViaWhatsApp={handleWhatsAppClick}
+                variant="dock"
+                helperText="Konsultasi kebutuhan & estimasi gratis via WA"
+              />
+            </div>
           </div>
 
           {/* 2. KOLOM TENGAH: PRODUK FIXED DI TENGAH (TANPA SCROLL) */}
@@ -690,10 +694,10 @@ export function DetailStage({
 
       {/* 3. FLOATING ORDER BAR KHUSUS MOBILE & TABLET (Menempel tetap di bawah layar) */}
       <div className="lg:hidden">
-        {/* Progressive blur + gradasi halus di tepi bawah agar teks di belakang dock buram & tidak bertabrakan */}
+        {/* Progressive blur + gradasi transparan di tepi bawah agar kartu di belakang memudar halus & tidak menyatu dengan dock CTA */}
         <div
           aria-hidden="true"
-          className="pointer-events-none fixed inset-x-0 bottom-0 h-32 z-30 bg-gradient-to-t from-page/95 via-page/65 to-transparent backdrop-blur-lg [mask-image:linear-gradient(to_top,black_55%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_top,black_55%,transparent_100%)]"
+          className="pointer-events-none fixed inset-x-0 bottom-0 h-44 z-30 bg-gradient-to-t from-page via-page/90 via-55% to-transparent backdrop-blur-xl [mask-image:linear-gradient(to_top,black_65%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_top,black_65%,transparent_100%)]"
         />
         <OrderBottomBar
           onOrderViaWhatsApp={handleWhatsAppClick}
