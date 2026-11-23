@@ -114,3 +114,16 @@ Dokumen ini adalah aturan kerja baku untuk AI Assistant dalam mengembangkan proj
   * Widget floating BGM diposisikan melayang di atas kartu produk (`bottom-[84px]`), bukan di `bottom-4` yang bertumpukan dengan teks *"Mulai dari"*.
   * Widget BGM otomatis disembunyikan saat modal detail produk terbuka (`isDetailOpen = true`) agar tampilan formulir ukuran dan pemesanan tetap bersih tanpa halangan.
 
+---
+
+## 10. Standar Foto Produk, Arah Hadap & Kelurusan Kait Gantungan
+Aturan wajib setiap kali menambah, mengganti, atau merapikan aset foto produk di `public/products/` maupun komponen rak (`HangerRack`, `HangerHookSVG`):
+* **Arah Hadap Tampak Samping Seragam (Menghadap ke Kiri)**:
+  * Seluruh foto produk tampak samping (`*-side.webp`) di setiap kategori (**Kaos**, **Jersey**, dan **Kemeja**) **wajib menghadap ke kiri** secara seragam (tidak boleh ada satu item yang menghadap ke kanan sendiri seperti kasus lama kemeja biru paling kanan).
+* **Bentuk Kait Gantungan Tampak Samping Seragam**:
+  * Foto tampak samping (`*-side.webp`) **tidak boleh menyisakan kait melengkung lebar** (tampak depan berbentuk `?`, seperti kasus lama pada kaos hijau dan kaos ungu).
+  * Semua foto tampak samping wajib menampilkan batang kawat tipis tampak samping (*edge-on*) yang lurus ke atas dari leher gantungan hitam.
+* **Poros Tengah & Sambungan Kait Gantungan Lurus Presisi (`x = 50%`)**:
+  * Seluruh aset foto (`side`, `front`, `back`, beserta varian `flash*` dan `reflective*`) wajib berporos tepat di **tengah horizontal kanvas (`stemX = 50.0%`)** dan tinggi awal leher gantungan hitam yang seragam (**`neckY ≈ 9.5%`** dari tinggi gambar).
+  * Pergeseran horizontal/vertikal pada `front`/`back`/`flash*`/`reflective*` untuk satu item yang sama wajib identik agar overlay efek flash tetap presisi 100%.
+  * Di panggung rak ([`HangerRack.tsx`](src/components/HangerRack.tsx) & [`HangerHookSVG.tsx`](src/components/HangerHookSVG.tsx)), tidak boleh ada dua kait ganda yang bertumpukan atau sambungan yang miring/terputus antara kait krom SVG di rel dengan leher gantungan foto.

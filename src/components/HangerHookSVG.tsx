@@ -48,7 +48,11 @@ export function HangerHookSVG({
 
         {/* Leher & Kait Melengkung Masuk ke Pipa Wire */}
         <path
-          d="M 60 28 C 60 18, 56 12, 59 7 C 61 3, 67 3, 68 7 C 69 11, 66 14, 63 15"
+          d={
+            hideHangerBody
+              ? 'M 60 58 L 60 28 C 60 18, 56 12, 59 7 C 61 3, 67 3, 68 7 C 69 11, 66 14, 63 15'
+              : 'M 60 28 C 60 18, 56 12, 59 7 C 61 3, 67 3, 68 7 C 69 11, 66 14, 63 15'
+          }
           stroke="url(#hangerChromeGrad)"
           strokeWidth="3.2"
           strokeLinecap="round"

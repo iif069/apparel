@@ -527,6 +527,10 @@ export function HangerRack({
                       <div
                         className={`relative w-full h-[260px] md:h-[268px] flex items-start justify-center [perspective:1000px] ${
                           hasPhotoHanger ? '-mt-[26px] md:-mt-[30px]' : '-mt-1.5'
+                        } ${
+                          !custom?.frontDataUrl && !custom?.sideDataUrl && (item.front || item.side)
+                            ? '[mask-image:linear-gradient(to_bottom,transparent_0px,transparent_22px,black_25px)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0px,transparent_22px,black_25px)]'
+                            : ''
                         }`}
                       >
                         {/* SISI SAMPING (Tampil saat menyamping di rak) */}
