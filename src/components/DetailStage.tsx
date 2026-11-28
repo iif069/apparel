@@ -345,14 +345,14 @@ export function DetailStage({
         type="button"
         onClick={handleStageToggleFlash}
         aria-pressed={isFlashActive}
-        className={`press relative inline-flex items-center gap-2 min-h-[44px] px-4 py-2 rounded-full text-[13px] font-bold transition-all cursor-pointer ${
+        className={`press inline-flex items-center gap-2 min-h-[44px] px-4 py-2 rounded-full text-[13px] font-bold border transition-all cursor-pointer shadow-sm ${
           isFlashActive
-            ? 'bg-ink text-surface border border-ink shadow-soft'
-            : 'liquid-glass text-ink hover:text-brand'
+            ? 'bg-ink text-surface border-ink shadow-soft'
+            : 'bg-surface text-ink border-line hover:border-brand/50 hover:text-brand'
         }`}
       >
-        <Zap className={`relative z-10 w-4 h-4 ${isFlashActive ? 'text-yellow-300 fill-yellow-300' : 'text-brand'}`} />
-        <span className="relative z-10">{isFlashActive ? 'Sablon Menyala: Aktif' : 'Tes Sablon Menyala (Flash)'}</span>
+        <Zap className={`w-4 h-4 ${isFlashActive ? 'text-yellow-300 fill-yellow-300' : 'text-brand'}`} />
+        <span>{isFlashActive ? 'Sablon Menyala: Aktif' : 'Tes Sablon Menyala (Flash)'}</span>
       </button>
     ) : null;
 
@@ -465,7 +465,7 @@ export function DetailStage({
           : 'opacity-0 pointer-events-none'
       }`}
     >
-      {/* 1. HEADER DETAIL TETAP DI ATAS (Liquid glass melayang di mobile & auto-hide saat scroll turun) */}
+      {/* 1. HEADER DETAIL TETAP DI ATAS (Kapsul mengambang di mobile & auto-hide saat scroll turun) */}
       <div
         aria-hidden="true"
         className={`lg:hidden pointer-events-none absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-page/60 via-page/25 to-transparent backdrop-blur-lg [mask-image:linear-gradient(to_bottom,black_55%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_55%,transparent_100%)] z-40 transition-opacity duration-300 ${
@@ -473,17 +473,17 @@ export function DetailStage({
         }`}
       />
       <header
-        className={`absolute top-3 left-3 right-3 h-[58px] rounded-full px-2 liquid-glass lg:relative lg:top-auto lg:left-auto lg:right-auto lg:w-[calc(100%-56px)] lg:max-w-[1344px] lg:mx-auto lg:mt-3 lg:h-[64px] lg:px-3 flex-shrink-0 flex items-center z-50 transition-transform duration-300 ease-out motion-reduce:transition-none ${
+        className={`absolute top-3 left-3 right-3 h-[58px] rounded-full px-2 bg-surface/95 backdrop-blur-md border border-line shadow-[0_6px_24px_rgba(0,0,0,0.08)] lg:static lg:inset-auto lg:w-full lg:h-[72px] lg:rounded-none lg:px-7 lg:glass lg:border-0 lg:border-b lg:border-line/60 lg:shadow-none flex-shrink-0 flex items-center z-50 transition-transform duration-300 ease-out motion-reduce:transition-none ${
           isHeaderHidden ? '-translate-y-[calc(100%+18px)] lg:translate-y-0' : 'translate-y-0'
         }`}
       >
-        <div className="relative z-10 w-full flex items-center justify-between gap-1.5 sm:gap-3">
+        <div className="w-full max-w-[1340px] mx-auto flex items-center justify-between gap-1.5 sm:gap-3">
           {/* Tombol Kembali ke Rak */}
           <button
             ref={backButtonRef}
             type="button"
             onClick={onClose}
-            className="press focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 inline-flex items-center gap-2.5 min-w-[44px] h-11 px-2.5 md:px-3.5 rounded-full bg-white/50 border border-white/75 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)] hover:bg-white/80 text-ink hover:text-brand transition-colors cursor-pointer shrink-0"
+            className="press inline-flex items-center gap-2.5 min-w-[44px] h-11 px-2.5 md:px-3.5 rounded-full bg-surface border border-line shadow-sm hover:border-brand/40 text-ink hover:text-brand transition-colors cursor-pointer shrink-0"
             aria-label="Kembali ke rak"
           >
             <ArrowLeft className="w-5 h-5 stroke-[2] shrink-0" />
@@ -497,7 +497,7 @@ export function DetailStage({
                 {productName}
               </span>
             ) : items.length > 1 ? (
-              <div className="inline-flex items-center rounded-full bg-white/50 text-ink/85 border border-white/75 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)] shrink-0">
+              <div className="inline-flex items-center rounded-full bg-page text-ink/85 border border-line shrink-0">
                 <button
                   type="button"
                   onClick={() => {
@@ -505,7 +505,7 @@ export function DetailStage({
                     onSelectIndex((itemIndex - 1 + items.length) % items.length);
                   }}
                   aria-label="Model sebelumnya"
-                  className="min-w-[40px] sm:min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-ink/75 hover:text-ink hover:bg-white/65 transition-colors press-active cursor-pointer"
+                  className="min-w-[40px] sm:min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-ink/75 hover:text-ink hover:bg-surface transition-colors press-active cursor-pointer"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
@@ -519,13 +519,13 @@ export function DetailStage({
                     onSelectIndex((itemIndex + 1) % items.length);
                   }}
                   aria-label="Model berikutnya"
-                  className="min-w-[40px] sm:min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-ink/75 hover:text-ink hover:bg-white/65 transition-colors press-active cursor-pointer"
+                  className="min-w-[40px] sm:min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-ink/75 hover:text-ink hover:bg-surface transition-colors press-active cursor-pointer"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
             ) : (
-              <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white/50 text-ink/85 border border-white/75 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)] tabular-nums whitespace-nowrap shrink-0">
+              <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-page text-ink/85 border border-line tabular-nums whitespace-nowrap shrink-0">
                 {counterText}
               </span>
             )}
@@ -546,7 +546,7 @@ export function DetailStage({
                 colorName,
               })
             }
-            className="press flex items-center justify-center gap-1.5 sm:gap-2 h-11 px-3 sm:px-4 rounded-full bg-white/50 text-ink border border-white/75 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)] hover:bg-white/80 hover:border-brand/30 transition-colors cursor-pointer shrink-0 whitespace-nowrap"
+            className="press flex items-center justify-center gap-1.5 sm:gap-2 h-11 px-3 sm:px-4 rounded-full bg-surface text-ink border border-line hover:border-brand/40 shadow-sm transition-colors cursor-pointer shrink-0 whitespace-nowrap"
             aria-label="Hubungi WhatsApp CS"
           >
             <WhatsAppIcon className="w-4 h-4 flex-shrink-0" />
@@ -694,10 +694,10 @@ export function DetailStage({
 
       {/* 3. FLOATING ORDER BAR KHUSUS MOBILE & TABLET (Menempel tetap di bawah layar) */}
       <div className="lg:hidden">
-        {/* Penutup celah bawah dock CTA (hanya setinggi bagian bawah tombol ungu) agar teks di belakang tidak tembus ke bawah */}
+        {/* Progressive blur + gradasi transparan di tepi bawah agar kartu di belakang memudar halus & tidak menyatu dengan dock CTA */}
         <div
           aria-hidden="true"
-          className="pointer-events-none fixed inset-x-0 bottom-0 h-[calc(52px+env(safe-area-inset-bottom))] z-30 bg-gradient-to-t from-page from-55% via-page/95 via-75% to-transparent"
+          className="pointer-events-none fixed inset-x-0 bottom-0 h-44 z-30 bg-gradient-to-t from-page via-page/90 via-55% to-transparent backdrop-blur-xl [mask-image:linear-gradient(to_top,black_65%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_top,black_65%,transparent_100%)]"
         />
         <OrderBottomBar
           onOrderViaWhatsApp={handleWhatsAppClick}

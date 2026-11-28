@@ -52,10 +52,10 @@ export function BackgroundMusic({ soundEnabled }: BackgroundMusicProps) {
       onClick={toggleMusic}
       title={isPlaying ? 'Jeda Musik Latar' : 'Putar Musik Latar'}
       aria-pressed={isPlaying}
-      className={`press shrink-0 whitespace-nowrap select-none flex items-center justify-center gap-1.5 sm:gap-2 min-h-[44px] h-11 px-3 sm:px-4 rounded-full bg-white/50 text-ink border transition-colors cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)] hover:bg-white/80 ${
+      className={`press shrink-0 whitespace-nowrap select-none flex items-center justify-center gap-1.5 sm:gap-2 min-h-[44px] h-11 px-3 sm:px-4 rounded-full bg-surface text-ink border transition-colors cursor-pointer shadow-sm ${
         isPlaying
           ? 'border-brand/40 shadow-soft'
-          : 'border-white/75 hover:border-brand/40'
+          : 'border-line hover:border-brand/40'
       }`}
       aria-label={isPlaying ? 'Jeda musik latar' : 'Putar musik latar'}
     >

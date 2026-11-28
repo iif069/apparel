@@ -127,3 +127,11 @@ Aturan wajib setiap kali menambah, mengganti, atau merapikan aset foto produk di
   * Seluruh aset foto (`side`, `front`, `back`, beserta varian `flash*` dan `reflective*`) wajib berporos tepat di **tengah horizontal kanvas (`stemX = 50.0%`)** dan tinggi awal leher gantungan hitam yang seragam (**`neckY ≈ 9.5%`** dari tinggi gambar).
   * Pergeseran horizontal/vertikal pada `front`/`back`/`flash*`/`reflective*` untuk satu item yang sama wajib identik agar overlay efek flash tetap presisi 100%.
   * Di panggung rak ([`HangerRack.tsx`](src/components/HangerRack.tsx) & [`HangerHookSVG.tsx`](src/components/HangerHookSVG.tsx)), tidak boleh ada dua kait ganda yang bertumpukan atau sambungan yang miring/terputus antara kait krom SVG di rel dengan leher gantungan foto.
+
+---
+
+## 11. Pencatatan Konteks & Riwayat Lintas Perangkat (`AI-CONTEXT.md`)
+* **Wajib Baca di Awal Sesi**:
+  * Setiap AI Assistant (dari device atau editor mana pun) wajib membaca [`AI-CONTEXT.md`](./AI-CONTEXT.md) sebelum melakukan perubahan agar mengetahui preferensi aktif pengguna dan kondisi kode terkini.
+* **Wajib Catat Tiap Perintah & Perubahan**:
+  * Setiap kali menyelesaikan instruksi pengguna, tambahkan entri baru di bagian atas riwayat [`AI-CONTEXT.md`](./AI-CONTEXT.md) berisi: tanggal, ringkasan perintah pengguna, file yang diubah/dibuat, hasil `lint`/`build`, dan status Git (`belum commit`, `sudah commit`, atau `sudah push`).
