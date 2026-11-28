@@ -14,6 +14,8 @@ File ini menyimpan ringkasan konteks terbaru, preferensi desain pengguna, serta 
 * **Tanpa Efek Liquid Glass**:
   * Pengguna menolak penggunaan efek **liquid glass** (`.liquid-glass` / prisma optik / kilau tepi kaca).
   * Gunakan gaya permukaan standar MIG UI sesuai [`RULES.md`](./RULES.md) Bagian 7 (`bg-surface`, `bg-surface/95 backdrop-blur-md`, `.glass` standar pada bar penuh desktop, `border-line`).
+* **CTA Tanpa Shadow Ungu**:
+  * Tombol CTA (*Desain custom? Chat via WhatsApp* dan CTA lainnya) dilarang diberi bayangan berwarna ungu (`rgba(123,41,186,...)`); gunakan bayangan netral standar (`shadow-[0_6px_24px_rgba(0,0,0,0.08)]` atau `shadow-sm`).
 * **Standar Foto Produk & Kait Gantungan** (`RULES.md` Bagian 10, commit `9275572`):
   * Seluruh foto tampak samping (`*-side.webp`) menghadap ke kiri dengan batang kawat tipis tampak samping (*edge-on*) dan poros tengah lurus di `x = 50%`.
 * **Aturan Git Push** (`RULES.md` Bagian 1):
@@ -23,6 +25,18 @@ File ini menyimpan ringkasan konteks terbaru, preferensi desain pengguna, serta 
 ---
 
 ## Riwayat Perintah & Perubahan (Terbaru di Atas)
+
+### 2026-11-28 (10:00 WIB) — Hapus Shadow Ungu pada CTA
+* **Perintah Pengguna**:
+  * *"cta nya gk usah di kasih shadow ungu"*
+* **Perubahan Dilakukan**:
+  * `src/components/HangerRack.tsx`: Mengganti shadow ungu (`shadow-[0_6px_22px_rgba(123,41,186,0.18)]` pada CTA mobile dan `shadow-[0_6px_24px_rgba(123,41,186,0.18)]` pada CTA desktop) menjadi shadow netral `shadow-[0_6px_24px_rgba(0,0,0,0.08)]` yang seragam dengan tombol pill lainnya.
+  * `AI-CONTEXT.md`: Menambahkan preferensi *CTA Tanpa Shadow Ungu* dan mencatat log perubahan ini.
+* **Verifikasi & Status Git**:
+  * `npm run lint` lulus dan `npm run build` lulus (0 error).
+  * Status Git: **Sudah di-commit dan di-push ke `origin/main`** atas instruksi pengguna (`push`).
+
+---
 
 ### 2026-11-28 — Hapus Efek Liquid Glass & Buat File Konteks Lintas Device
 * **Perintah Pengguna**:

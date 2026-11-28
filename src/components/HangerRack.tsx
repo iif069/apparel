@@ -290,7 +290,7 @@ export function HangerRack({
               colorName: activeColorName,
             })
           }
-          className="press relative inline-flex rounded-full p-[2px] overflow-hidden shadow-[0_6px_22px_rgba(123,41,186,0.18)] cursor-pointer group"
+          className="press relative inline-flex rounded-full p-[2px] overflow-hidden shadow-[0_6px_24px_rgba(0,0,0,0.08)] cursor-pointer group"
           title="Konsultasi Desain Custom via WhatsApp"
         >
           <span aria-hidden="true" className="cta-loop-ring pointer-events-none" />
@@ -654,7 +654,7 @@ export function HangerRack({
               colorName: activeColorName,
             })
           }
-          className="press hidden md:inline-flex shrink-0 relative rounded-full p-[2px] overflow-hidden shadow-[0_6px_24px_rgba(123,41,186,0.18)] cursor-pointer group"
+          className="press hidden md:inline-flex shrink-0 relative rounded-full p-[2px] overflow-hidden shadow-[0_6px_24px_rgba(0,0,0,0.08)] cursor-pointer group"
           title="Konsultasi Desain Custom via WhatsApp"
         >
           <span aria-hidden="true" className="cta-loop-ring pointer-events-none" />
